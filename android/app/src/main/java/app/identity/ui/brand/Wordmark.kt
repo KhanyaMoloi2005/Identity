@@ -14,9 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import app.identity.ui.theme.InterFamily
 
 // Proportions of the I-cross mark, relative to its height. Matches docs/design/brand/*.svg.
 private const val MARK_WIDTH = 0.55f
@@ -74,6 +76,8 @@ fun IdentityWordmark(
         Text(
             text = "dentity",
             fontSize = fontSize,
+            fontFamily = InterFamily,
+            fontWeight = FontWeight.Medium,
             color = colors.onBackground,
             modifier = Modifier.alignByBaseline(),
         )

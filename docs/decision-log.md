@@ -25,6 +25,9 @@ _Last updated: 2026-10-27._
 | D-013 | 2026-10-27 | Builds run in the cloud (GitHub Actions); no Android tooling on the work laptop | Accepted |
 | D-014 | 2026-10-27 | Application ID `app.identity` is a placeholder; final ID chosen before first Play upload | Provisional |
 | D-015 | 2026-10-27 | Pinned toolchain: AGP 8.7.3, Gradle 8.9, Kotlin 2.0.21, Compose BOM 2024.12.01, compile/target SDK 35 | Provisional |
+| D-016 | 2026-10-27 | Bundle Inter + Literata as variable fonts (SIL OFL, licences shipped in the APK) | Accepted |
+| D-017 | 2026-10-27 | Navigation Compose 2.8.5 with type-safe routes; kotlinx.serialization 1.7.3 | Accepted |
+| D-018 | 2026-10-27 | Custom line icons for the tab bar instead of the large Material extended icon library | Accepted |
 
 ---
 
@@ -72,6 +75,16 @@ _Last updated: 2026-10-27._
 ### D-014: Application ID
 **Context:** The application ID uniquely identifies the app on Google Play and can never change after the first upload.
 **Decision:** `app.identity` as a placeholder. Pick a final ID before M8, ideally based on a domain the product owner controls (e.g. `za.co.<domain>.identity`).
+
+### D-016: Fonts
+**Decision:** download Inter and Literata from Google's official fonts repository (`github.com/google/fonts`, `ofl/` folder) and bundle them in `res/font/`. They're variable fonts (one file holds every weight), about 1.8 MB together. Italic files skipped for now. The SIL Open Font Licence requires the licence to travel with the font, so the OFL texts ship inside the app in `assets/licenses/`. A licences screen in Settings will display them later.
+**Why bundle instead of downloading at runtime:** works offline, needs no internet permission, and sends no request to Google when the app opens.
+
+### D-017: Navigation
+**Decision:** Google's Navigation Compose library with **type-safe routes**: each screen is a Kotlin type, so a mistyped route fails the build instead of crashing on the phone. Type-safe routes require kotlinx.serialization (JetBrains, Apache 2.0), which 1.2 needs anyway to read verse data files.
+
+### D-018: Tab icons
+**Decision:** four hand-drawn line icons (shield, open book, two people, sliders) as vector drawables. Material's built-in core icons have no book icon, and the extended icon library is a very large dependency for four icons.
 
 ### D-015: Toolchain versions
 **Decision:** a known-compatible, well-established set (see `android/gradle/libs.versions.toml`). Play currently requires a recent target SDK for new uploads, so targetSdk will be raised to the then-required level before beta (M8). Upgrades happen one at a time, each verified by a build.

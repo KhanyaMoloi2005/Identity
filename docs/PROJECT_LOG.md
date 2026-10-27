@@ -8,6 +8,87 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: M1.1: Navigation shell + bundled fonts (branch `m1/navigation-shell`)
+
+> ⚠️ **Status: written, not yet built.** Becomes verified when the PR check is ✅ and the APK is checked on the phone.
+
+**What changed and why**
+- Product owner approved the M1 plan (six slices) and agreed to downloading the fonts and to Claude drafting the starter verse list (in 1.2).
+- **Bottom navigation** with four tabs: Home (shield), Scripture (open book), Partner (two people), Settings (sliders). Each tab is a placeholder for now, with honest text about what's coming.
+- **Fonts bundled:** Inter for the interface, Literata for Scripture. Downloaded from Google's official fonts repo, checked to be genuine TrueType files (sizes matched GitHub's listing). OFL licences ship inside the APK (D-016).
+- **Home** shows the wordmark and a Protection card: *"Not active yet. Filtering arrives in a later update."*
+- **Scripture** shows a sample verse (Psalm 119:105, WEB, public domain) in the Literata reading font, so you can judge the reading style.
+- Removed the temporary M0 `WelcomeScreen`. Version is now 0.0.2 (versionCode 2) so it installs as an update.
+- New libraries: Navigation Compose 2.8.5 and kotlinx.serialization 1.7.3 (D-017). Still **no permissions, no internet**.
+
+**How the pieces connect**
+```
+MainActivity → IdentityTheme (colours + fonts) → IdentityApp
+IdentityApp  → Scaffold: [ NavHost (current screen) ] over [ NavigationBar (4 tabs) ]
+Tap a tab    → navController.navigate(route) → NavHost shows HomeScreen / ScriptureScreen / PartnerScreen / SettingsScreen
+Each screen  → ScreenColumn (shared padding, scrolling, heading for screen readers)
+```
+
+**Files created**
+
+| File | Purpose |
+|---|---|
+| `android/app/src/main/res/font/inter.ttf`, `literata.ttf` | Bundled variable fonts |
+| `android/app/src/main/assets/licenses/inter-OFL.txt`, `literata-OFL.txt` | Font licences, shipped in the app |
+| `android/app/src/main/res/drawable/ic_nav_{home,scripture,partner,settings}.xml` | Tab icons |
+| `.../ui/theme/Type.kt` | Inter/Literata font families, app typography, `ScriptureBody` style |
+| `.../ui/navigation/TopLevelDestination.kt` | The four tabs and their type-safe routes |
+| `.../ui/navigation/IdentityApp.kt` | App frame: screen area + bottom bar, tab switching |
+| `.../ui/components/ScreenColumn.kt` | Shared layout for tab screens |
+| `.../feature/home/HomeScreen.kt` | Home tab |
+| `.../feature/scripture/ScriptureScreen.kt` | Scripture tab (sample verse) |
+| `.../feature/accountability/PartnerScreen.kt` | Partner tab (placeholder) |
+| `.../feature/settings/SettingsScreen.kt` | Settings tab (placeholder) |
+
+(`...` = `android/app/src/main/java/app/identity`)
+
+**Files updated:** `android/gradle/libs.versions.toml`, `android/build.gradle.kts`, `android/app/build.gradle.kts` (plugins, dependencies, version 0.0.2), `MainActivity.kt` (now shows `IdentityApp`), `ui/theme/Theme.kt` (typography), `ui/brand/Wordmark.kt` (Inter Medium), `res/values/strings.xml`, `CHANGELOG.md`, `docs/roadmap.md`, `docs/decision-log.md` (D-016 to D-018).
+**Files deleted:** `ui/WelcomeScreen.kt` (replaced by the Home tab).
+
+**How to verify**
+1. Publish branch `m1/navigation-shell` in GitHub Desktop and open a pull request into `main`. Wait for the ✅.
+2. Install the APK from that run (it installs over the old one).
+3. Check:
+   - four tabs at the bottom; the selected tab's icon sits in an amber pill
+   - tapping each tab switches screens; the Back button from any tab returns to Home, then exits
+   - the Scripture tab's sample verse is in a serif font (Literata), and the rest of the app is in a clean sans font (Inter)
+   - switch the phone between light and dark mode: colours follow
+   - with TalkBack on (optional), tab names are read aloud and screen titles are announced as headings
+
+**Next step:** 1.2, the Scripture data layer and starter verse list.
+
+---
+
+## 2026-10-27: M0 complete: build verified, app running on phone (branch `m0/close-out`)
+
+**Verified (by the product owner)**
+- Pull request #1 (`m0/android-skeleton` → `main`): both GitHub Actions checks passed ✅. The app compiles, passes lint, and produces an APK.
+- PR #1 merged into `main` (merge commit `a8d87d1`). Actions run #3 was the automatic build of `main` after the merge.
+- The debug APK was downloaded from GitHub, installed on the product owner's phone, and opened: it shows the Identity wordmark and *"Foundations build. Protection is not active yet."*
+
+**What changed and why**
+- `.github/workflows/android.yml`: each change was being built **twice** (once for the branch push, once for the pull request), wasting free Actions minutes. Now it builds on pull requests, on pushes to `main`, and on manual "Run workflow" only.
+- Marked M0 complete in `docs/roadmap.md` and `README.md`; risk R-15 (unverified code) marked mitigated.
+
+**Files updated:** `.github/workflows/android.yml`, `docs/roadmap.md`, `docs/risk-register.md`, `docs/PROJECT_LOG.md`, `README.md`.
+
+**Workflow from now on (each change)**
+1. Claude makes changes on a new branch and commits locally.
+2. You publish the branch in GitHub Desktop and open a pull request.
+3. Wait for the ✅ check, then optionally test the APK from that run.
+4. Merge, delete the branch, then in GitHub Desktop switch to `main` and pull.
+
+**Still open (not blocking M1):** ESV licence (D-001), confirming provisional decisions, Android Studio on your personal laptop.
+
+**Next step:** agree the M1 plan (app shell + offline Scripture), then build it in small slices.
+
+---
+
 ## 2026-10-27: M0 step 2: Android skeleton + cloud build (branch `m0/android-skeleton`)
 
 > ⚠️ **Status: written but UNVERIFIED.** No build has run yet. Nothing in this entry counts as working until the GitHub Actions build passes.

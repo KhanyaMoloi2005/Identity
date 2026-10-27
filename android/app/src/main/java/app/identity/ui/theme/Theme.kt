@@ -41,6 +41,7 @@ fun IdentityTheme(
 ) {
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
+        typography = IdentityTypography,
         content = content,
     )
 }
