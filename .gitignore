@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------
+# Identity .gitignore
+# Rule of thumb: build output, machine-specific files and ANY
+# secret must never be committed.
+# ---------------------------------------------------------------
+
+# --- Android / Gradle build output ---
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# --- Machine-specific Android Studio files ---
+local.properties
+*.iml
+.idea/
+.kotlin/
+
+# --- Signing keys (release keystores and blocklist-signing keys) ---
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+keystore.properties
+signing/
+
+# --- Environment files / secrets (keep only the example) ---
+.env
+.env.*
+!.env.example
+
+# --- Node / Supabase tooling ---
+node_modules/
+backend/supabase/.temp/
+backend/supabase/.branches/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log

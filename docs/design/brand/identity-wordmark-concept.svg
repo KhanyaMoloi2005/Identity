@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <title>Identity wordmark concept on dark and light backgrounds</title>
+  <!-- Dark version -->
+  <rect width="640" height="200" fill="#121826"/>
+  <rect x="96" y="58" width="14" height="84" rx="2" fill="#F5F0E6"/>
+  <rect x="81" y="80" width="44" height="10" rx="2" fill="#D9A15B"/>
+  <text x="122" y="142" font-family="Inter, 'Segoe UI', Roboto, Arial, sans-serif" font-size="112" font-weight="500" letter-spacing="2" fill="#F5F0E6">dentity</text>
+  <!-- Light version -->
+  <rect y="200" width="640" height="200" fill="#F5F0E6"/>
+  <rect x="96" y="258" width="14" height="84" rx="2" fill="#121826"/>
+  <rect x="81" y="280" width="44" height="10" rx="2" fill="#B07A35"/>
+  <text x="122" y="342" font-family="Inter, 'Segoe UI', Roboto, Arial, sans-serif" font-size="112" font-weight="500" letter-spacing="2" fill="#121826">dentity</text>
+</svg>
