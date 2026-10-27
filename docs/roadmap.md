@@ -7,7 +7,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | # | Milestone | Status |
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
-| M1 | App shell + offline Scripture | ⚪ Not started |
+| M1 | App shell + offline Scripture | 🟡 In progress (1.1 of 6) |
 | M2 | DNS filtering proof of concept | ⚪ Not started |
 | M3 | Reliable protection | ⚪ Not started |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
@@ -33,6 +33,16 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
   - [ ] ESV licence question answered (D-001); needed before any build is shared with others
 
 ## M1: App shell + offline Scripture (SP-01, SP-02, SP-03, CORE-01 screens)
+
+Built in six slices, one pull request each:
+- [ ] 1.1 Navigation shell + bundled fonts (written, awaiting build ✅ + phone check)
+- [ ] 1.2 Scripture data layer (Room, verse/topic format, starter verse list, first unit tests)
+- [ ] 1.3 Browse by topic
+- [ ] 1.4 "I'm struggling" flow
+- [ ] 1.5 Saved verses + private reflections
+- [ ] 1.6 Onboarding + privacy disclosures
+
+Acceptance criteria for M1 as a whole:
 - Navigation (Home · Scripture · Partner · Settings), theme in light and dark, bundled fonts
 - Onboarding + privacy disclosure screens (static text; no permissions requested yet)
 - Verse library from bundled public-domain text; browse by topic

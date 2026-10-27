@@ -2,5 +2,28 @@
 <!-- All user-visible text lives here so it can be translated later. -->
 <resources>
     <string name="app_name">Identity</string>
-    <string name="welcome_status">Foundations build. Protection is not active yet.</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_scripture">Scripture</string>
+    <string name="nav_partner">Partner</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="home_protection_title">Protection</string>
+    <string name="home_protection_status">Not active yet. Filtering arrives in a later update.</string>
+
+    <!-- Scripture -->
+    <string name="scripture_title">Scripture</string>
+    <string name="scripture_placeholder">Topics, the \"I\'m struggling\" flow and saved verses are coming next. Everything here will work offline and stay private.</string>
+    <string name="scripture_sample_text">Your word is a lamp to my feet, and a light for my path.</string>
+    <string name="scripture_sample_reference">Psalm 119:105 (WEB)</string>
+
+    <!-- Partner -->
+    <string name="partner_title">Accountability partner</string>
+    <string name="partner_placeholder">Optional. When this arrives, you choose who to invite and exactly what they can see, and you can stop sharing at any time.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_placeholder">Settings will appear here as features are added.</string>
 </resources>
