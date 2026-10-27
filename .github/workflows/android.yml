@@ -2,8 +2,11 @@
 # has to be installed locally. The debug APK is attached to each run as a download.
 name: Android build
 
+# Build each change once: on pull requests, and again after merging into main.
+# (Pushing a feature branch alone doesn't build; open a PR, or use "Run workflow" on the Actions tab.)
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

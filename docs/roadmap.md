@@ -6,7 +6,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 
 | # | Milestone | Status |
 |---|---|---|
-| M0 | Foundations | 🟡 In progress |
+| M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⚪ Not started |
 | M2 | DNS filtering proof of concept | ⚪ Not started |
 | M3 | Reliable protection | ⚪ Not started |
@@ -25,10 +25,12 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 - [x] Setup guide for Android Studio + phone
 - [x] Android project skeleton written (`android/`): theme, I-cross mark, welcome screen, launcher icon
 - [x] Cloud build workflow (`.github/workflows/android.yml`) written
-- [ ] Repo pushed to a private GitHub repo and the cloud build **passes** (first real verification)
-- [ ] Debug APK installed on your phone and the welcome screen shows (no cable needed: download from GitHub)
-- [ ] Android Studio on your **personal** laptop (later, optional for M0)
-- [ ] Provisional decisions confirmed or changed; ESV licence question answered (D-001)
+- [x] Repo pushed to GitHub and the cloud build **passes** (PR #1, merged into `main`)
+- [x] Debug APK installed on the product owner's phone; welcome screen shows
+- Carried forward (not blocking M1):
+  - [ ] Android Studio on your **personal** laptop (optional)
+  - [ ] Provisional decisions confirmed or changed
+  - [ ] ESV licence question answered (D-001); needed before any build is shared with others
 
 ## M1: App shell + offline Scripture (SP-01, SP-02, SP-03, CORE-01 screens)
 - Navigation (Home · Scripture · Partner · Settings), theme in light and dark, bundled fonts

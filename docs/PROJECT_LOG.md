@@ -8,6 +8,31 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: M0 complete: build verified, app running on phone (branch `m0/close-out`)
+
+**Verified (by the product owner)**
+- Pull request #1 (`m0/android-skeleton` → `main`): both GitHub Actions checks passed ✅. The app compiles, passes lint, and produces an APK.
+- PR #1 merged into `main` (merge commit `a8d87d1`). Actions run #3 was the automatic build of `main` after the merge.
+- The debug APK was downloaded from GitHub, installed on the product owner's phone, and opened: it shows the Identity wordmark and *"Foundations build. Protection is not active yet."*
+
+**What changed and why**
+- `.github/workflows/android.yml`: each change was being built **twice** (once for the branch push, once for the pull request), wasting free Actions minutes. Now it builds on pull requests, on pushes to `main`, and on manual "Run workflow" only.
+- Marked M0 complete in `docs/roadmap.md` and `README.md`; risk R-15 (unverified code) marked mitigated.
+
+**Files updated:** `.github/workflows/android.yml`, `docs/roadmap.md`, `docs/risk-register.md`, `docs/PROJECT_LOG.md`, `README.md`.
+
+**Workflow from now on (each change)**
+1. Claude makes changes on a new branch and commits locally.
+2. You publish the branch in GitHub Desktop and open a pull request.
+3. Wait for the ✅ check, then optionally test the APK from that run.
+4. Merge, delete the branch, then in GitHub Desktop switch to `main` and pull.
+
+**Still open (not blocking M1):** ESV licence (D-001), confirming provisional decisions, Android Studio on your personal laptop.
+
+**Next step:** agree the M1 plan (app shell + offline Scripture), then build it in small slices.
+
+---
+
 ## 2026-10-27: M0 step 2: Android skeleton + cloud build (branch `m0/android-skeleton`)
 
 > ⚠️ **Status: written but UNVERIFIED.** No build has run yet. Nothing in this entry counts as working until the GitHub Actions build passes.
