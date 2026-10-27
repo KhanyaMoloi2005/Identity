@@ -66,7 +66,7 @@ Gradle files → describe how to compile all of the above into an .apk
 3. Download the `identity-debug-apk` artifact on your phone and install it (see [setup guide](setup/android-studio.md#no-cable-install-from-a-github-actions-build)). Expected: an "Identity" icon (cream I-cross with an amber bar on navy); opening it shows the wordmark and the status text.
 
 **Next step**
-- **You:** decide whether to create a private GitHub repo and push from this laptop (check your employer's policy first) or wait for your personal laptop.
+- **You:** push `main` and `m0/android-skeleton` to `github.com/KhanyaMoloi2005/Identity` yourself using **GitHub Desktop** (decided 2026-10-27; Claude does not push).
 - **Then:** fix anything the first build reports, merge `m0/android-skeleton` into `main`, and M0 is complete.
 
 ---
