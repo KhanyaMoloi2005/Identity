@@ -8,6 +8,26 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: Local tooling working: Android Studio + USB debugging (branch `docs/usb-setup`)
+
+> ✅ **Verified by the product owner and by `adb`:** Android Studio installed on the personal laptop; Gradle sync succeeded; ▶ Run installed and opened the app on the phone over USB; **M1.1 confirmed working** (the product owner reported it fully works, which covers the checklist items left open earlier: Back behaviour, fonts, dark mode).
+
+**What happened**
+- Installed Android Studio (Standard setup). The SDK is at `%LOCALAPPDATA%\Android\Sdk`.
+- Chose **USB debugging** over wireless: simpler, more reliable, charges the phone (wireless remains an optional extra).
+- `adb devices` first showed `unauthorized`; tapping **Allow** on the phone fixed it. `adb` then reported `SM-A346E`, Android 16 (API 36).
+- The first Gradle sync stopped because the disk had < 1 MB free. After freeing space (43 GB free), re-syncing finished successfully.
+
+**Test device (closes the open question about the phone):** Samsung Galaxy A34 5G (SM-A346E), Android 16. D-007 (minSdk 26) stays as chosen: this one device does not change it.
+
+**Files changed:** `docs/setup/android-studio.md` (rewritten: USB is the main route, with the disk-space and `unauthorized` fixes), `docs/PROJECT_LOG.md`.
+
+**Open item: Gradle wrapper version (not committed).** Android Studio generated `android/gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar` and changed `gradle-wrapper.properties` to **Gradle 9.7.1**, plus `android/gradle/gradle-daemon-jvm.properties`. CI and decision D-015 use **Gradle 8.9** (AGP 8.7.3). The local build works with 9.7.1, but local and CI should match. These files are left uncommitted until the version is chosen (default proposal: restore 8.9, commit the wrapper scripts, re-sync to confirm).
+
+**Next step:** decide the wrapper version, then M1.2 (Scripture data layer, see the pause-point entry below for its criteria), pending approval.
+
+---
+
 ## 2026-10-27: ⏸ PAUSE POINT: resume here on the personal laptop
 
 **Where we are:** M0 complete. M1.1 (navigation shell) verified and merged. Development rules adopted. Work pauses until the product owner is on their **personal laptop** (with Android Studio, and USB or Wi-Fi debugging available).
