@@ -8,9 +8,58 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: ⏸ PAUSE POINT: resume here on the personal laptop
+
+**Where we are:** M0 complete. M1.1 (navigation shell) verified and merged. Development rules adopted. Work pauses until the product owner is on their **personal laptop** (with Android Studio, and USB or Wi-Fi debugging available).
+
+**To resume (new Claude Code session):**
+1. Clone `KhanyaMoloi2005/Identity` with GitHub Desktop and open Claude Code in the repo folder.
+2. Ask Claude to read `docs/DEVELOPMENT_RULES.md`, the spec in `docs/spec/`, and this log, then continue from this entry.
+3. Set up Android Studio with [setup/android-studio.md](setup/android-studio.md), then open the `android/` folder. Wireless debugging lets the ▶ Run button install straight onto the phone, so no more APK downloads.
+4. With local tooling, Claude can also build and run tests on the laptop before pushing (computer checks), and the phone checks become quick.
+
+**Proposed next task (awaiting product owner approval): M1.2, Scripture data layer**
+- *Task:* verse/topic data format, a small bundled starter verse set, a repository that loads it, and the project's first unit tests. No UI change.
+- *Scope note:* load the read-only bundled verses from a JSON asset in memory, with no Room database yet. Room arrives in 1.5 for saved verses and reflections. Record this as a decision when implemented.
+- *Acceptance criteria:*
+  1. Format matches spec §5 (`id`, `reference`, `text`, `translation`, `topic_tags`, `optional_reflection`, `is_active`) and is documented.
+  2. Starter set: the eight spec topics (lust, temptation, self-control, purity, renewing the mind, repentance, grace, hope), at least 3 verses each, text copied from the official public-domain WEB source (not typed from memory), source recorded. Placeholder until ESV licensing is resolved; the product owner reviews verse choices.
+  3. Repository: list topics, list a topic's verses, get one verse; inactive verses excluded.
+  4. Unit tests: real bundled file parses; every verse has a known topic and every topic has at least one verse; malformed/incomplete data rejected safely; topic filtering; inactive verses hidden.
+  5. CI ✅ with **more than 0 tests run**.
+  6. Still no permissions or internet; no phone check needed (no UI change).
+- *Likely files:* `android/app/src/main/assets/scripture/`, `android/app/src/main/java/app/identity/data/scripture/`, `android/app/src/test/java/app/identity/data/scripture/`, `android/gradle/libs.versions.toml`, `android/app/build.gradle.kts` (JUnit, test-only), `content/scripture/SOURCES.md`, docs.
+
+**Follow-up list (not started; move into `docs/FOLLOW_UPS.md` with M1.2)**
+- Update GitHub Actions versions (Node 20 deprecation, `setup-java@v5`, Ubuntu runner migration warnings from run #4).
+- Review the `lint-report` artifact for warnings (lint passing only means no errors).
+- Unit tests: none exist yet (fixed by M1.2).
+- M1.1 phone checklist items not individually confirmed: Back behaviour, fonts, dark mode, TalkBack.
+- In-app licences screen (font OFL texts) in Settings.
+
+**Decisions awaiting the product owner**
+- D-001: ESV licence from Crossway (blocks distributing any build to others).
+- D-002 to D-008, D-014, D-015: still provisional.
+- Phone model and Android version (confirms minimum Android version, D-007).
+
+---
+
+## 2026-10-27: Development rules adopted (branch `docs/development-rules`)
+
+**What changed and why**
+- Product owner supplied *"Identity: Incremental Development Rules for Claude Code"*, which governs **how** work is done (one task at a time; define, inspect, plan, implement, verify, report, pause; required start/end response format; honest verification). The SDLC spec remains the product specification.
+- Saved as [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md), text unchanged apart from a note at the top giving the spec's location (`docs/spec/`).
+- Also recorded: **M1.1 verified.** PR #2 check (Actions run #4) passed ✅ (`assembleDebug lintDebug testDebugUnitTest`, 2m 51s). The product owner installed the APK and saw the navigation, then merged PR #2.
+
+**Files:** `docs/DEVELOPMENT_RULES.md` (new), `docs/PROJECT_LOG.md`, `README.md` (index link).
+
+**Next step:** initial assessment per rules §12 (read-only), then await approval of the proposed task.
+
+---
+
 ## 2026-10-27: M1.1: Navigation shell + bundled fonts (branch `m1/navigation-shell`)
 
-> ⚠️ **Status: written, not yet built.** Becomes verified when the PR check is ✅ and the APK is checked on the phone.
+> ✅ **Verified 2026-10-27:** PR #2 build passed; APK installed on the product owner's phone and navigation seen; PR #2 merged. (Detailed checklist items such as dark mode and Back behaviour were not individually reported.)
 
 **What changed and why**
 - Product owner approved the M1 plan (six slices) and agreed to downloading the fonts and to Claude drafting the starter verse list (in 1.2).

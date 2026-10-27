@@ -14,6 +14,7 @@ An Android-first, privacy-focused pornography protection and personal accountabi
 |---|---|
 | [docs/spec/identity_sdlc_stitch_handoff.md](docs/spec/identity_sdlc_stitch_handoff.md) | Original product specification (requirements baseline, not edited) |
 | [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md) | **Running log of every change**: start here |
+| [docs/DEVELOPMENT_RULES.md](docs/DEVELOPMENT_RULES.md) | **How work is done**: one task at a time, verification, response format |
 | [docs/roadmap.md](docs/roadmap.md) | Milestones M0–M8 with acceptance criteria |
 | [docs/architecture.md](docs/architecture.md) | Tech stack, architecture, folder structure, platform limits |
 | [docs/decision-log.md](docs/decision-log.md) | Every significant decision and why |
