@@ -23,9 +23,12 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 - [x] Planning docs: architecture, roadmap, decision log, risk register, data inventory, project log
 - [x] Brand concept drafted (`docs/design/`)
 - [x] Setup guide for Android Studio + phone
-- [ ] Android Studio installed; `adb devices` lists your phone
-- [ ] Android project skeleton (`android/`) builds; blank Identity app runs on your phone
-- [ ] Provisional decisions (D-001 … D-008) confirmed or changed by product owner
+- [x] Android project skeleton written (`android/`): theme, I-cross mark, welcome screen, launcher icon
+- [x] Cloud build workflow (`.github/workflows/android.yml`) written
+- [ ] Repo pushed to a private GitHub repo and the cloud build **passes** (first real verification)
+- [ ] Debug APK installed on your phone and the welcome screen shows (no cable needed: download from GitHub)
+- [ ] Android Studio on your **personal** laptop (later, optional for M0)
+- [ ] Provisional decisions confirmed or changed; ESV licence question answered (D-001)
 
 ## M1: App shell + offline Scripture (SP-01, SP-02, SP-03, CORE-01 screens)
 - Navigation (Home · Scripture · Partner · Settings), theme in light and dark, bundled fonts

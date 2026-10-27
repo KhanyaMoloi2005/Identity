@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Colours needed before Compose starts (window background, launcher icon). See docs/design/DESIGN.md §3. -->
+<resources>
+    <color name="window_background">#F5F0E6</color>
+    <color name="ink">#121826</color>
+    <color name="parchment">#F5F0E6</color>
+    <color name="dawn">#D9A15B</color>
+</resources>

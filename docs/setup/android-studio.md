@@ -1,5 +1,7 @@
 # Setup: Android Studio and your phone (Windows)
 
+> **Current plan (D-013):** builds run in the cloud on GitHub Actions, so **you don't need this guide yet**. Use it later on your **personal** laptop. To run the app on your phone without a cable or Android Studio, see "No-cable install" at the bottom.
+
 Everything here is free. Expect about 10 GB of disk space and 30–60 minutes, mostly download time.
 
 ## 1. Install Android Studio
@@ -41,4 +43,15 @@ Once `adb devices` shows `device`, tell Claude:
 - your phone model and Android version (Settings → About phone)
 - how much RAM your PC has (Settings → System → About)
 
-Claude will then create the `android/` project skeleton and walk you through building it and running it on your phone.
+Claude will then walk you through opening the `android/` folder in Android Studio and running the app on your phone.
+
+---
+
+## No-cable install (from a GitHub Actions build)
+1. On your phone's browser, sign in to GitHub and open the repo → **Actions** → the latest green ✅ "Android build" run.
+2. Under **Artifacts**, download `identity-debug-apk` (a `.zip`). Open it with the Files app and tap the `.apk` inside.
+3. Android will ask to allow installs from that app (browser/Files): allow it **only for this install**, then turn it back off afterwards.
+4. Play Protect may warn that the app is unrecognised. That's expected for a debug build you made yourself.
+
+## Wireless debugging (personal laptop, Android 11+, no cable)
+Android Studio → **Device Manager → Pair devices using Wi-Fi**, then on the phone: Developer options → **Wireless debugging → Pair device with QR code**. Phone and laptop must be on the same Wi-Fi network.

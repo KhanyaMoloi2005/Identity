@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The I-cross mark on a 108dp adaptive-icon canvas.
+  Everything stays inside the central 66dp safe zone so launchers can crop it to any shape.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stem of the "I" -->
+    <path
+        android:fillColor="@color/parchment"
+        android:pathData="M49,30h10v48h-10z" />
+    <!-- Crossbar about a third of the way down -->
+    <path
+        android:fillColor="@color/dawn"
+        android:pathData="M39,43h30v6h-30z" />
+</vector>
