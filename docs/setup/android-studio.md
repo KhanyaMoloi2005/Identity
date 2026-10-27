@@ -12,6 +12,8 @@ Everything here is free. Expect about 10 GB of disk space (keep **at least 15 GB
 
 **Check:** the SDK should now exist at `C:\Users\<you>\AppData\Local\Android\Sdk`.
 
+> **Java 17 required for Gradle 8.9.** Android Studio bundles Java 25, which Gradle 8.9 cannot run on (the sync fails with just `25.0.3`). Install Temurin 17 (`winget install EclipseAdoptium.Temurin.17.JDK`), then in Android Studio: **Ctrl+Alt+S → search `Gradle JDK` → pick the Temurin 17 entry**, and sync.
+
 > **Disk space:** if the disk fills during setup or sync, the Gradle sync stops with an error. Free some space, then use **File → Sync Project with Gradle Files** (or the elephant icon with the blue arrow) to resume. If it still fails, ask Claude to clear the Gradle cache (`%USERPROFILE%\.gradle`); it only re-downloads files.
 
 ## 2. Prepare your Android phone

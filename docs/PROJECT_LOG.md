@@ -48,15 +48,16 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
-## 2026-10-27: ⏸ PAUSE POINT: resume here on the personal laptop
+## 2026-10-27: ⏸ PAUSE POINT (updated end of day): local tooling is set up, M1.2 is next
 
-**Where we are:** M0 complete. M1.1 (navigation shell) verified and merged. Development rules adopted. Work pauses until the product owner is on their **personal laptop** (with Android Studio, and USB or Wi-Fi debugging available).
+**Where we are:** M0 complete. M1.1 verified (confirmed fully working on the phone). Development rules adopted. **Personal laptop is set up:** Android Studio, USB debugging to the Galaxy A34 (Android 16), Temurin JDK 17, Gradle wrapper pinned to 8.9 and verified by a command-line build.
 
-**To resume (new Claude Code session):**
-1. Clone `KhanyaMoloi2005/Identity` with GitHub Desktop and open Claude Code in the repo folder.
-2. Ask Claude to read `docs/DEVELOPMENT_RULES.md`, the spec in `docs/spec/`, and this log, then continue from this entry.
-3. Set up Android Studio with [setup/android-studio.md](setup/android-studio.md), then open the `android/` folder. Wireless debugging lets the ▶ Run button install straight onto the phone, so no more APK downloads.
-4. With local tooling, Claude can also build and run tests on the laptop before pushing (computer checks), and the phone checks become quick.
+**Unfinished housekeeping (do first tomorrow)**
+1. Branch `build/gradle-wrapper-8.9` (commit `dc078e9`) is committed **locally only**. Push it with GitHub Desktop, open a pull request, wait for the CI ✅, merge, then switch to `main` and pull.
+2. In Android Studio: Settings (Ctrl+Alt+S) → search `Gradle JDK` → choose **Temurin 17**, sync, press ▶ Run once. Until this is done a Studio sync on Gradle 8.9 fails with the Java 25 error (`25.0.3`).
+3. Note: GitHub Desktop stashed the uncommitted Gradle files when switching branches (`stash@{0}` "GitHub_Desktop<docs/usb-setup>"). Its useful files are already committed, so the stash can be dropped.
+
+**To resume (new Claude Code session):** open Claude Code in `C:\Users\moloi\Downloads\Identity`, ask it to read `docs/DEVELOPMENT_RULES.md`, the spec in `docs/spec/`, and this log, then continue from this entry. Command-line builds need `JAVA_HOME` set to `C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot`.
 
 **Proposed next task (awaiting product owner approval): M1.2, Scripture data layer**
 - *Task:* verse/topic data format, a small bundled starter verse set, a repository that loads it, and the project's first unit tests. No UI change.
