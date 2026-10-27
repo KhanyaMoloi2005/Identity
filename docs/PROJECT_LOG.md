@@ -8,9 +8,22 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: Development rules adopted (branch `docs/development-rules`)
+
+**What changed and why**
+- Product owner supplied *"Identity: Incremental Development Rules for Claude Code"*, which governs **how** work is done (one task at a time; define, inspect, plan, implement, verify, report, pause; required start/end response format; honest verification). The SDLC spec remains the product specification.
+- Saved as [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md), text unchanged apart from a note at the top giving the spec's location (`docs/spec/`).
+- Also recorded: **M1.1 verified.** PR #2 check (Actions run #4) passed ✅ (`assembleDebug lintDebug testDebugUnitTest`, 2m 51s). The product owner installed the APK and saw the navigation, then merged PR #2.
+
+**Files:** `docs/DEVELOPMENT_RULES.md` (new), `docs/PROJECT_LOG.md`, `README.md` (index link).
+
+**Next step:** initial assessment per rules §12 (read-only), then await approval of the proposed task.
+
+---
+
 ## 2026-10-27: M1.1: Navigation shell + bundled fonts (branch `m1/navigation-shell`)
 
-> ⚠️ **Status: written, not yet built.** Becomes verified when the PR check is ✅ and the APK is checked on the phone.
+> ✅ **Verified 2026-10-27:** PR #2 build passed; APK installed on the product owner's phone and navigation seen; PR #2 merged. (Detailed checklist items such as dark mode and Back behaviour were not individually reported.)
 
 **What changed and why**
 - Product owner approved the M1 plan (six slices) and agreed to downloading the fonts and to Claude drafting the starter verse list (in 1.2).
