@@ -8,6 +8,26 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-27: Gradle wrapper committed, pinned to 8.9 (branch `build/gradle-wrapper-8.9`)
+
+> ✅ **Verified on the laptop:** `./gradlew assembleDebug lintDebug testDebugUnitTest` → BUILD SUCCESSFUL (9m 18s) with Gradle 8.9 on Java 17. Unit tests: `NO-SOURCE` (none exist until M1.2). Not re-checked in CI or from Android Studio yet.
+
+**What changed and why**
+- Added the Gradle wrapper scripts (`gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar`) so the project builds the same everywhere from the command line. `gradle-wrapper.properties` stays at **Gradle 8.9** (D-015); Android Studio had auto-changed it to 9.7.1, which was reverted.
+- **Why Studio chose 9.7.1:** the only Java installed was Studio's bundled **Java 25**, which Gradle 8.9 cannot run on (error was just `25.0.3`). CI uses Java 17, so it was never affected.
+- Installed **Eclipse Temurin JDK 17** (`winget`, installer hash verified) at `C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot`.
+- Not committed: `gradle-daemon-jvm.properties` (a Gradle 9 file; nothing in 8.9 uses it).
+
+**Needed once in Android Studio:** Settings (Ctrl+Alt+S) → search `Gradle JDK` → choose the **Temurin 17** JDK, then sync. Until then, a Studio sync on Gradle 8.9 will fail with the Java 25 error.
+
+**Command-line builds on this laptop:** set `JAVA_HOME` to the Temurin 17 folder first.
+
+**Files:** `android/gradlew`, `android/gradlew.bat`, `android/gradle/wrapper/gradle-wrapper.jar` (new), `docs/PROJECT_LOG.md`.
+
+**Next step:** M1.2 (Scripture data layer), pending approval.
+
+---
+
 ## 2026-10-27: Local tooling working: Android Studio + USB debugging (branch `docs/usb-setup`)
 
 > ✅ **Verified by the product owner and by `adb`:** Android Studio installed on the personal laptop; Gradle sync succeeded; ▶ Run installed and opened the app on the phone over USB; **M1.1 confirmed working** (the product owner reported it fully works, which covers the checklist items left open earlier: Back behaviour, fonts, dark mode).
