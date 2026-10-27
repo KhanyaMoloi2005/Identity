@@ -83,7 +83,8 @@ Known DNS bypass paths, and how we'll handle them, are tracked in the [risk regi
 
 ```
 Identity/
-├── README.md · CHANGELOG.md · .gitignore · .editorconfig
+├── README.md · CHANGELOG.md · .gitignore · .gitattributes · .editorconfig
+├── .github/workflows/   cloud build (GitHub Actions, D-013)
 ├── docs/
 │   ├── spec/            original specification (unchanged baseline)
 │   ├── PROJECT_LOG.md   running log of every change
@@ -91,7 +92,7 @@ Identity/
 │   ├── privacy/data-inventory.md
 │   ├── design/DESIGN.md + brand/
 │   └── setup/android-studio.md
-├── android/                     ← created in M0 step 2 (after Android Studio is installed)
+├── android/                     ← skeleton created in M0 step 2 (built by GitHub Actions)
 │   ├── filter-core/             pure Kotlin (no Android code) → fast tests, reusable later
 │   └── app/src/main/java/app/identity/
 │       ├── ui/          theme, shared components, navigation

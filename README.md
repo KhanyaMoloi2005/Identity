@@ -6,7 +6,7 @@ An Android-first, privacy-focused pornography protection and personal accountabi
 
 ## Status
 
-**Milestone M0: Foundations** (in progress). There's no app code yet. See [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md) for the latest state.
+**Milestone M0: Foundations** (in progress). A minimal Android app skeleton exists in `android/` but has **not been built or verified yet**. Builds run in the cloud via GitHub Actions. See [docs/PROJECT_LOG.md](docs/PROJECT_LOG.md) for the latest state.
 
 ## Where to find things
 

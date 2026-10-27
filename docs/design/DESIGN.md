@@ -26,7 +26,20 @@ A clean capital **I** whose crossbar sits about a third of the way down and is s
 | `attention` (amber) | `#A86B12` | `#E3B05C` | Needs attention (e.g. Always-on VPN off) |
 | `interrupted` (brick) | `#A4483C` | `#E08A7E` | Protection interrupted; calm, not alarming |
 
-Every text/background pair must reach WCAG AA contrast (4.5:1 for body text). This will be verified with a contrast check when the theme is coded in M1. The light accent is darker than the dark-theme accent for that reason.
+Every text/background pair must reach WCAG AA contrast (4.5:1 for body text). The light accent is darker than the dark-theme accent for that reason.
+
+**Contrast check (calculated 2026-10-27):**
+
+| Pair | Ratio | Result |
+|---|---|---|
+| Ink on Parchment | ≈ 15:1 | ✅ |
+| Muted `#5B6475` on Parchment | ≈ 5.3:1 | ✅ |
+| Muted `#A3AABA` on Ink | ≈ 7.6:1 | ✅ |
+| Ink text on accent `#B07A35` (light buttons) | ≈ 4.8:1 | ✅ |
+| Ink text on accent `#D9A15B` (dark buttons) | ≈ 7.7:1 | ✅ |
+| Accent `#B07A35` as text on Parchment | ≈ 3.2:1 | ❌ for body text, so the light accent is only used as a **fill** (buttons, the crossbar) or for large text ≥ 24 sp, never for small text |
+
+Button text on the accent is therefore **Ink, not white**, in both themes.
 
 ## 4. Typography
 - **Interface:** Inter (SIL Open Font Licence).

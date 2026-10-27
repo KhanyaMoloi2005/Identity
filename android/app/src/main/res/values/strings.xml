@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- All user-visible text lives here so it can be translated later. -->
+<resources>
+    <string name="app_name">Identity</string>
+    <string name="welcome_status">Foundations build. Protection is not active yet.</string>
+</resources>

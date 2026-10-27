@@ -13,7 +13,8 @@ _Last updated: 2026-10-27. Likelihood/Impact: L = low, M = medium, H = high._
 | R-07 | Coercive use (installed on someone else's phone to monitor them) | M | H | Adults only; device holder owns the account; visible VPN notification; aggregates only; user can revoke anytime | M4, M8 |
 | R-08 | VPN breaks connectivity (IPv6, network transitions, captive portals, DNS timeouts) | M | H | DNS-only routing; upstream timeouts + fallback resolver; transition and IPv6 test cases | M2, M3 |
 | R-09 | Supabase free-tier limits (inactivity pause, quotas) | M | M | Monitor usage; daily check-ins keep the project active; budget for a paid tier before public launch | M4+ |
-| R-10 | Bible translation licensing | L | M | Use public-domain WEB (D-001); record sources and licences in `content/scripture/` | M1 |
+| R-10 | Bible translation licensing: **ESV chosen (D-001) is copyrighted by Crossway**; bundling full text offline likely needs a licence | H | H | Product owner checks/requests Crossway permission before any distribution; develop with public-domain WEB placeholder in a translation-neutral format; record sources and licences in `content/scripture/` | M1 |
+| R-15 | Code is unverified while no build has run (no local Android tooling, D-013) | M | M | Never mark work "done" until the GitHub Actions build passes; fix build errors before adding features | M0 |
 | R-11 | Blocklist licensing (some lists restrict commercial use) | M | M | Verify each source's licence before bundling; record in `content/blocklists/SOURCES.md` | M3 |
 | R-12 | Defects in AI-generated security-critical code (filter, RLS, invitations) | M | H | Tests for every critical path; diff review; independent human review before public release | All |
 | R-13 | False positives (legitimate sites blocked) | M | M | User allow rules (with cooldown under commitment mode); easy reporting | M3 |
