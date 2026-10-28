@@ -8,6 +8,20 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-28: Added a completion checklist (branch `docs/completion-checklist`)
+
+**What changed and why**
+- Product owner asked for a checklist so the work stays focused. Added `docs/CHECKLIST.md`: a "done means done" list that applies to every task, all milestones with the M1 slices, open items, and the M8 beta gate.
+- Docs only; no code changed. Work is paused until the product owner is back with their phone.
+
+**Files:** `docs/CHECKLIST.md` (new), `docs/PROJECT_LOG.md`.
+
+**How to verify:** open `docs/CHECKLIST.md` and confirm it matches the roadmap.
+
+**Next step:** product owner approves M1.2 (Scripture data layer) when ready.
+
+---
+
 ## 2026-10-27: Local tooling working: Android Studio + USB debugging (branch `docs/usb-setup`)
 
 > ✅ **Verified by the product owner and by `adb`:** Android Studio installed on the personal laptop; Gradle sync succeeded; ▶ Run installed and opened the app on the phone over USB; **M1.1 confirmed working** (the product owner reported it fully works, which covers the checklist items left open earlier: Back behaviour, fonts, dark mode).
