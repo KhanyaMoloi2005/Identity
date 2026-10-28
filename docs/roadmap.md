@@ -7,8 +7,8 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | # | Milestone | Status |
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
-| M1 | App shell + offline Scripture | 🟡 In progress (1.2 of 6 written, awaiting CI) |
-| M2 | DNS filtering proof of concept | ⚪ Not started |
+| M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes after M2 |
+| M2 | DNS filtering proof of concept | 🟡 Next (planning) |
 | M3 | Reliable protection | ⚪ Not started |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
@@ -34,6 +34,8 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 
 ## M1: App shell + offline Scripture (SP-01, SP-02, SP-03, CORE-01 screens)
 
+> **Paused after 1.2 (D-020).** 1.3 to 1.6 resume once M2 is proven.
+
 Built in six slices, one pull request each:
 - [ ] 1.1 Navigation shell + bundled fonts (written, awaiting build ✅ + phone check)
 - [ ] 1.2 Scripture data layer (written; awaiting build ✅ with tests run)
@@ -52,6 +54,14 @@ Acceptance criteria for M1 as a whole:
 - Unit tests for the verse repository; TalkBack labels on all controls
 
 ## M2: DNS filtering proof of concept (BLOCK-01)
+
+Built in four slices, one pull request each:
+- [ ] 2.1 `:filter-core` module: DNS packet parsing + domain matcher, unit-tested (computer only)
+- [ ] 2.2 `IdentityVpnService` skeleton: VPN permission, start/stop, visible notification, nothing blocked yet (phone check)
+- [ ] 2.3 Answer queries: block a hard-coded test domain, forward everything else upstream (phone check)
+- [ ] 2.4 Wi-Fi to mobile data, IPv6 and 24 h battery observation recorded (phone check)
+
+Acceptance criteria for M2 as a whole:
 - `:filter-core` module: DNS packet parsing + domain matcher, unit-tested
 - `IdentityVpnService` (DNS-only) with a tiny hard-coded test blocklist
 - **On a physical phone:** test domain blocked in Chrome; ordinary browsing works
