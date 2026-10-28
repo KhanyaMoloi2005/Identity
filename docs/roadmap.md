@@ -7,7 +7,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | # | Milestone | Status |
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
-| M1 | App shell + offline Scripture | 🟡 In progress (1.1 of 6) |
+| M1 | App shell + offline Scripture | 🟡 In progress (1.2 of 6 written, awaiting CI) |
 | M2 | DNS filtering proof of concept | ⚪ Not started |
 | M3 | Reliable protection | ⚪ Not started |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
@@ -36,7 +36,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 
 Built in six slices, one pull request each:
 - [ ] 1.1 Navigation shell + bundled fonts (written, awaiting build ✅ + phone check)
-- [ ] 1.2 Scripture data layer (Room, verse/topic format, starter verse list, first unit tests)
+- [ ] 1.2 Scripture data layer (written; awaiting build ✅ with tests run)
 - [ ] 1.3 Browse by topic
 - [ ] 1.4 "I'm struggling" flow
 - [ ] 1.5 Saved verses + private reflections

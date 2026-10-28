@@ -88,3 +88,8 @@ _Last updated: 2026-10-27._
 
 ### D-015: Toolchain versions
 **Decision:** a known-compatible, well-established set (see `android/gradle/libs.versions.toml`). Play currently requires a recent target SDK for new uploads, so targetSdk will be raised to the then-required level before beta (M8). Upgrades happen one at a time, each verified by a build.
+
+### D-019: Scripture data storage and source (M1.2)
+**Decision:** the read-only starter verses live in a JSON file (`assets/scripture/verses.json`) loaded into memory at startup. No Room database yet: Room arrives in M1.5, where saved verses and reflections actually need to be stored. Topics are fixed in code (`StarterTopics`) and verses refer to them by id in `topic_tags`.
+**Source:** verse text is copied by script from the official World English Bible download at ebible.org (public domain), not typed from memory. See `content/scripture/SOURCES.md`. The WEB is a **placeholder** until the ESV licensing question (D-001) is settled.
+**Safety:** bad data returns a failed `Result` instead of crashing; unknown topics, blank fields and duplicate ids are rejected.

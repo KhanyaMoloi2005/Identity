@@ -8,6 +8,47 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-28: M1.2 Scripture data layer (branch `m1/scripture-data-layer`)
+
+> ⚠️ **Not yet verified.** This work laptop has no Java or Gradle, so nothing was compiled or tested here. The first real check is the GitHub Actions run (see "How to verify").
+
+**Task:** load a curated verse set from a bundled file, with a repository and the project's first unit tests. No UI change, no permissions, no internet.
+
+**What changed and why**
+- `verses.json`: 24 verses (3 for each of the 8 spec topics) in the spec §5 format. Text was extracted **by script** from the official WEB download at ebible.org, not typed from memory (D-019, `content/scripture/SOURCES.md`).
+- `Verse.kt`: the verse record and the fixed list of 8 topics.
+- `VerseLibraryParser.kt`: reads the JSON and rejects broken data (unknown topic, blank field, duplicate id, missing field, bad JSON) with a failed result instead of a crash.
+- `ScriptureRepository.kt`: list topics, list a topic's verses, get one verse; inactive verses are hidden. Held in memory; Room waits for M1.5.
+- `ScriptureDataTest.kt`: 10 unit tests covering the acceptance criteria below.
+- Added JUnit 4.13.2 as a **test-only** dependency (not shipped in the app).
+
+**Files:** `android/app/src/main/assets/scripture/verses.json`, `android/app/src/main/java/app/identity/data/scripture/{Verse,VerseLibraryParser,ScriptureRepository}.kt`, `android/app/src/test/java/app/identity/data/scripture/ScriptureDataTest.kt`, `android/gradle/libs.versions.toml`, `android/app/build.gradle.kts`, `content/scripture/SOURCES.md`, `docs/decision-log.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Things to know**
+- The repository is not wired to any screen yet (that is 1.3), so there is nothing to see on the phone.
+- Some verses begin mid-sentence in lower case (for example Matthew 5:28 "but I tell you…") or carry a stray quotation mark (Job 31:1, Matthew 26:41). That is how the WEB text is divided; I left it unedited. Worth deciding in 1.3 whether to show these with a leading "…".
+- The WEB writes God's name as "Yahweh" in the Old Testament.
+- The verse choices are mine and **need your review**.
+- A PowerShell script was blocked by the machine's execution policy; I did not bypass it and used bash tools instead.
+
+**Acceptance criteria and status**
+1. Format matches spec §5, documented: ✅ written (`Verse.kt`, `SOURCES.md`)
+2. 8 topics × ≥3 verses from official WEB: ✅ written; 🔶 awaiting your review
+3. Repository behaviour: ✅ written; ⏳ not run
+4. Unit tests: ✅ written; ⏳ not run
+5. CI green with more than 0 tests run: ⏳ pending
+6. No permissions or internet added: ✅ manifest untouched
+
+**How to verify**
+1. Push `m1/scripture-data-layer` (GitHub Desktop; push `docs/completion-checklist` first, since this branch builds on it) and open a pull request.
+2. GitHub → Actions → "Android build" must be ✅. Open the "Build, lint and unit-test" step and look for the test task running (not "NO-SOURCE").
+3. If ❌, paste the red lines to Claude.
+4. Read `content/scripture/SOURCES.md` and tell me which verses to swap.
+
+**Next step:** once CI is green and you approve the verses, merge, then M1.3 (browse by topic).
+
+---
+
 ## 2026-10-28: Added a completion checklist (branch `docs/completion-checklist`)
 
 **What changed and why**

@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M1.2 Scripture data layer (awaiting approval to start)
+**Current task:** M1.2 Scripture data layer (written, awaiting CI and product owner review)
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -26,7 +26,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 - [x] **M0** Foundations
 - [ ] **M1** App shell + offline Scripture
   - [x] 1.1 Navigation shell + fonts (merged, phone-verified)
-  - [ ] 1.2 Scripture data layer + first unit tests
+  - [ ] 1.2 Scripture data layer + first unit tests (written; CI green with tests run, then verse review)
   - [ ] 1.3 Browse by topic
   - [ ] 1.4 "I'm struggling" flow
   - [ ] 1.5 Saved verses + private reflections
