@@ -8,6 +8,42 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-28: M2.1 `:filter-core`: DNS parsing and domain matcher (branch `m2/filter-core`)
+
+> ✅ **Verified on a computer:** 18 unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses. ⏳ **Not yet verified:** the full-project CI run, because the module was tested in a scratch copy (this laptop has no Android SDK, so the `app` module could not be built here). No phone check is needed for this slice.
+
+**Task:** a pure-Kotlin module that reads a DNS query, answers "no such domain", and decides whether a domain is blocked. No VPN, permission, UI or real blocklist yet.
+
+**What changed and why**
+- `DnsPackets.parseQuery`: reads a packet and returns the domain, record type and id. It rejects responses, packets with zero or several questions, truncated packets and a looping compression pointer, without crashing.
+- `DnsPackets.nxDomainResponse`: builds a valid NXDOMAIN reply with the same id and question, response and recursion-available flags set, and no answers.
+- `DomainMatcher`: `example.com` blocks itself and subdomains but not look-alikes such as `notexample.com`. Case and trailing dots are ignored. **Any matching allow rule wins over any block rule**, however specific.
+- dnsjava 3.6.5 does the packet work (D-021). Added to the version catalog; the new module is registered in `settings.gradle.kts`.
+- **CI fix:** the workflow now also runs `:filter-core:test`; the old command would have skipped these tests.
+
+**Found by running the tests locally:** the first version did not compile (dnsjava's flag constants are bytes; its methods take ints). Fixed with `.toInt()` before committing. Running locally caught what would otherwise have been a red CI run.
+
+**Files:** `android/filter-core/build.gradle.kts`, `android/filter-core/src/main/kotlin/app/identity/filter/{DnsPackets,DomainMatcher}.kt`, `android/filter-core/src/test/kotlin/app/identity/filter/{DnsPacketsTest,DomainMatcherTest}.kt`, `android/settings.gradle.kts`, `android/build.gradle.kts`, `android/gradle/libs.versions.toml`, `.github/workflows/android.yml`, `docs/decision-log.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Parses a real, hand-built DNS packet: ✅ tested
+2. Matcher: subdomains, case, trailing dot, look-alikes: ✅ tested
+3. Allow beats block, documented order: ✅ tested
+4. Valid NXDOMAIN reply matching the query: ✅ tested
+5. Malformed or truncated packets rejected safely (incl. 200 random byte strings): ✅ tested
+6. CI green with the new tests actually run: ⏳ pending
+
+**Limits to know:** the matcher decides on the name only, so it cannot tell a blocked site from an allowed page on the same domain. Everything in the risk register for DNS (R-02) still applies. Internationalised names arrive as the form the packet carries them in; a real blocklist (M3) must use that form.
+
+**How to verify**
+1. Push `docs/reorder-m2` first, then `m2/filter-core` (this branch builds on it). Open pull requests.
+2. GitHub → Actions → "Android build" must be ✅. In the "Build, lint and unit-test" step, find `:filter-core:test` and confirm it did not say NO-SOURCE.
+3. If ❌, paste the red lines to Claude.
+
+**Next step:** after CI ✅ and merge, M2.2 (VPN service skeleton): the first slice that needs your phone.
+
+---
+
 ## 2026-10-28: Reordered the roadmap: filtering (M2) before more Scripture screens (D-020)
 
 **What changed and why**

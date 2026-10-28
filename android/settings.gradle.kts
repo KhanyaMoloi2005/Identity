@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Identity"
 include(":app")
+include(":filter-core")

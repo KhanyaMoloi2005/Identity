@@ -38,7 +38,7 @@ jobs:
           gradle-version: "8.9"
 
       - name: Build, lint and unit-test
-        run: gradle assembleDebug lintDebug testDebugUnitTest --no-daemon --stacktrace
+        run: gradle assembleDebug lintDebug testDebugUnitTest :filter-core:test --no-daemon --stacktrace
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
