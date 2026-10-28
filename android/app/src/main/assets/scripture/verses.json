@@ -1,0 +1,221 @@
+{
+  "translation": "WEB",
+  "verses": [
+    {
+      "id": "job-31-1",
+      "reference": "Job 31:1",
+      "text": "“I made a covenant with my eyes; how then should I look lustfully at a young woman?",
+      "translation": "WEB",
+      "topic_tags": ["lust"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "matthew-5-28",
+      "reference": "Matthew 5:28",
+      "text": "but I tell you that everyone who gazes at a woman to lust after her has committed adultery with her already in his heart.",
+      "translation": "WEB",
+      "topic_tags": ["lust"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "colossians-3-5",
+      "reference": "Colossians 3:5",
+      "text": "Put to death therefore your members which are on the earth: sexual immorality, uncleanness, depraved passion, evil desire, and covetousness, which is idolatry.",
+      "translation": "WEB",
+      "topic_tags": ["lust"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "1-corinthians-10-13",
+      "reference": "1 Corinthians 10:13",
+      "text": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
+      "translation": "WEB",
+      "topic_tags": ["temptation"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "james-1-12",
+      "reference": "James 1:12",
+      "text": "Blessed is a person who endures temptation, for when he has been approved, he will receive the crown of life which the Lord promised to those who love him.",
+      "translation": "WEB",
+      "topic_tags": ["temptation"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "matthew-26-41",
+      "reference": "Matthew 26:41",
+      "text": "Watch and pray, that you don’t enter into temptation. The spirit indeed is willing, but the flesh is weak.”",
+      "translation": "WEB",
+      "topic_tags": ["temptation"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "proverbs-25-28",
+      "reference": "Proverbs 25:28",
+      "text": "Like a city that is broken down and without walls is a man whose spirit is without restraint.",
+      "translation": "WEB",
+      "topic_tags": ["self-control"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "2-timothy-1-7",
+      "reference": "2 Timothy 1:7",
+      "text": "For God didn’t give us a spirit of fear, but of power, love, and self-control.",
+      "translation": "WEB",
+      "topic_tags": ["self-control"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "proverbs-16-32",
+      "reference": "Proverbs 16:32",
+      "text": "One who is slow to anger is better than the mighty; one who rules his spirit, than he who takes a city.",
+      "translation": "WEB",
+      "topic_tags": ["self-control"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "psalm-51-10",
+      "reference": "Psalm 51:10",
+      "text": "Create in me a clean heart, O God. Renew a right spirit within me.",
+      "translation": "WEB",
+      "topic_tags": ["purity"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "psalm-119-9",
+      "reference": "Psalm 119:9",
+      "text": "How can a young man keep his way pure? By living according to your word.",
+      "translation": "WEB",
+      "topic_tags": ["purity"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "matthew-5-8",
+      "reference": "Matthew 5:8",
+      "text": "Blessed are the pure in heart, for they shall see God.",
+      "translation": "WEB",
+      "topic_tags": ["purity"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "romans-12-2",
+      "reference": "Romans 12:2",
+      "text": "Don’t be conformed to this world, but be transformed by the renewing of your mind, so that you may prove what is the good, well-pleasing, and perfect will of God.",
+      "translation": "WEB",
+      "topic_tags": ["renewing-the-mind"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "philippians-4-8",
+      "reference": "Philippians 4:8",
+      "text": "Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report: if there is any virtue and if there is anything worthy of praise, think about these things.",
+      "translation": "WEB",
+      "topic_tags": ["renewing-the-mind"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "2-corinthians-10-5",
+      "reference": "2 Corinthians 10:5",
+      "text": "throwing down imaginations and every high thing that is exalted against the knowledge of God and bringing every thought into captivity to the obedience of Christ,",
+      "translation": "WEB",
+      "topic_tags": ["renewing-the-mind"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "1-john-1-9",
+      "reference": "1 John 1:9",
+      "text": "If we confess our sins, he is faithful and righteous to forgive us the sins and to cleanse us from all unrighteousness.",
+      "translation": "WEB",
+      "topic_tags": ["repentance"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "proverbs-28-13",
+      "reference": "Proverbs 28:13",
+      "text": "He who conceals his sins doesn’t prosper, but whoever confesses and renounces them finds mercy.",
+      "translation": "WEB",
+      "topic_tags": ["repentance"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "psalm-32-5",
+      "reference": "Psalm 32:5",
+      "text": "I acknowledged my sin to you. I didn’t hide my iniquity. I said, I will confess my transgressions to Yahweh, and you forgave the iniquity of my sin. Selah.",
+      "translation": "WEB",
+      "topic_tags": ["repentance"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "ephesians-2-8",
+      "reference": "Ephesians 2:8",
+      "text": "for by grace you have been saved through faith, and that not of yourselves; it is the gift of God,",
+      "translation": "WEB",
+      "topic_tags": ["grace"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "2-corinthians-12-9",
+      "reference": "2 Corinthians 12:9",
+      "text": "He has said to me, “My grace is sufficient for you, for my power is made perfect in weakness.” Most gladly therefore I will rather glory in my weaknesses, that the power of Christ may rest on me.",
+      "translation": "WEB",
+      "topic_tags": ["grace"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "hebrews-4-16",
+      "reference": "Hebrews 4:16",
+      "text": "Let’s therefore draw near with boldness to the throne of grace, that we may receive mercy and may find grace for help in time of need.",
+      "translation": "WEB",
+      "topic_tags": ["grace"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "romans-15-13",
+      "reference": "Romans 15:13",
+      "text": "Now may the God of hope fill you with all joy and peace in believing, that you may abound in hope in the power of the Holy Spirit.",
+      "translation": "WEB",
+      "topic_tags": ["hope"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "lamentations-3-22",
+      "reference": "Lamentations 3:22",
+      "text": "It is because of Yahweh’s loving kindnesses that we are not consumed, because his mercies don’t fail.",
+      "translation": "WEB",
+      "topic_tags": ["hope"],
+      "optional_reflection": null,
+      "is_active": true
+    },
+    {
+      "id": "isaiah-40-31",
+      "reference": "Isaiah 40:31",
+      "text": "but those who wait for Yahweh will renew their strength. They will mount up with wings like eagles. They will run, and not be weary. They will walk, and not faint.",
+      "translation": "WEB",
+      "topic_tags": ["hope"],
+      "optional_reflection": null,
+      "is_active": true
+    }
+  ]
+}
