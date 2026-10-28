@@ -98,3 +98,10 @@ _Last updated: 2026-10-27._
 **Decision:** after M1.2, pause M1.3 to M1.6 and do **M2 (DNS filtering proof of concept)** next. Milestone numbers stay the same; only the order changes. M1.3 to M1.6 resume after M2.
 **Why:** filtering is the core of the product and its riskiest part (VPN behaviour, battery, network changes, risks R-01, R-02, R-08). If it proves harder than expected, we want to know before building more around it. The Scripture screens are low-risk and independent, so waiting costs nothing. The product owner said the priority is back end and functionality; the UI can change later.
 **Trade-off:** M2 needs a real-phone check (VPN permission, test domain, Wi-Fi/mobile-data switching), so the computer-only parts (DNS parsing, domain matching, tests) come first.
+
+### D-021: dnsjava for DNS messages; `:filter-core` as a plain Kotlin module (2026-10-28)
+**Decision:** use **dnsjava 3.6.5** (BSD-3-Clause, about 600 KB, runtime dependency only on `slf4j-api`) to read DNS queries and build replies. Only its message parsing is used, not its resolver. The rest of the app sees just `DnsPackets.parseQuery` and `DnsPackets.nxDomainResponse`, so the library can be swapped later.
+**Why a library:** packets come from other apps on the phone (untrusted input) and DNS has known traps such as looping name-compression pointers. A mature parser has already met these. M3 SafeSearch also needs to build real answer records.
+**Why not 3.7.0:** it was released on 2026-10-25, three days before this decision. We adopt new versions deliberately, one at a time (D-015).
+**Module:** `android/filter-core`, plain Kotlin/JVM (Java 11 bytecode like the app), no Android code, so its tests run anywhere. The app does not use it yet (that starts in M2.2); the release-build shrinker (R8) rules for dnsjava will be checked then, on a phone.
+**CI:** the workflow now also runs `:filter-core:test`. `testDebugUnitTest` only covers the `app` module and would have skipped these tests silently.
