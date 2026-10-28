@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M1.2 Scripture data layer (written, awaiting CI and product owner review)
+**Current task:** M2.1 filter-core (DNS parsing + domain matcher) — plan awaiting approval. M1.2 waits on CI + verse review (verses still in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -24,7 +24,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 ## Milestones
 
 - [x] **M0** Foundations
-- [ ] **M1** App shell + offline Scripture
+- [ ] **M1** App shell + offline Scripture ⏸ paused after 1.2 until M2 is proven (D-020)
   - [x] 1.1 Navigation shell + fonts (merged, phone-verified)
   - [ ] 1.2 Scripture data layer + first unit tests (written; CI green with tests run, then verse review)
   - [ ] 1.3 Browse by topic
@@ -32,7 +32,12 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [ ] 1.5 Saved verses + private reflections
   - [ ] 1.6 Onboarding + privacy disclosures
   - [ ] M1 acceptance: works in airplane mode, no internet permission, TalkBack labels, verse tests pass
-- [ ] **M2** DNS filtering proof of concept
+- [ ] **M2** DNS filtering proof of concept ← next
+  - [ ] 2.1 `:filter-core`: DNS parsing + domain matcher, unit-tested (computer only)
+  - [ ] 2.2 VPN service skeleton: permission, start/stop, notification (phone check)
+  - [ ] 2.3 Block a test domain, forward the rest (phone check)
+  - [ ] 2.4 Network switching, IPv6, 24 h battery (phone check)
+  - [ ] M2 acceptance: test domain blocked in Chrome, normal browsing works
 - [ ] **M3** Reliable protection
 - [ ] **M4** Accounts, partners, account deletion
 - [ ] **M5** Reports and alerts
@@ -46,6 +51,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 
 - [ ] Decide Gradle wrapper version (local 9.7.1 vs CI 8.9), then commit wrapper scripts
 - [ ] Confirm or change provisional decisions D-001 … D-008
+- [ ] Review the 24 starter verses in `content/scripture/SOURCES.md` (in progress)
 - [ ] ESV licence question (D-001); needed before sharing any build with others
 - [ ] Update GitHub Actions versions (Node 20 deprecation warnings)
 - [ ] Review `lint-report` artifact warnings

@@ -8,6 +8,19 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-28: Reordered the roadmap: filtering (M2) before more Scripture screens (D-020)
+
+**What changed and why**
+- Product owner said the priority is the back end and functionality; screens can change later. Agreed to do M2 (DNS filtering proof of concept) right after M1.2, because filtering is the riskiest core part and we should learn early whether it works on the phone.
+- M1.3 to M1.6 are paused, not dropped. M2 is split into four slices (2.1 to 2.4).
+- M1.2 stays as committed. Its CI check is still pending and the product owner's verse review is **in progress**; neither blocks starting M2.1.
+
+**Files:** `docs/decision-log.md` (D-020), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`. Docs only.
+
+**Next step:** product owner approves the M2.1 plan (proposed in chat), then Claude builds `:filter-core`.
+
+---
+
 ## 2026-10-28: M1.2 Scripture data layer (branch `m1/scripture-data-layer`)
 
 > ⚠️ **Not yet verified.** This work laptop has no Java or Gradle, so nothing was compiled or tested here. The first real check is the GitHub Actions run (see "How to verify").

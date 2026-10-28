@@ -93,3 +93,8 @@ _Last updated: 2026-10-27._
 **Decision:** the read-only starter verses live in a JSON file (`assets/scripture/verses.json`) loaded into memory at startup. No Room database yet: Room arrives in M1.5, where saved verses and reflections actually need to be stored. Topics are fixed in code (`StarterTopics`) and verses refer to them by id in `topic_tags`.
 **Source:** verse text is copied by script from the official World English Bible download at ebible.org (public domain), not typed from memory. See `content/scripture/SOURCES.md`. The WEB is a **placeholder** until the ESV licensing question (D-001) is settled.
 **Safety:** bad data returns a failed `Result` instead of crashing; unknown topics, blank fields and duplicate ids are rejected.
+
+### D-020: Build the filtering core before the Scripture screens (2026-10-28)
+**Decision:** after M1.2, pause M1.3 to M1.6 and do **M2 (DNS filtering proof of concept)** next. Milestone numbers stay the same; only the order changes. M1.3 to M1.6 resume after M2.
+**Why:** filtering is the core of the product and its riskiest part (VPN behaviour, battery, network changes, risks R-01, R-02, R-08). If it proves harder than expected, we want to know before building more around it. The Scripture screens are low-risk and independent, so waiting costs nothing. The product owner said the priority is back end and functionality; the UI can change later.
+**Trade-off:** M2 needs a real-phone check (VPN permission, test domain, Wi-Fi/mobile-data switching), so the computer-only parts (DNS parsing, domain matching, tests) come first.
