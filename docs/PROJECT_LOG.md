@@ -8,6 +8,41 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.3c-2 Leave YouTube Shorts and Instagram Reels, with two switches (branch `m3/shorts-reels`)
+
+> ✅ **Verified on a computer:** 72 `:filter-core` unit tests ran (0 failed, 0 skipped): 69 existing plus 3 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (product owner, 2026-10-29):** with the service on, Shorts and Reels both show a short message and take the user out of the app; with each switch off, that one plays normally and the other still closes; the switches keep their setting. Opening a Reels link and a Shorts link from the computer also ended on the phone's home screen. ⏳ **Not yet verified:** CI on a pull request; whether normal YouTube/Instagram use (feed, Stories, messages, a Reel shared in a message) is ever blocked by mistake over longer use.
+
+**Task:** when the user opens YouTube Shorts or Instagram Reels, take them out and let them open the app again; the rest of each app keeps working (product owner, D-031). Two switches, one per app, kept for now.
+
+**What changed and why**
+- **Found on the phone:** with USB debugging, the screens were inspected (`uiautomator`). YouTube's Shorts screen contains `reel_watch_fragment_root` and `reel_recycler`; Instagram's Reels viewer contains `clips_viewer_view_pager`, `root_clips_layout` and `clips_viewer_container`. (Instagram's dump only worked with the Reel paused.)
+- `ShortsReels` (`:filter-core`): the two watched apps and their markers in one place. Tests check that other apps (WhatsApp, TikTok, Chrome, Identity itself) are never watched.
+- `ShortsReelsService` (app, an Accessibility Service): Android only sends it events from YouTube and Instagram. It checks, at most every 0.3 s, whether a marker is on screen. If so it presses **Back**, shows a short message, and presses **Home** if Back didn't leave within 4 seconds. It reads no text, and stores, logs and sends nothing.
+- `ShortsReelsPrefs`: the two switches, both on by default.
+- Settings: "YouTube Shorts and Instagram Reels" with a plain-language explanation of what the service sees, the two switches, a status line, and a button to Android's Accessibility settings (where only the user can turn the service on).
+- **New permission:** the Accessibility Service itself (declared with `BIND_ACCESSIBILITY_SERVICE`). No internet or other permission added.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/ShortsReels.kt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/ShortsReelsTest.kt` (new), `android/app/src/main/java/app/identity/protection/{ShortsReelsService.kt,ShortsReelsPrefs.kt}` (new), `android/app/src/main/java/app/identity/feature/settings/SettingsScreen.kt`, `android/app/src/main/res/xml/shorts_reels_service.xml` (new), `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/strings.xml`, `docs/decision-log.md` (D-031, D-032), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Only YouTube and Instagram are watched; markers are full ids inside their own app: ✅ tested
+2. Build and lint: ✅ (local); CI on a pull request: ⏳
+3. Phone: Shorts and Reels close the app with a message; each switch controls only its own app; settings are kept: ✅
+4. Phone: normal use of both apps not blocked by mistake over longer use: ⏳
+
+**Also recorded (docs only):** the product owner's **focus hour** idea (a wake-up alarm that covers every app except essentials such as Phone and WhatsApp while the user reads and prays inside Identity; then the apps unlock) is in **D-032** and M6. The product owner will decide in **M7** whether the Shorts/Reels switches stay.
+
+**Limits to know:** YouTube and Instagram can rename these screens in any update, so the markers need re-checking on a phone after app updates. The user can turn the service or either switch off. Works whether or not protection (the VPN) is on. The Google Play review of the Accessibility Service is the largest open policy risk (R-03) and only matters before sharing a build. Two small deprecation warnings (`LocalLifecycleOwner`) are left for a later tidy-up.
+
+**How to verify (phone)**
+1. Install the build. Settings → "YouTube Shorts and Instagram Reels" → Turn on in Accessibility settings → switch on "Identity: leave Shorts and Reels".
+2. Open YouTube Shorts and Instagram Reels: each should close with a message. Use the rest of both apps normally.
+3. Turn one switch off at a time and repeat.
+
+**Next step:** pull request and CI ✅, merge. Then 3.4: staying on (restart after reboot, Always-on VPN, custom Private DNS detection).
+
+---
+
 ## 2026-10-29: M3.3c-1 TikTok daily time limit (branch `m3/app-time-limit`)
 
 > ✅ **Verified on a computer:** 69 `:filter-core` unit tests ran (0 failed, 0 skipped): 56 existing plus 13 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (product owner, 2026-10-29):** granted both permissions, set 15 minutes; having already used TikTok for longer today, opening TikTok brought up Identity's page and closed TikTok ("it works fine"). ⏳ **Not yet verified:** CI on a pull request; raising the limit (starts tomorrow); midnight reset; the DNS cut-off on its own.

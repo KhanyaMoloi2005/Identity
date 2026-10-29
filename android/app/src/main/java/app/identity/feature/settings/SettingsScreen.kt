@@ -1,5 +1,6 @@
 package app.identity.feature.settings
 
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -16,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,6 +44,9 @@ import app.identity.filter.TimeLimit
 import app.identity.protection.CustomRule
 import app.identity.protection.CustomRulesStore
 import app.identity.protection.IdentityVpnService
+import app.identity.filter.ShortsReels
+import app.identity.protection.ShortsReelsPrefs
+import app.identity.protection.ShortsReelsService
 import app.identity.protection.TikTokLimit
 import app.identity.ui.components.ScreenColumn
 
@@ -75,6 +80,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         )
 
         TikTokLimitSection()
+
+        ShortsReelsSection()
 
         SectionHeading(stringResource(R.string.settings_custom_heading))
         Text(
@@ -308,4 +315,80 @@ private fun durationText(minutes: Int): String = when {
     minutes < 60 -> stringResource(R.string.duration_minutes, minutes)
     minutes % 60 == 0 -> stringResource(R.string.duration_hours, minutes / 60)
     else -> stringResource(R.string.duration_hours_minutes, minutes / 60, minutes % 60)
+}
+
+/**
+ * YouTube Shorts and Instagram Reels (M3.3c-2, D-031). Shows the plain-language disclosure before
+ * sending the user to Android's Accessibility settings, where only they can switch it on.
+ */
+@Composable
+private fun ShortsReelsSection() {
+    val context = LocalContext.current
+    var enabled by remember { mutableStateOf(isShortsServiceEnabled(context)) }
+    val switches = remember { ShortsReelsPrefs(context) }
+    var youtubeOn by remember { mutableStateOf(switches.isOn(ShortsReels.YOUTUBE)) }
+    var instagramOn by remember { mutableStateOf(switches.isOn(ShortsReels.INSTAGRAM)) }
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) enabled = isShortsServiceEnabled(context)
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+
+    SectionHeading(stringResource(R.string.settings_shorts_heading))
+    Text(
+        text = stringResource(R.string.settings_shorts_explanation),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Text(
+        text = stringResource(R.string.settings_shorts_disclosure),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    if (enabled) {
+        Text(stringResource(R.string.settings_shorts_is_on), style = MaterialTheme.typography.bodyMedium)
+    }
+    SwitchRow(stringResource(R.string.settings_shorts_youtube), youtubeOn) {
+        youtubeOn = it
+        switches.setOn(ShortsReels.YOUTUBE, it)
+    }
+    SwitchRow(stringResource(R.string.settings_shorts_instagram), instagramOn) {
+        instagramOn = it
+        switches.setOn(ShortsReels.INSTAGRAM, it)
+    }
+    Button(onClick = { context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }) {
+        Text(
+            stringResource(
+                if (enabled) R.string.settings_shorts_button_manage else R.string.settings_shorts_button_on,
+            ),
+        )
+    }
+}
+
+/** Whether the user has switched the Shorts/Reels service on in system Settings. */
+private fun isShortsServiceEnabled(context: android.content.Context): Boolean {
+    val enabled = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+        ?: return false
+    val name = ComponentName(context, ShortsReelsService::class.java)
+    return enabled.split(':').any {
+        val component = ComponentName.unflattenFromString(it)
+        component != null && component == name
+    }
+}
+
+/** A label with an on/off switch. */
+@Composable
+private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Switch(checked = checked, onCheckedChange = onChange)
+    }
 }

@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.3c-1 TikTok daily time limit, branch `m3/app-time-limit`: written, 69 filter-core tests pass, lint clean, phone-tested (page shows and TikTok closes). Still to do: pull request and CI ✅, then merge. After that 3.3c-2 (Shorts and Reels, needs an Accessibility Service: awaiting decision). M3.1 to M3.3b merged. Not yet checked: custom rules surviving a restart.
+**Current task:** M3.3c-2 Shorts and Reels blocker with two switches, branch `m3/shorts-reels`: written, 72 filter-core tests pass, lint clean, phone-tested (Shorts and Reels both close; each switch works). Still to do: pull request and CI ✅, then merge. Next: 3.4 staying on (restart, Always-on VPN, custom Private DNS). M3.1 to M3.3c-1 merged. Not yet checked: custom rules surviving a restart.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
@@ -47,14 +47,14 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [x] 3.3b Your own blocks: websites + words, 10-minute undo (merged; restart persistence still to check)
   - [ ] 3.3c App blocking
     - [ ] 3.3c-1 TikTok daily time limit (D-030): phone ✅; PR + CI ✅ then merge
-    - [ ] 3.3c-2 YouTube Shorts / Instagram Reels only (Accessibility Service: decision needed)
+    - [x] 3.3c-2 YouTube Shorts / Instagram Reels only (Accessibility Service, D-031), two switches; phone-tested; PR + CI ✅ then merge
   - [ ] 3.4 Staying on: reboot, Always-on, Private DNS detection
   - [ ] 3.5 Observed status + interruption log
   - [ ] 3.6 Signed list updates
   - [ ] 3.7 Bypass test checklist
 - [ ] **M4** Accounts, partners, account deletion
 - [ ] **M5** Reports and alerts
-- [ ] **M6** Scripture First alarm + reminders
+- [ ] **M6** Scripture First alarm + reminders (incl. the focus hour: D-032)
 - [ ] **M7** Commitment controls (incl. uninstall friction + tamper alert, after a Play policy check: D-024)
 - [ ] **M8** Hardening + private beta
 
@@ -62,6 +62,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 
 ## Open items (do not forget, do not start until scheduled)
 
+- [ ] M7: decide whether to keep the Shorts/Reels switches (D-031) and treat the TikTok allowance the same way (D-030)
 - [ ] Decide Gradle wrapper version (local 9.7.1 vs CI 8.9), then commit wrapper scripts
 - [ ] Confirm or change provisional decisions D-001 … D-008
 - [ ] Review the 24 starter verses in `content/scripture/SOURCES.md` (in progress)
