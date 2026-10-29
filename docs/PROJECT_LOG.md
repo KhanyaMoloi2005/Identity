@@ -10,7 +10,11 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ## 2026-10-29: M3.2 SafeSearch (branch `m3/safesearch`, stacked on `m3/bundled-blocklist`)
 
-> ✅ **Verified on a computer:** 45 `:filter-core` unit tests ran (0 failed, 0 skipped): 38 existing plus 7 new. Each safe hostname was also resolved through Cloudflare for Families from the laptop: `forcesafesearch.google.com` → 216.239.38.120, `strict.bing.com` → 150.171.27.16, `safe.duckduckgo.com` → 191.235.126.53, `restrictmoderate.youtube.com` → 216.239.38.119. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
+> ✅ **Verified on a computer:** 45 `:filter-core` unit tests ran (0 failed, 0 skipped): 38 existing plus 7 new. Each safe hostname was also resolved through Cloudflare for Families from the laptop: `forcesafesearch.google.com` → 216.239.38.120, `strict.bing.com` → 150.171.27.16, `safe.duckduckgo.com` → 191.235.126.53, `restrictmoderate.youtube.com` → 216.239.38.119. ✅ **CI and phone:** the product owner installed the CI build and reported "safe search works and I cannot view explicit content" (2026-10-29).
+
+**Phone findings (follow-ups, not failures of this slice)**
+- Some images on **X/Twitter and Reddit** got through: they have no enforceable safe mode, so they need blocking as whole sites → slice 3.3a ("Block X and Reddit", on by default).
+- **"View image"** on a SafeSearch result opens the original picture from its own site, which DNS can't judge → slice 3.3a ("Block image search", on by default; reduces but cannot fully stop this).
 
 **Also recorded**
 - **M3.1 phone feedback:** nothing feels slow with the full list.
@@ -32,8 +36,8 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 1. Engines map to the right safe hostnames; Gmail/Maps and look-alikes untouched: ✅ tested
 2. Redirected reply carries the phone's own question, an alias and the safe address; wrong upstream answers rejected; IPv6 lookups redirected too; blocking still wins: ✅ tested
 3. Safe hostnames resolve through Cloudflare for Families: ✅ checked from the laptop
-4. CI green: ⏳ pending push
-5. Phone: Google SafeSearch locked on; Bing strict; YouTube Restricted Mode on and can't be turned off; normal search and Gmail work: 📱 pending
+4. CI green: ✅
+5. Phone: SafeSearch enforced, explicit content not viewable: ✅ (product owner)
 
 **Limits to know:** other search engines aren't covered (D-027). Browsers and apps remember lookups for a few minutes, so changes show after a short wait or a restart of the app. Explicit content inside social apps isn't affected.
 

@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.2 SafeSearch — written, 45 filter-core tests pass locally; awaiting CI ✅ and phone check. M3.1 awaits CI ✅ and merge (product owner: nothing feels slow). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
+**Current task:** M3.3a rule presets (Block X and Reddit, Block image search). M3.1 merged; M3.2 phone-tested ✅, merge next. M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -40,7 +40,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [ ] M2 acceptance: test domain blocked in Chrome, normal browsing works
 - [ ] **M3** Reliable protection ← in progress
   - [ ] 3.1 Bundled blocklist (HaGeZi NSFW) — written; CI ✅ then phone
-  - [ ] 3.2 SafeSearch — written; CI ✅ then phone (branch stacked on 3.1)
+  - [x] 3.2 SafeSearch (phone-tested)
   - [ ] 3.3 Custom allow/block rules
   - [ ] 3.4 Staying on: reboot, Always-on, Private DNS detection
   - [ ] 3.5 Observed status + interruption log

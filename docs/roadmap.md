@@ -71,7 +71,7 @@ Acceptance criteria for M2 as a whole:
 
 Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [ ] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain — written, 38 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) — written, 45 filter-core tests pass locally; awaiting CI ✅ and phone check
+- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) — phone-tested ✅
 - [ ] 3.3 Custom allow/block rules, applied predictably (allow wins)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
