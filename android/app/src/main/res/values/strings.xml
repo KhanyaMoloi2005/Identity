@@ -12,14 +12,14 @@
     <!-- Home -->
     <string name="home_protection_title">Protection</string>
     <string name="home_protection_status_off">Off.</string>
-    <string name="home_protection_status_on">On. Test version: nothing is blocked yet.</string>
+    <string name="home_protection_status_on">On. Test version: only example.com is blocked.</string>
     <string name="home_protection_turn_on">Turn on</string>
     <string name="home_protection_turn_off">Turn off</string>
 
     <!-- Protection notification -->
     <string name="protection_channel_name">Protection status</string>
     <string name="protection_notification_title">Identity protection is on</string>
-    <string name="protection_notification_text">Test version: nothing is blocked yet.</string>
+    <string name="protection_notification_text">Test version: only example.com is blocked.</string>
 
     <!-- Scripture -->
     <string name="scripture_title">Scripture</string>

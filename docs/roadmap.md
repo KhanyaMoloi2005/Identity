@@ -8,7 +8,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes after M2 |
-| M2 | DNS filtering proof of concept | 🟡 In progress (2.1 merged; 2.2 written, awaiting CI + phone check) |
+| M2 | DNS filtering proof of concept | 🟡 In progress (2.1, 2.2 merged; 2.3 written, awaiting CI + phone check) |
 | M3 | Reliable protection | ⚪ Not started |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
@@ -57,8 +57,8 @@ Acceptance criteria for M1 as a whole:
 
 Built in four slices, one pull request each:
 - [x] 2.1 `:filter-core` module: DNS packet parsing + domain matcher, unit-tested (computer only), merged (PR #8)
-- [ ] 2.2 `IdentityVpnService` skeleton: VPN permission, start/stop, visible notification, nothing blocked yet (phone check) — written; awaiting CI ✅ and phone check
-- [ ] 2.3 Answer queries: block a hard-coded test domain, forward everything else upstream (phone check)
+- [x] 2.2 `IdentityVpnService` skeleton: VPN permission, start/stop, visible notification, nothing blocked yet (phone check), merged (PR #9), phone-tested
+- [ ] 2.3 Answer queries: block a hard-coded test domain, forward everything else upstream (phone check) — written, 32 filter-core tests pass locally; awaiting CI ✅ and phone check
 - [ ] 2.4 Wi-Fi to mobile data, IPv6 and 24 h battery observation recorded (phone check)
 
 Acceptance criteria for M2 as a whole:

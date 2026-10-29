@@ -15,17 +15,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import app.identity.MainActivity
 import app.identity.R
+import app.identity.filter.DnsFilter
+import app.identity.filter.DomainMatcher
 
 /**
- * Identity's on-device VPN (M2.2 skeleton).
+ * Identity's on-device, DNS-only VPN.
  *
- * It switches on with the user's permission and shows a notification, but no traffic goes
- * through it yet: the tunnel has an address and no routes and no DNS server, so the phone's
- * internet works exactly as before. M2.3 adds the DNS server address and starts answering queries.
+ * It tells Android to use a private DNS address ([DNS_ADDRESS]) and routes only that address into
+ * the tunnel, so DNS queries come to us and all other traffic bypasses the VPN as before.
+ * [DnsTunnel] answers blocked names itself and forwards the rest. M2.3 blocks only [TEST_BLOCKLIST].
  */
 class IdentityVpnService : VpnService() {
 
     private var tunnel: ParcelFileDescriptor? = null
+    private var dnsTunnel: DnsTunnel? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Anything other than "stop" means start, including Android starting us for Always-on VPN.
@@ -56,10 +59,16 @@ class IdentityVpnService : VpnService() {
             tunnel = Builder()
                 .setSession(getString(R.string.app_name))
                 .addAddress(TUNNEL_ADDRESS, 32)
+                .addDnsServer(DNS_ADDRESS)
+                .addRoute(DNS_ADDRESS, 32) // only DNS enters the tunnel
                 .establish()
-        } catch (e: RuntimeException) {
-            // Android refused (e.g. permission revoked a moment ago). Stop cleanly rather than crash.
-            tunnel = null
+            tunnel?.let { fd ->
+                dnsTunnel = DnsTunnel(fd, DnsFilter(DomainMatcher(TEST_BLOCKLIST)), ::protect).also { it.start() }
+            }
+        } catch (e: Exception) {
+            // Android refused (e.g. permission revoked a moment ago) or the tunnel couldn't be set up.
+            // Stop cleanly rather than crash.
+            closeTunnel()
         }
         if (tunnel == null) stopProtection() else isRunning = true
     }
@@ -71,6 +80,8 @@ class IdentityVpnService : VpnService() {
     }
 
     private fun closeTunnel() {
+        dnsTunnel?.stop()
+        dnsTunnel = null
         tunnel?.close()
         tunnel = null
         isRunning = false
@@ -112,8 +123,12 @@ class IdentityVpnService : VpnService() {
         private const val CHANNEL_ID = "protection"
         private const val NOTIFICATION_ID = 1
 
-        /** A private address for the tunnel itself. Nothing is routed to it in M2.2. */
+        /** Private addresses: the phone's end of the tunnel, and the DNS server only we answer. */
         private const val TUNNEL_ADDRESS = "10.111.222.2"
+        private const val DNS_ADDRESS = "10.111.222.1"
+
+        /** M2.3 test only: a harmless site that normally loads. The real blocklist arrives in M3. */
+        private val TEST_BLOCKLIST = listOf("example.com")
 
         /**
          * Whether the tunnel is up, for the Home screen. Compose state, so the screen redraws when it

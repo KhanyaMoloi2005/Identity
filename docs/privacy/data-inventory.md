@@ -2,7 +2,7 @@
 
 What data Identity handles, where it lives, who can see it, and how long it's kept. **Update this whenever a feature adds or changes data.**
 
-_Last updated: 2026-10-27 (planned; nothing is implemented yet)._
+_Last updated: 2026-10-29 (M2.3: DNS forwarding is the first data that leaves the phone)._
 
 ## Principles
 1. Collect only what an enabled feature needs.
@@ -25,6 +25,14 @@ _Last updated: 2026-10-27 (planned; nothing is implemented yet)._
 | Auth session token | Encrypted local storage | Sent to Supabase for authentication only | Until sign-out | M4 |
 
 All of the above (except the bundled library) are **excluded from Android cloud backup**.
+
+## Sent to third parties
+
+| Data | Sent to | Why | Stored by Identity? | Milestone |
+|---|---|---|---|---|
+| DNS queries that are **not** blocked (the domain name and record type, as any phone sends today) | Cloudflare for Families (`1.1.1.3`, `1.0.0.3`), D-003 | To look up the address so the site loads; a second filtering layer | **No.** Not logged or saved on the device; blocked queries are answered on the phone and go nowhere | M2.3 |
+
+This replaces whichever DNS server the phone used before (usually the mobile network's or the Wi-Fi router's), so Cloudflare, rather than that provider, sees these lookups. The queries are not encrypted (plain DNS, as before). Cloudflare's own policy covers what it keeps.
 
 ## Backend data (Supabase)
 
