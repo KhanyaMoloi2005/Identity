@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.7b closing the Chrome secure-DNS bypass, branch `m3/resolver-block`: 121 filter-core tests pass, lint clean, phone-tested (bypass closed with Chrome on Cloudflare; normal browsing, the blocked site and Home confirmed after Chrome was set back). Still to do: pull request and CI ✅, then merge. After that M3 is finished except the custom-rules restart check; next is M4 (accounts and partners, needs a plan and decisions first). M3.1 to M3.7 merged.
+**Current task:** M4 planning (no code yet), branch `m4/plan`: plan written in docs/plans/m4-accounts-and-partners.md; waiting for the product owner's decisions (sign-in method, partner limits, sharing defaults) and for the Supabase project (slice 4.0). M3 is finished (3.1 to 3.7b merged); still open from M3: custom rules surviving a restart.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.

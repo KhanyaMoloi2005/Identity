@@ -8,6 +8,16 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M4 plan written (branch `m4/plan`, docs only)
+
+**What changed and why:** the product owner asked for the M4 plan (accounts, partners, account deletion). Written as [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md): what M4 is and is not (reports and alerts are M5; accounts stay optional and filtering never depends on them), what the server will and will never know, the design (Supabase free tier, tables with Row Level Security, four database functions instead of Edge Functions for M4, hashed single-use 48-hour invitation codes shared with the share sheet, sharing choices stored for M5, account deletion by cascade), six slices (4.0 to 4.5), risks to verify (free-tier pausing, sign-up email limits, South African POPIA special personal information, public repo), and six decisions needed from the product owner. Nothing is built; no code, permissions or data changed.
+
+**Files:** `docs/plans/m4-accounts-and-partners.md` (new), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`. Docs only.
+
+**Next step:** the product owner answers the decisions; then slice 4.0 (the product owner creates the Supabase project) and 4.1 (database and test script).
+
+---
+
 ## 2026-10-29: M3.7b Close the Chrome secure-DNS bypass (branch `m3/resolver-block`)
 
 > ✅ **Verified on a computer:** 121 `:filter-core` unit tests ran (0 failed, 0 skipped): 105 existing plus 16 new (TCP resets for IPv4 and IPv6 with checksum checks and junk-input fuzzing, the resolver list, the encrypted-DNS names including look-alike names that must not be blocked, the new health problem, the filter flag). `assembleDebug` and `lintDebug` pass. ✅ **Phone (checked over USB with screenshots, 2026-10-29):** the 40-odd resolver routes appear on the tunnel (`ip route`), normal browsing (BBC) kept working with them in place, and with Chrome's secure DNS set to Cloudflare the blocked test site and a normal site both failed with `DNS_PROBE_FINISHED_BAD_SECURE_CONFIG`; Home read "On, but needs attention" with the explanation and a history entry was written. ✅ **Final phone check (2026-10-29, after the product owner set Chrome back to the default):** BBC loaded fully, a fresh `example.com` address was blocked (`DNS_PROBE_FINISHED_NXDOMAIN`), and Home read plain "On. Adult sites are blocked on this phone." ⏳ **Not yet verified:** an app with its own DNS server; a Private DNS hostname pointing at a listed provider; CI on a pull request. **One thing not fully explained:** at 22:14 Home still said "needs attention", seven minutes after the last attempt I had seen (22:07), although the notice lasts 5 minutes. A debug-only log (added in this slice; it records only the encrypted-DNS server name or address that was refused, never anything else, and only in debug builds) showed **no** refusals either while the phone was idle or while browsing normally with Chrome at its default. The likeliest cause is Chrome retrying its old secure-DNS server for a few minutes after the setting was changed (around 22:10, during my last check); reinstalling the app to add the log reset the timer, so this could not be confirmed.
