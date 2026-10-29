@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
 import android.provider.Settings
+import android.text.format.DateUtils
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.identity.R
+import app.identity.filter.InterruptionLog
 import app.identity.filter.PrivateDns
+import app.identity.filter.ProtectionHealth
+import app.identity.protection.InterruptionStore
 import app.identity.protection.ProtectionPrefs
 import app.identity.protection.IdentityVpnService
 import app.identity.ui.brand.IdentityWordmark
@@ -47,6 +51,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         IdentityWordmark(fontSize = 34.sp)
         ProtectionCard()
         AttentionCards()
+        HistoryCard()
     }
 }
 
@@ -148,9 +153,12 @@ private fun ProtectionCard() {
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            // What Identity actually observes (M3.5), not just the switch.
+            val problems = IdentityVpnService.health?.problems.orEmpty()
             Text(
                 text = stringResource(
                     when {
+                        running && problems.isNotEmpty() -> R.string.home_protection_status_attention
                         running -> R.string.home_protection_status_on
                         interrupted -> R.string.home_protection_status_interrupted
                         else -> R.string.home_protection_status_off
@@ -160,6 +168,16 @@ private fun ProtectionCard() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
             )
+            if (running) {
+                for (problem in problems) {
+                    Text(
+                        text = stringResource(problemText(problem)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
             if (running) {
                 OutlinedButton(
                     onClick = { IdentityVpnService.stop(context) },
@@ -184,3 +202,80 @@ private fun ProtectionCard() {
 private fun needsNotificationPermission(context: Context): Boolean =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
         context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+
+private fun problemText(problem: ProtectionHealth.Problem): Int = when (problem) {
+    ProtectionHealth.Problem.DNS_HANDLER_STOPPED -> R.string.home_problem_dns_stopped
+    ProtectionHealth.Problem.FILTER_SERVICE_UNREACHABLE -> R.string.home_problem_unreachable
+    ProtectionHealth.Problem.PRIVATE_DNS_BYPASS -> R.string.home_problem_private_dns
+}
+
+private fun eventText(kind: InterruptionLog.Kind): Int = when (kind) {
+    InterruptionLog.Kind.TURNED_ON -> R.string.history_turned_on
+    InterruptionLog.Kind.TURNED_OFF -> R.string.history_turned_off
+    InterruptionLog.Kind.TURNED_OFF_IN_ANDROID -> R.string.history_turned_off_in_android
+    InterruptionLog.Kind.ENDED_UNEXPECTEDLY -> R.string.history_ended_unexpectedly
+    InterruptionLog.Kind.DNS_HANDLER_STOPPED -> R.string.home_problem_dns_stopped
+    InterruptionLog.Kind.FILTER_SERVICE_UNREACHABLE -> R.string.home_problem_unreachable
+    InterruptionLog.Kind.PRIVATE_DNS_BYPASS -> R.string.home_problem_private_dns
+}
+
+/** The last few things protection did, newest first. Kept on the phone for 30 days (M3.5). */
+@Composable
+private fun HistoryCard() {
+    val context = LocalContext.current
+    val running = IdentityVpnService.isRunning
+    val health = IdentityVpnService.health
+    var tick by remember { mutableStateOf(0) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) tick++ }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+    val events = remember(running, health, tick) { InterruptionStore(context).load().asReversed().take(HISTORY_SHOWN) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.history_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(R.string.history_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            if (events.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.history_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+            for (event in events) {
+                Text(
+                    text = stringResource(
+                        R.string.history_row,
+                        DateUtils.formatDateTime(
+                            context,
+                            event.timeMs,
+                            DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_MONTH,
+                        ),
+                        stringResource(eventText(event.kind)),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        }
+    }
+}
+
+private const val HISTORY_SHOWN = 8

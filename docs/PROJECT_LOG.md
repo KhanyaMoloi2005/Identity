@@ -8,6 +8,42 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.5 Observed status and protection history (branch `m3/staying-on`, with M3.4)
+
+> ✅ **Verified on a computer:** 89 `:filter-core` unit tests ran (0 failed, 0 skipped): 75 existing plus 14 new (status rules, 30-day history). `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (checked over USB and by screenshot, 2026-10-29):** after Private DNS was set back to Automatic, the warning card is gone (product owner saw it appear first); the history card lists turn-ons and "stopped unexpectedly, then restarted" entries with times; after a force-stop, opening the app brought protection back by itself; while the service was waiting for Android to restart it, Home honestly showed **Interrupted**. ⏳ **Not yet verified:** the "Needs attention" status and its reasons on the phone; the partner-facing use (M5); CI on a pull request.
+
+**Task:** Home must show what protection is really doing, and Identity must keep a short, private history of interruptions (D-034).
+
+**What changed and why**
+- `ProtectionHealth` (`:filter-core`): turns observations into Off, Protected, Needs attention (with reasons) or Interrupted. `InterruptionLog` (`:filter-core`): the 30-day, 200-entry history rules. Both tested.
+- `DnsTunnel`: reports whether its lookup thread is alive and how many upstream lookups in a row failed.
+- `HealthMonitor`: every 20 seconds while protection runs (a timer that does not wake a sleeping phone), observes health, publishes it to Home, and writes a history entry when a new problem first appears.
+- `InterruptionStore`: the history, in one small file written atomically, excluded from backup.
+- `IdentityVpnService`: records turn-on, turn-off, turned off in Android, and "ended unexpectedly" (session flag still open at the next start); `resumeIfWanted` starts protection again when the app is opened if it should be on.
+- Home: status with reasons, and a "Protection history" card (last 8 entries, with the 30-day note).
+- **No new permission.**
+
+**Found while testing (and why self-heal was added):** killing the app's process several times made Android stop restarting the service for at least 5 minutes, and my earlier "it came back" checks had only looked for the service record, which exists even while a restart is merely scheduled. The checks now look for the process. So Android's own restart cannot be relied on; opening the app restarts protection, and Always-on VPN and the restart/update receiver cover the rest.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{ProtectionHealth.kt,InterruptionLog.kt}` (new), `android/filter-core/src/test/kotlin/app/identity/filter/{ProtectionHealthTest.kt,InterruptionLogTest.kt}` (new), `android/app/src/main/java/app/identity/protection/{HealthMonitor.kt,InterruptionStore.kt}` (new), `android/app/src/main/java/app/identity/protection/{DnsTunnel.kt,IdentityVpnService.kt,ProtectionPrefs.kt,BootReceiver.kt}`, `android/app/src/main/java/app/identity/MainActivity.kt`, `android/app/src/main/java/app/identity/feature/home/HomeScreen.kt`, `android/app/src/main/res/values/strings.xml`, `docs/decision-log.md` (D-034), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/privacy/data-inventory.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Status rules and history rules (30 days, 200 entries, ordering): ✅ tested
+2. Build and lint: ✅ (local); CI on a pull request: ⏳
+3. Phone: history card shows entries; Interrupted shown when the service is not running; opening the app restarts protection: ✅
+4. Phone: Needs attention with a reason when Private DNS is custom (within 20 seconds): ⏳ product owner to test
+
+**Limits to know:** see D-034. The history is on this phone only; nothing is sent anywhere.
+
+**How to verify (phone)**
+1. Home with protection on: "On. Adult sites are blocked on this phone." and a Protection history card.
+2. Set Private DNS to a hostname (for example `dns.google`) and wait 20 seconds: Home says "On, but needs attention" with the reason, and a new history entry appears. Set it back to Automatic: it returns to "On".
+3. Force-stop Identity (Settings, Apps), then open it: protection starts again and a history entry is added.
+
+**Next step:** pull request and CI ✅, merge M3.4 and M3.5 together. Then 3.6 (signed, versioned blocklist updates) and 3.7 (the bypass test checklist).
+
+---
+
 ## 2026-10-29: M3.4 Staying on (branch `m3/staying-on`)
 
 > ✅ **Verified on a computer:** 75 `:filter-core` unit tests ran (0 failed, 0 skipped): 72 existing plus 3 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (checked from the computer over USB, 2026-10-29):** after reinstalling the app, protection kept running; after killing the app's process, Android restarted it under a new process id; after a force-stop it stayed stopped (Android's rule) and Always-on VPN brought it back when the app was opened. ✅ **Phone (product owner):** after a real restart with Always-on off, protection came back (the service was running 2 minutes after boot, by the `BootReceiver`) and Home showed On plus the Always-on card; the product owner then set Always-on VPN and protection came back after a restart.

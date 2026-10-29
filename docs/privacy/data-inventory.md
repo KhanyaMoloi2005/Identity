@@ -20,6 +20,7 @@ _Last updated: 2026-10-29 (M2.3: DNS forwarding is the first data that leaves th
 | Private reflections | Room | **Never** | Until user deletes | M1 |
 | Custom block rules: websites and words the user chose to block (no exceptions) | One file in app storage (`custom-rules.json`) | No | Permanent; removable only within 10 minutes of adding (D-029) | M3.3b |
 | TikTok daily allowance: the limit chosen and any raise waiting for tomorrow (time used is read from Android's usage history each time and never copied) | One file in app storage (`tiktok-limit.json`) | No | Kept until changed | M3.3c-1 |
+| Protection history: when protection was turned on or off, or was interrupted, with the kind of problem. No domain names, no browsing | One file in app storage (`protection-history.json`), excluded from backup | No (partner alerts are M5, and will be opt-in) | Entries deleted after 30 days; at most 200 kept | M3.5 |
 | Blocked-domain events (domain + time) | Room | **No**, only daily counts are sent if the user consents | 30 days, then auto-deleted | M3 |
 | Protection status events (VPN started/stopped, list update failed) | Room | Summary only, if consented | 30 days | M3 |
 | Scripture First sessions (scheduled, completed, missed) | Room | Only if user enables sharing (off by default) | 90 days | M6 |

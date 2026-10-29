@@ -18,6 +18,8 @@ import app.identity.R
 import app.identity.filter.BlockPresets
 import app.identity.filter.DnsFilter
 import app.identity.filter.DomainSet
+import app.identity.filter.InterruptionLog
+import app.identity.filter.ProtectionHealth
 
 /**
  * Identity's on-device, DNS-only VPN.
@@ -31,6 +33,7 @@ class IdentityVpnService : VpnService() {
     private var tunnel: ParcelFileDescriptor? = null
     private var dnsTunnel: DnsTunnel? = null
     private var tiktokMonitor: TikTokLimitMonitor? = null
+    private var healthMonitor: HealthMonitor? = null
 
     // Loaded once per protection session; a rule change only rebuilds the small custom part.
     @Volatile private var bundled: DomainSet? = null
@@ -59,7 +62,11 @@ class IdentityVpnService : VpnService() {
     override fun onRevoke() {
         // Called when the user turns us off in system Settings or another VPN app takes over.
         // Respect that: don't bring protection back by itself after the next restart.
-        ProtectionPrefs(this).wantsProtection = false
+        ProtectionPrefs(this).apply {
+            wantsProtection = false
+            sessionOpen = false
+        }
+        InterruptionStore(this).record(InterruptionLog.Kind.TURNED_OFF_IN_ANDROID)
         stopProtection()
     }
 
@@ -97,6 +104,11 @@ class IdentityVpnService : VpnService() {
         } else {
             isRunning = true
             alwaysOn = isAlwaysOnVpn()
+            val choice = ProtectionPrefs(this)
+            // Still open from last time: that session never ended on purpose (Android stopped us or the phone restarted).
+            if (choice.sessionOpen) InterruptionStore(this).record(InterruptionLog.Kind.ENDED_UNEXPECTEDLY)
+            choice.sessionOpen = true
+            healthMonitor = HealthMonitor(this, { dnsTunnel }) { report -> health = report }.also { it.start() }
         }
     }
 
@@ -119,6 +131,8 @@ class IdentityVpnService : VpnService() {
     }
 
     private fun closeTunnel() {
+        healthMonitor?.stop()
+        healthMonitor = null
         tiktokMonitor?.stop()
         tiktokMonitor = null
         dnsTunnel?.stop()
@@ -127,6 +141,7 @@ class IdentityVpnService : VpnService() {
         tunnel = null
         isRunning = false
         alwaysOn = false
+        health = null
     }
 
     /** The visible "Identity protection is on" notification. Android requires it for a long-running service. */
@@ -181,10 +196,28 @@ class IdentityVpnService : VpnService() {
         var alwaysOn by mutableStateOf(false)
             private set
 
-        /** Call only after the user has allowed the VPN (see [VpnService.prepare]). */
-        fun start(context: Context) {
+        /** What protection is really doing, checked every 20 seconds while it runs (M3.5). Null while it isn't running. */
+        var health by mutableStateOf<ProtectionHealth.Report?>(null)
+            private set
+
+        /**
+         * Call only after the user has allowed the VPN (see [VpnService.prepare]). [byUser] is false
+         * when the phone restarting or an app update starts it again, so that isn't logged as a turn-on.
+         */
+        fun start(context: Context, byUser: Boolean = true) {
+            if (byUser) InterruptionStore(context).record(InterruptionLog.Kind.TURNED_ON)
             ProtectionPrefs(context).wantsProtection = true
             context.startService(Intent(context, IdentityVpnService::class.java))
+        }
+
+        /**
+         * Called whenever the app comes to the front. If the user wants protection on but it isn't
+         * running (Android ended it and hasn't restarted it yet), start it again now (M3.4/3.5).
+         */
+        fun resumeIfWanted(context: Context) {
+            if (isRunning || !ProtectionPrefs(context).wantsProtection) return
+            if (prepare(context) != null) return // VPN permission gone: only the user can grant it again
+            start(context, byUser = false)
         }
 
         /** Applies changed custom rules to running protection. Does nothing when protection is off. */
@@ -193,7 +226,11 @@ class IdentityVpnService : VpnService() {
         }
 
         fun stop(context: Context) {
-            ProtectionPrefs(context).wantsProtection = false
+            ProtectionPrefs(context).apply {
+                wantsProtection = false
+                sessionOpen = false
+            }
+            InterruptionStore(context).record(InterruptionLog.Kind.TURNED_OFF)
             context.startService(Intent(context, IdentityVpnService::class.java).setAction(ACTION_STOP))
         }
     }
