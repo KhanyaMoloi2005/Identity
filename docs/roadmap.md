@@ -9,7 +9,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
 | M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
-| M3 | Reliable protection | 🟡 In progress (3.1 merged, 3.2 phone-tested, 3.3a written) |
+| M3 | Reliable protection | 🟡 In progress (3.1 to 3.3a merged; 3.3b written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -70,10 +70,11 @@ Acceptance criteria for M2 as a whole:
 ## M3: Reliable protection (BLOCK-02, BLOCK-03, SEC-01, CORE-02, TEST-01)
 
 Built in seven slices, one pull request each (order agreed 2026-10-29):
-- [ ] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain — written, 38 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) — phone-tested ✅
-- [ ] 3.3a Always block X/Reddit and image-search pictures, no user switches (D-028) — written, 50 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 3.3b Custom allow/block rules typed by the user, applied predictably (allow wins)
+- [x] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain (merged, phone-tested)
+- [x] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) (merged, phone-tested)
+- [x] 3.3a Always block X/Reddit and image-search pictures, no user switches (D-028) (merged, phone-tested)
+- [ ] 3.3b Your own blocks: websites and words in site names; block-only, 10-minute undo (D-029) — written, 56 filter-core tests pass locally; awaiting CI ✅ and phone check
+- [ ] 3.3c App blocking: a full-screen "This app is blocked" page with a verse when a blocked app opens (Usage access permission). **Google Play policy check first** (R-03). Chosen over cutting the app's internet (D-029)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)

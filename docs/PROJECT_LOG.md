@@ -8,6 +8,42 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.3b Your own blocks: websites and words (branch `m3/custom-rules`)
+
+> ✅ **Verified on a computer:** 56 `:filter-core` unit tests ran (0 failed, 0 skipped): 50 existing plus 6 new. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
+
+**M3.3a phone result (merged as PR #14):** the product owner reported "everything works", and observed that the app already blocks most of the sites and search phrases they tried.
+
+**Task:** let users add their own blocks: websites and words in site names. Block-only, with a 10-minute undo (product owner, D-029). App blocking becomes slice 3.3c (block screen). The product owner asked why not cut the app's internet instead; the reasons are in D-029.
+
+**What changed and why**
+- `CustomRules` (`:filter-core`): cleans what the user types (URL → site name, drops `www.`), checks words (4+ letters), matches words inside names, and decides whether the undo window is still open. Tests cover all of these, plus the safety net that keeps Android's connectivity check working.
+- `CustomRulesStore` (app): saves rules in one small file, safely (`AtomicFile`). The undo window is measured from the phone's start-up time, not its clock, so changing the time in Settings can't reopen it.
+- `Blocklist.withCustomRules`: the bundled list plus the user's sites and words.
+- **Live changes:** adding or undoing a rule rebuilds the filter in the background while protection keeps running.
+- **Settings screen:** "Your own blocks" with two boxes (website, word), an Add button each, clear error messages, and a "Blocked by you" list showing **Undo** for 10 minutes, then **Permanent**.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/CustomRules.kt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/CustomRulesTest.kt` (new), `android/app/src/main/java/app/identity/protection/{CustomRulesStore.kt (new),Blocklist.kt,DnsTunnel.kt,IdentityVpnService.kt}`, `android/app/src/main/java/app/identity/feature/settings/SettingsScreen.kt`, `android/app/src/main/res/values/strings.xml`, `docs/privacy/data-inventory.md`, `docs/decision-log.md` (D-029), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Typed/pasted sites cleaned; invalid input rejected; words need 4+ letters; word rules match names containing them; undo only within 10 minutes of the same boot; connectivity check never blocked: ✅ tested
+2. CI green: ⏳ pending push
+3. Phone: add a site → it stops loading (after force-stopping Chrome); Undo within 10 minutes → it loads again: 📱 pending
+4. Phone: after 10 minutes a rule shows "Permanent" with no Undo: 📱 pending
+5. Phone: restarting the phone keeps the rules: 📱 pending
+
+**Limits to know:** a word rule blocks every site containing it, and after 10 minutes it can't be removed (until M7), so choose words carefully. Rules match site names only, not page text. Apps remember lookups for a few minutes.
+
+**How to verify (phone)**
+1. Install the CI build; protection on.
+2. Settings → "Block a website" → `wikipedia.org` → Add. Force-stop Chrome, open wikipedia.org: blocked. Tap **Undo** (within 10 minutes), force-stop Chrome: it loads again.
+3. Add a site you're happy to lose for good, wait 10 minutes, and check its row says **Permanent** with no Undo. Only add **words** you really want blocked forever.
+4. Restart the phone: your rules are still listed.
+
+**Next step:** after CI ✅ and the phone check, 3.3c (app blocking), starting with the Google Play policy check.
+
+---
+
 ## 2026-10-29: M3.3a Always block X/Reddit and image-search pictures (branch `m3/rule-presets`, stacked on `m3/safesearch`)
 
 > ✅ **Verified on a computer:** 50 `:filter-core` unit tests ran (0 failed, 0 skipped): 45 existing plus 5 new. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**

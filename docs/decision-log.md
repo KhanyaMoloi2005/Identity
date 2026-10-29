@@ -157,3 +157,13 @@ _Last updated: 2026-10-27._
 - **Image-search pictures:** Google `encrypted-tbn0..3.gstatic.com`, Bing `mm.bing.net` and `th.bing.com`, DuckDuckGo `external-content.duckduckgo.com`. Normal search, Gmail and Maps use other servers and keep working (tested). Thumbnails in ordinary search results (e.g. news pictures) also go blank.
 **Limit, stated plainly:** blanking image-search pictures reduces exposure but isn't a wall: opening a result can still load the full picture from the website that hosts it, unless that site is on the blocklist.
 **History:** switches (on by default) were built first, then removed before pushing at the product owner's request. If switches return, it will be in M7, behind the loosening cooldown.
+
+### D-029: Users' own blocks: block-only, 10-minute undo; app blocking by block screen (M3.3b, 2026-10-29)
+**Decision (product owner):** users can add their own **websites** and **words in site names** to block. There are **no user exceptions** (an exception would loosen protection, and users have no switches, D-028).
+- **Website:** cleaned from whatever is typed or pasted (`https://www.Example.com/page` → `example.com`); the whole site and its subdomains are blocked.
+- **Word in site names:** blocks every site whose name contains it (`casino` → `bestcasino.net`). At least 4 letters, because short words catch innocent sites (`sex` would block `essex.ac.uk`). Identity sees site names only, so "phrases" means words in names, not words on a page.
+- **Undo:** a new rule can be removed for **10 minutes** (to fix typos), then it is permanent until the M7 cooldown exists. The window uses time since the phone started plus the boot count, not the clock, so changing the phone's clock can't reopen it; restarting the phone closes it.
+- **Safety net:** custom rules never block Android's connectivity-check names, so a broad word can't make the phone report "no internet" forever. Up to 500 rules.
+- **Storage:** one JSON file in app storage, written atomically (a crash mid-save can't leave half a file), excluded from backup.
+- **Phrases on screen or in searches:** not possible without an Accessibility Service (D-012); stays a research item. SafeSearch covers searches on the major engines.
+**Apps (later slice 3.3c):** a blocked app will be covered by a full-screen "This app is blocked" page with a verse, using Android's Usage access permission. Chosen over cutting the app's internet because (1) cut-off apps still show saved or cached content, and (2) cutting one app's traffic would require sending all phone traffic through Identity instead of DNS only, which is far more complex and worse for battery and reliability (R-08). Google Play policy check before building.

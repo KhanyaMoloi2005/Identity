@@ -40,9 +40,20 @@ internal class DnsTunnel(
     // Writing a byte into this pipe wakes the reader thread so it can finish.
     private val wakeUp = Os.pipe()
     private val reader = Thread(::readLoop, "identity-dns")
-    private lateinit var filter: DnsFilter
+
+    // Replaced as a whole when the user adds or removes a rule; read by several threads.
+    @Volatile private var filter: DnsFilter? = null
 
     fun start() = reader.start()
+
+    /** Rebuilds the filter after the user's rules change, in the background. Until then the old rules apply. */
+    fun reload() = inBackground {
+        try {
+            filter = createFilter()
+        } catch (e: Exception) {
+            // Keep the rules already in use.
+        }
+    }
 
     fun stop() {
         try {
@@ -101,7 +112,8 @@ internal class DnsTunnel(
     private fun handle(buffer: ByteArray, length: Int) {
         val query = IpPackets.parseUdp(buffer, length) ?: return
         if (query.destinationPort != DNS_PORT) return
-        when (val decision = filter.decide(query.payload)) {
+        val current = filter ?: return
+        when (val decision = current.decide(query.payload)) {
             is DnsDecision.Answer -> write(query.reply(decision.response))
             DnsDecision.Forward -> inBackground {
                 askUpstream(query.payload)?.let { write(query.reply(it)) }
