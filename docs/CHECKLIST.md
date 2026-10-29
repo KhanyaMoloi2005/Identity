@@ -2,7 +2,9 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.3a X/Reddit and image-search blocking — written, 50 filter-core tests pass locally; awaiting CI ✅ and phone check. M3.1 merged; M3.2 phone-tested ✅, merge next. M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
+**Current task:** M3.3b your own blocks, branch `m3/custom-rules` (not merged). CI ✅; site blocking works on the phone. Still to check: 10-minute "Permanent", rules survive a restart, a word rule. Then merge and start 3.3c (app blocking, Google Play policy check first). M3.1 to M3.3a merged and phone-tested.
+
+> **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -39,10 +41,11 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [ ] 2.4 Network switching ✅ (Wi-Fi ↔ mobile data, reported 2026-10-29), IPv6, battery (in progress)
   - [ ] M2 acceptance: test domain blocked in Chrome, normal browsing works
 - [ ] **M3** Reliable protection ← in progress
-  - [ ] 3.1 Bundled blocklist (HaGeZi NSFW) — written; CI ✅ then phone
+  - [x] 3.1 Bundled blocklist (HaGeZi NSFW)
   - [x] 3.2 SafeSearch (phone-tested)
-  - [ ] 3.3a Always block X/Reddit and image-search pictures, no switches — written; CI ✅ then phone (stacked on 3.2)
-  - [ ] 3.3b Custom allow/block rules
+  - [x] 3.3a Always block X/Reddit and image-search pictures, no switches
+  - [ ] 3.3b Your own blocks: websites + words, 10-minute undo — written; CI ✅ then phone
+  - [ ] 3.3c App blocking (block screen; Play policy check first)
   - [ ] 3.4 Staying on: reboot, Always-on, Private DNS detection
   - [ ] 3.5 Observed status + interruption log
   - [ ] 3.6 Signed list updates

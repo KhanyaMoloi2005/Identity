@@ -35,4 +35,20 @@
     <string name="settings_title">Settings</string>
     <string name="settings_protection_heading">Protection</string>
     <string name="settings_protection_always_on">While protection is on, Identity always blocks adult websites, X and Reddit (websites, apps and posts shown on other sites), and the pictures in Google, Bing and DuckDuckGo image results. Normal search, YouTube in Restricted Mode, Gmail and Maps keep working.</string>
+    <string name="settings_custom_heading">Your own blocks</string>
+    <string name="settings_custom_explanation">Add websites or words you want blocked too. You can undo a new block for 10 minutes, in case of a typo. After that it stays.</string>
+    <string name="settings_site_label">Block a website</string>
+    <string name="settings_site_hint">For example example.com. Its whole site is blocked.</string>
+    <string name="settings_site_error">That doesn\'t look like a website name. Try something like example.com.</string>
+    <string name="settings_word_label">Block a word in site names</string>
+    <string name="settings_word_hint">Blocks every site whose name contains it: casino blocks bestcasino.net. 4 letters or more. Short words can block innocent sites.</string>
+    <string name="settings_word_error">Use one word of 4 or more letters or numbers, with no spaces or dots.</string>
+    <string name="settings_rule_add">Add</string>
+    <string name="settings_rule_error_duplicate">That\'s already blocked.</string>
+    <string name="settings_rule_error_too_many">You\'ve reached the limit of 500 blocks.</string>
+    <string name="settings_your_blocks_heading">Blocked by you</string>
+    <string name="settings_rule_kind_site">Website</string>
+    <string name="settings_rule_kind_word">Word in site names</string>
+    <string name="settings_rule_undo">Undo</string>
+    <string name="settings_rule_permanent">Permanent</string>
 </resources>

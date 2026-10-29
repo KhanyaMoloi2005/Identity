@@ -16,23 +16,30 @@ import androidx.compose.runtime.setValue
 import app.identity.MainActivity
 import app.identity.R
 import app.identity.filter.DnsFilter
-import app.identity.filter.DomainMatcher
+import app.identity.filter.DomainSet
 
 /**
  * Identity's on-device, DNS-only VPN.
  *
  * It tells Android to use a private DNS address ([DNS_ADDRESS]) and routes only that address into
  * the tunnel, so DNS queries come to us and all other traffic bypasses the VPN as before.
- * [DnsTunnel] answers names on the bundled [Blocklist] itself and forwards the rest.
+ * [DnsTunnel] answers names on the bundled [Blocklist] and the user's own rules itself, and forwards the rest.
  */
 class IdentityVpnService : VpnService() {
 
     private var tunnel: ParcelFileDescriptor? = null
     private var dnsTunnel: DnsTunnel? = null
 
+    // Loaded once per protection session; a rule change only rebuilds the small custom part.
+    @Volatile private var bundled: DomainSet? = null
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Anything other than "stop" means start, including Android starting us for Always-on VPN.
-        if (intent?.action == ACTION_STOP) stopProtection() else startProtection()
+        // Anything other than "stop" or "reload" means start, including Android starting us for Always-on VPN.
+        when (intent?.action) {
+            ACTION_STOP -> stopProtection()
+            ACTION_RELOAD -> if (tunnel == null) stopSelf() else dnsTunnel?.reload()
+            else -> startProtection()
+        }
         // Not restarted automatically yet; restart after a crash or reboot is M3 work.
         return START_NOT_STICKY
     }
@@ -73,8 +80,12 @@ class IdentityVpnService : VpnService() {
         if (tunnel == null) stopProtection() else isRunning = true
     }
 
-    /** Runs on the tunnel's thread. The list stays in memory only while protection is on. */
-    private fun createFilter(): DnsFilter = DnsFilter(DomainMatcher(Blocklist.load(this)))
+    /** Runs on a background thread, one call at a time. The lists stay in memory only while protection is on. */
+    @Synchronized
+    private fun createFilter(): DnsFilter {
+        val list = bundled ?: Blocklist.load(this).also { bundled = it }
+        return DnsFilter(Blocklist.withCustomRules(list, CustomRulesStore(this).load()))
+    }
 
     private fun stopProtection() {
         closeTunnel()
@@ -123,6 +134,7 @@ class IdentityVpnService : VpnService() {
 
     companion object {
         private const val ACTION_STOP = "app.identity.protection.STOP"
+        private const val ACTION_RELOAD = "app.identity.protection.RELOAD"
         private const val CHANNEL_ID = "protection"
         private const val NOTIFICATION_ID = 1
 
@@ -140,6 +152,11 @@ class IdentityVpnService : VpnService() {
         /** Call only after the user has allowed the VPN (see [VpnService.prepare]). */
         fun start(context: Context) {
             context.startService(Intent(context, IdentityVpnService::class.java))
+        }
+
+        /** Applies changed custom rules to running protection. Does nothing when protection is off. */
+        fun reload(context: Context) {
+            if (isRunning) context.startService(Intent(context, IdentityVpnService::class.java).setAction(ACTION_RELOAD))
         }
 
         fun stop(context: Context) {
