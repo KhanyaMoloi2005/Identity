@@ -76,7 +76,7 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [ ] 3.3b Your own blocks: websites and words in site names; block-only, 10-minute undo (D-029) — written, 56 filter-core tests pass locally; awaiting CI ✅ and phone check
 - [ ] 3.3c App blocking (chosen over cutting the app's internet, D-029)
   - [x] 3.3c-1 TikTok daily time limit: fixed allowances, "time is up" page over TikTok, DNS cut-off, raising starts tomorrow (D-030). Phone-tested by the product owner; the 30-day lock is M7
-  - [ ] 3.3c-2 YouTube Shorts and Instagram Reels only (not the whole apps): needs an Accessibility Service, amending D-012. Awaiting decision; Google Play policy risk (R-03)
+  - [x] 3.3c-2 YouTube Shorts and Instagram Reels only (not the whole apps): an Accessibility Service sends the user back to the app's home screen or closes the app; they can open it again (D-031). Two switches, one per app. Phone-tested by the product owner. Google Play policy risk (R-03)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
@@ -100,10 +100,12 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 - Schedule, edit, pause and disable alarms; passage matches the reading plan, offline
 - Reboot, time-zone, daylight-saving and missed-alarm behaviour defined and tested
 - Fallback notification when Android won't allow a full-screen alarm
+- **Focus hour (product owner's idea, D-032):** at the wake-up time, every app except an essential list (Phone, WhatsApp, ...) is covered for a set time while the user reads and prays in Identity; then the apps unlock. Uses the cover-page method from D-030. Questions to settle before building are in D-032
 - Optional Morning Focus list released on completion (D-006); sharing off by default
 
 ## M7: Commitment controls
 - Tightening protection applies immediately; loosening waits through a user-chosen cooldown
+- **Decide whether to keep the Shorts/Reels switches (D-031) and whether the TikTok allowance (D-030) needs the same treatment; the product owner will decide here**
 - Optional partner notification of loosening; all limits disclosed before enabling (if user switches for the D-028 blocks are ever added, they belong here, behind the cooldown)
 - **Uninstall friction + tamper alert (D-024, product owner request 2026-10-29):** optional, off by default. When on, Identity holds the Device Admin role, so the user must first turn that role off in Settings before uninstalling; Identity shows a pause message at that moment, and the partner (if any, M5) is told neutrally that protection was removed or the device stopped checking in. Removing the role can be tied to the loosening cooldown above. **Cannot make uninstalling impossible** (Safe Mode, factory reset and computer uninstall always work); the app says so before it is enabled.
   - **Gate before building:** check the current Google Play Device Admin and "Device and Network Abuse" policies (R-03). If Play does not allow this use, record the outcome and keep only the tamper alert.

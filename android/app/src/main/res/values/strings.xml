@@ -71,4 +71,15 @@
     <string name="limit_reached_leave">Leave TikTok</string>
     <string name="limit_reached_fallback_reference">Galatians 5:22-23</string>
     <string name="limit_reached_fallback_verse">But the fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control.</string>
+    <string name="shorts_service_label">Identity: leave Shorts and Reels</string>
+    <string name="shorts_service_description">Takes you out of YouTube Shorts and Instagram Reels. It only looks at YouTube and Instagram, only checks whether Shorts or Reels is on screen, and does not read, save or send anything.</string>
+    <string name="shorts_blocked_toast">Shorts and Reels are blocked by Identity</string>
+    <string name="settings_shorts_heading">YouTube Shorts and Instagram Reels</string>
+    <string name="settings_shorts_explanation">Identity can take you out of Shorts and Reels, back to the app\'s home screen, while the rest of YouTube and Instagram keeps working. You can open the app again straight away.</string>
+    <string name="settings_shorts_disclosure">To do this, Identity uses Android\'s Accessibility Service, which lets an app see what is on the screen. Identity only looks at YouTube and Instagram, and only checks whether the Shorts or Reels screen is showing. It does not read what you type or what is on the page, and it does not save or send anything. You can turn it off at any time in Settings, Accessibility.</string>
+    <string name="settings_shorts_button_on">Turn on in Accessibility settings</string>
+    <string name="settings_shorts_is_on">On. Shorts and Reels are blocked.</string>
+    <string name="settings_shorts_button_manage">Open Accessibility settings</string>
+    <string name="settings_shorts_youtube">Leave YouTube Shorts</string>
+    <string name="settings_shorts_instagram">Leave Instagram Reels</string>
 </resources>

@@ -61,6 +61,24 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+
+        <!--
+          M3.3c-2 (D-031): leaves YouTube Shorts and Instagram Reels. Exported because Android itself
+          must bind to it; BIND_ACCESSIBILITY_SERVICE means only Android can. Off until the user
+          switches it on in system Settings. Sees only YouTube and Instagram (see the config file).
+        -->
+        <service
+            android:name=".protection.ShortsReelsService"
+            android:exported="true"
+            android:label="@string/shorts_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/shorts_reels_service" />
+        </service>
     </application>
 
 </manifest>
