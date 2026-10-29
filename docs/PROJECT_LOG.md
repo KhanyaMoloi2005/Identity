@@ -10,7 +10,7 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ## 2026-10-29: M3.6 Signed blocklist updates (branch `m3/signed-updates`)
 
-> ✅ **Verified on a computer:** 104 `:filter-core` unit tests ran (0 failed, 0 skipped): 89 existing plus 15 new. They include a list signed with the product owner's **real** private key by `openssl`, accepted by the app's Java code; the same list refused after one changed byte; and refusals for a wrong key, a tampered manifest, junk signatures, no key, an old or equal version, an oversized list, a hash or entry-count mismatch, too few names, and a list that shrinks by more than half. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. `publish_update.py` ran for real: it built version `202610291841` (92,127 names), signed it, and verified its own signature. ⏳ **Not yet verified:** the first published release and the phone downloading and installing it; the refusal path on the phone; the daily schedule; CI on a pull request.
+> ✅ **Verified on a computer:** 104 `:filter-core` unit tests ran (0 failed, 0 skipped): 89 existing plus 15 new. They include a list signed with the product owner's **real** private key by `openssl`, accepted by the app's Java code; the same list refused after one changed byte; and refusals for a wrong key, a tampered manifest, junk signatures, no key, an old or equal version, an oversized list, a hash or entry-count mismatch, too few names, and a list that shrinks by more than half. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. `publish_update.py` ran for real: it built version `202610291841` (92,127 names), signed it, and verified its own signature. ✅ **Phone (product owner, 2026-10-29):** before the release existed, Check for update said it could not reach the update server (the address returned 404); after the product owner published the `blocklist-latest` release, the three files were checked from the computer (all 200, byte-for-byte identical to what was signed, signature verified against the public key, SHA-256 matching), and Check for update then installed it ("it updated and it works"). ⏳ **Not yet verified:** the refusal path on a phone (covered by unit tests); the once-a-day schedule; CI on a pull request.
 
 **Task:** let the blocklist update itself safely (R-05): signed, versioned, and the last good list kept on any failure.
 
@@ -33,9 +33,9 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 **Acceptance criteria**
 1. A correctly signed, newer, well-formed list is accepted; every kind of bad update is refused: ✅ tested, including a real openssl signature
 2. Build and lint: ✅ (local); CI on a pull request: ⏳
-3. Phone: with no release published, Check for update says it could not reach the server, and nothing breaks: ⏳ product owner to see
-4. Phone: after the first release is published, Check for update installs it, the Blocklist line changes to "Updated list", and a history entry appears: ⏳
-5. Phone: pressing Check again says "already have the newest list": ⏳
+3. Phone: with no release published, Check for update says it could not reach the server, and nothing breaks: ✅ (product owner)
+4. Phone: after the first release is published, Check for update installs it: ✅ (product owner: "it updated and it works"); the Blocklist line and history entry were not reported separately
+5. Phone: pressing Check again says "already have the newest list": ⏳ not reported
 
 **Limits to know:** see D-035. This first update has the same names as the list already in the app (it was built from the same source on the same day), so the phone test proves the path works end to end but won't change what is blocked.
 
