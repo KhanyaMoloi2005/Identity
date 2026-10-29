@@ -1,6 +1,6 @@
 # M4 plan: accounts, partners and account deletion
 
-_Status: **proposal, awaiting the product owner's decisions** (listed at the end). Nothing in this plan is built yet. It follows the roadmap's M4 ([roadmap](../roadmap.md)), the spec (§4 Backend, §7 Accountability) and decisions D-004 (partner view inside the same app) and D-005 (Supabase)._
+_Status: **decisions made 2026-10-29 (D-037); slice 4.0 (the Supabase project) is next.** Nothing in this plan is built yet. It follows the roadmap's M4 ([roadmap](../roadmap.md)), the spec (§4 Backend, §7 Accountability) and decisions D-004 (partner view inside the same app) and D-005 (Supabase)._
 
 ## 1. What M4 is, and what it is not
 
@@ -88,7 +88,18 @@ One button in Settings: deletes the account and, by cascade, the person's device
 | **Public repo** | Only publishable values in the code; a secrets scan before each merge; `.gitignore` already blocks keys |
 | **Backups** | Free projects may have none or little (to verify); the retention note will say what is true |
 
-## 6. Decisions needed from the product owner
+## 6. Decisions (answered 2026-10-29, recorded as D-037)
+
+The product owner chose the recommended option for each of the four questions asked; the Supabase free tier (D-005) was not re-asked and stands as planned.
+
+| # | Decision | Answer |
+|---|---|---|
+| 2 | Sign-in method | **Email and password** |
+| 3 | Invitations | **A one-time code shared with the share sheet and pasted in the partner's app** (no website needed) |
+| 4 | Limits | **Up to 3 partners per person; either side can end a connection at any time** |
+| 5, 6 | Sharing and what a partner sees | **Nickname only (never the email); status and interruptions on, daily blocked count off, changes to protection settings off by default; changeable any time; domain names never shared** |
+
+The original questions, for reference:
 
 1. **Backend:** go ahead with Supabase on the free tier, as planned in D-005 (database functions instead of Edge Functions for M4)?
 2. **Sign-in method:** (a) **email and password** (recommended: works on any phone, partner can use any email); (b) Google sign-in (no emails to send, but needs Google Cloud setup and ties accounts to Google); (c) no email at all, with a private account per phone (best for privacy, but a lost phone loses the link, and a partner on another phone can't be recovered).

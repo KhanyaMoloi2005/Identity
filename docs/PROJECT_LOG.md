@@ -14,7 +14,9 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 **Files:** `docs/plans/m4-accounts-and-partners.md` (new), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`. Docs only.
 
-**Next step:** the product owner answers the decisions; then slice 4.0 (the product owner creates the Supabase project) and 4.1 (database and test script).
+**Decisions (same day):** the product owner chose the recommended option for all four questions asked: email and password, a one-time code shared with the share sheet, up to 3 partners with either side able to end, and nickname-only with status on / counts off / changes off by default. Recorded as D-037; the plan's status line and section 6 updated.
+
+**Next step:** slice 4.0 (the product owner creates the Supabase project and sends the project address and publishable key), then 4.1 (database and test script).
 
 ---
 
