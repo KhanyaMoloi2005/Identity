@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   The app's declaration to Android: its screens, services and permissions.
-  M0 requests NO permissions at all (not even internet). Each permission will be
-  added only by the milestone that needs it, and recorded in docs/PROJECT_LOG.md.
+  Each permission is added only by the milestone that needs it, and recorded in
+  docs/PROJECT_LOG.md. Still no internet permission: nothing leaves the phone yet.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- M2.2: run the VPN as a foreground service with a visible notification (D-022). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <!-- Android 13+: asked for once, so the "protection is on" notification can be shown. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
       allowBackup=false + dataExtractionRules: keep private data (future events,
@@ -27,6 +33,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          The VPN. Not exported, and BIND_VPN_SERVICE means only Android itself can bind to it;
+          other apps cannot start or control it.
+        -->
+        <service
+            android:name=".protection.IdentityVpnService"
+            android:exported="false"
+            android:foregroundServiceType="systemExempted"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

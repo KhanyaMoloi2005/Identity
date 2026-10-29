@@ -105,3 +105,10 @@ _Last updated: 2026-10-27._
 **Why not 3.7.0:** it was released on 2026-10-25, three days before this decision. We adopt new versions deliberately, one at a time (D-015).
 **Module:** `android/filter-core`, plain Kotlin/JVM (Java 11 bytecode like the app), no Android code, so its tests run anywhere. The app does not use it yet (that starts in M2.2); the release-build shrinker (R8) rules for dnsjava will be checked then, on a phone.
 **CI:** the workflow now also runs `:filter-core:test`. `testDebugUnitTest` only covers the `app` module and would have skipped these tests silently.
+
+### D-022: How the VPN runs as a foreground service (2026-10-29)
+**Decision:** `IdentityVpnService` is a foreground service of type **`systemExempted`** (permission `FOREGROUND_SERVICE_SYSTEM_EXEMPTED`), with a silent, ongoing "Identity protection is on" notification. On Android 13+ the app asks for the notification permission once, just before the VPN request. The M2.2 tunnel has an address but **no routes and no DNS server**, so no traffic goes through it yet.
+**Why `systemExempted`:** since Android 14 every foreground service must declare a type. Android's documentation lists "VPN apps" as allowed to use `systemExempted`. Other types (`specialUse`, `dataSync`) don't fit and bring their own Play review or time limits.
+**Why no routes yet:** if we sent DNS to the tunnel before we can answer it (M2.3), every website would stop loading while protection is on. This slice proves only the permission, start/stop and notification.
+**Not yet:** automatic restart after a crash or reboot, and Always-on VPN detection, are M3. Until then the on/off state lives in memory and shows "Off" if Android ends the app.
+**To check on the phone:** that Android 14+ accepts the `systemExempted` type after the user taps OK. The docs don't spell out exactly how a VPN app qualifies. If Android refuses, the service stops cleanly instead of crashing, and we will revisit this decision.
