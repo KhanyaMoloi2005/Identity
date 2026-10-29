@@ -8,6 +8,47 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M2.3 Block a test domain, forward the rest (branch `m2/block-test-domain`)
+
+> ✅ **Verified on a computer:** 32 `:filter-core` unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses: the 18 existing tests plus 14 new ones. ⏳ **Not yet verified:** the `app` module (this laptop has no Android SDK, so CI builds it). 📱 **Phone check pending.**
+
+**M2.2 phone result (recorded here; merged as PR #9):** the product owner installed the CI build and reported that the VPN turns on, the notification shows, and "everything looks good". Individual criteria 3 to 6 (Cancel, browsing while on, Turn off, turning it off from Settings) and the Android version were not reported separately; they are repeated in this slice's phone check.
+
+**Task:** protection does its first real job. While it is on, `example.com` should fail to load; every other site should load normally.
+
+**What changed and why**
+- The VPN now gives Android a DNS server address (`10.111.222.1`) and routes **only that address** into the tunnel. Lookups come to Identity; all other traffic still bypasses the VPN (D-023).
+- New `DnsTunnel` (app): reads each lookup from the tunnel. Blocked names get "no such domain" from the phone. Others go to **Cloudflare for Families** (`1.1.1.3`, backup `1.0.0.3`, D-003), and the answer is passed back. A sleeping reader thread (no timer) keeps battery use low; four helper threads do the forwarding.
+- New in `:filter-core`: `IpPackets` (reads and builds the IPv4/UDP packets that carry DNS, with correct checksums) and `DnsFilter` (block / forward / drop). Keeping this in the plain-Kotlin module means it is tested on a computer.
+- The app now uses `:filter-core` (and so dnsjava) for the first time.
+- **New permission: `INTERNET`**, needed to send allowed lookups to Cloudflare. Nothing else goes online. Recorded in the data inventory: the first data to leave the phone.
+- Status and notification text now say "only example.com is blocked".
+- Domain names are never logged or saved.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{IpPackets,DnsFilter}.kt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/{IpPacketsTest,DnsFilterTest}.kt` (new), `android/app/src/main/java/app/identity/protection/DnsTunnel.kt` (new), `android/app/src/main/java/app/identity/protection/IdentityVpnService.kt`, `android/app/src/main/AndroidManifest.xml`, `android/app/build.gradle.kts`, `android/app/src/main/res/values/strings.xml`, `docs/privacy/data-inventory.md`, `docs/decision-log.md` (D-023), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Packet reading/building and block/forward decisions unit-tested, incl. checksums, IP options, fragments, junk input: ✅ tested (computer)
+2. CI green (build, lint, all unit tests): ⏳ pending push
+3. Protection on → `example.com` and `www.example.com` fail in Chrome ("site can't be reached"): 📱 pending
+4. Protection on → other sites (e.g. wikipedia.org, YouTube) load normally; apps work: 📱 pending
+5. Turn off → `example.com` loads again: 📱 pending
+6. Cancel in the VPN dialog → stays Off, no crash; turning it off in Settings → Network → VPN shows "Off" in the app: 📱 pending
+
+**Limits to know:** only one test domain. IPv4 DNS only; IPv6, network switching and battery are M2.4. If the phone's **Private DNS** is set to a specific provider, or Chrome's **"Use secure DNS"** is set to a custom provider, lookups skip Identity (risk R-02). If the reader thread hits an unexpected error, websites stop loading while protection is on ("fail closed", D-023). The release (shrunk) build is still not checked with dnsjava (D-021); CI builds debug only.
+
+**How to verify**
+1. Push the branch, open a pull request, and wait for "Android build" ✅. If ❌, paste the red lines to Claude.
+2. On the phone, first check two settings, and write down what they were set to:
+   - Settings → Network & internet → **Private DNS**: should be "Automatic" or "Off".
+   - Chrome → Settings → Privacy and security → **Use secure DNS**: should be off or "current service provider".
+3. Install the APK from the run, turn protection on, then walk through criteria 3 to 6. Chrome remembers lookups for a minute, so if `example.com` still loads, close the tab, open an **Incognito** tab and try again.
+4. Note your Android version (Settings → About phone).
+
+**Next step:** after CI ✅ and the phone check, M2.4: Wi-Fi ↔ mobile data, IPv6 and a 24-hour battery observation.
+
+---
+
 ## 2026-10-29: M2.2 VPN service skeleton (branch `m2/vpn-skeleton`)
 
 > ⏳ **Not yet verified:** this laptop has no Android SDK, so the app was **not built here**. CI (GitHub Actions) builds it and runs lint and the unit tests once the branch is pushed. 📱 **Phone check pending:** the product owner will test at home. Nothing below has been run on a device.

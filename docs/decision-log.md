@@ -113,3 +113,11 @@ _Last updated: 2026-10-27._
 **Not yet:** automatic restart after a crash or reboot, and Always-on VPN detection, are M3. Until then the on/off state lives in memory and shows "Off" if Android ends the app.
 **Lint (found by the first CI run):** lint's `ForegroundServicePermission` check says `systemExempted` also needs `SCHEDULE_EXACT_ALARM` or `USE_EXACT_ALARM`. Lint only reads the manifest; Android also accepts the user's VPN approval (given at run time) instead. We do **not** add an alarm permission we don't use. That one check is switched off on the VPN service only, with a comment (`tools:ignore`).
 **To check on the phone:** that Android 14+ accepts the `systemExempted` type after the user taps OK. The docs don't spell out exactly how a VPN app qualifies. If Android refuses, the service stops cleanly instead of crashing, and we will revisit this decision.
+
+### D-023: How the DNS tunnel works (M2.3, 2026-10-29)
+**Decision:** the VPN gives Android one DNS server address, `10.111.222.1`, and routes **only that address** into the tunnel. Every app's DNS lookups therefore come to Identity, while all other traffic (web pages, video, messages) goes straight to the network as before. The packet code (IPv4 + UDP) lives in `:filter-core` (`IpPackets`, `DnsFilter`) so it is unit-tested on a computer; the app's `DnsTunnel` only moves bytes.
+**Blocked names** get "no such domain" from the phone itself. **Allowed names** are forwarded to Cloudflare for Families (D-003, now in use), `1.1.1.3` first and `1.0.0.3` if that doesn't answer within 5 seconds, through a socket marked to skip our own VPN.
+**Test blocklist:** only `example.com` (and its subdomains). Harmless, always online and normally loads, so a block is easy to see. The real list is M3.
+**If the tunnel's reader stops** (an unexpected error), DNS stops working while the VPN is on: websites fail to load, rather than load unfiltered. This "fail closed" behaviour suits a protection app; M3 adds detection and recovery.
+**Not covered yet:** IPv6-only DNS, DNS over TCP (rare; used for very large answers), Private DNS set to a specific provider, and browsers using their own secure DNS (risk R-02). These are M2.4 and M3 items.
+**Battery:** the reader thread sleeps until a packet arrives (`poll`), with no timer waking it; M2.4 measures it.
