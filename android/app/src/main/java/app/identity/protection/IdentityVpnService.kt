@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
@@ -105,7 +106,7 @@ class IdentityVpnService : VpnService() {
                 .apply { routePublicResolvers() }
                 .establish()
             tunnel?.let { fd ->
-                dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect).also { it.start() }
+                dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect, logOutsideDns = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0).also { it.start() }
                 tiktokMonitor = TikTokLimitMonitor(this) { dnsTunnel?.reload() }.also { it.start() }
             }
         } catch (e: Exception) {

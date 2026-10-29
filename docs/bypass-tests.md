@@ -2,7 +2,7 @@
 
 _TEST-01 (spec section 8): known ways around protection, how each was tested, and what Identity does about it. Identity must not promise to be impossible to bypass; this page says plainly what it can and cannot stop. Related: [risk register](risk-register.md) (R-01, R-02), [architecture §5](architecture.md), [decision log](decision-log.md)._
 
-**Test phone:** Samsung Galaxy A34 5G (SM-A346E), Android 16. **Last full run:** 2026-10-29, build from branch `m3/bypass-tests`, protection on, Always-on VPN on, "Block connections without VPN" off, Private DNS Automatic, Chrome as the browser. The blocked site used for tests is `example.com` (blocked in test builds only).
+**Test phone:** Samsung Galaxy A34 5G (SM-A346E), Android 16. **Last full run:** 2026-10-29 (re-run for #5 after the 3.7b fix, build from branch `m3/resolver-block`), protection on, Always-on VPN on, "Block connections without VPN" off, Private DNS Automatic, Chrome as the browser. The blocked site used for tests is `example.com` (blocked in test builds only).
 
 **Key:** ✅ blocked or handled · ⚠️ partly or not stoppable by a DNS filter (limit stated) · ❌ bypasses protection · ⏳ not yet tested on a phone
 

@@ -6,7 +6,7 @@ sealed interface DnsDecision {
      * Blocked: send this "no such domain" reply straight back. [outsideDns] is true when the name was
      * an outside encrypted-DNS server, so the phone can tell the user something tried to use one.
      */
-    class Answer(val response: ByteArray, val outsideDns: Boolean = false) : DnsDecision
+    class Answer(val response: ByteArray, val outsideDns: Boolean = false, val name: String? = null) : DnsDecision
 
     /** Allowed: pass the query, unchanged, to the upstream resolver. */
     data object Forward : DnsDecision
@@ -44,6 +44,8 @@ class DnsFilter(
             }
         }
         val reply = DnsPackets.nxDomainResponse(query).getOrNull() ?: return DnsDecision.Drop
-        return DnsDecision.Answer(reply, outsideDns = encryptedDnsServers.isBlocked(parsed.name))
+        val outside = encryptedDnsServers.isBlocked(parsed.name)
+        // The name is only passed on for encrypted-DNS servers (never for a user's own blocks), for debug builds' logs.
+        return DnsDecision.Answer(reply, outsideDns = outside, name = if (outside) parsed.name else null)
     }
 }

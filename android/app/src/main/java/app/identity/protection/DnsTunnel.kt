@@ -2,6 +2,7 @@ package app.identity.protection
 
 import android.os.ParcelFileDescriptor
 import android.os.SystemClock
+import android.util.Log
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
@@ -37,6 +38,8 @@ internal class DnsTunnel(
     private val createFilter: () -> DnsFilter,
     /** Marks a socket so its traffic skips our own VPN ([android.net.VpnService.protect]). */
     private val protect: (DatagramSocket) -> Boolean,
+    /** Debug builds only: log which encrypted-DNS server name or address was refused (never anything else). */
+    private val logOutsideDns: Boolean = false,
 ) {
     private val output = FileOutputStream(tunnel.fileDescriptor)
     private val forwarders = Executors.newFixedThreadPool(FORWARD_THREADS)
@@ -130,7 +133,10 @@ internal class DnsTunnel(
         val current = filter ?: return
         when (val decision = current.decide(query.payload)) {
             is DnsDecision.Answer -> {
-                if (decision.outsideDns) outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+                if (decision.outsideDns) {
+                    outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+                    if (logOutsideDns) Log.d(TAG, "outside DNS name refused: ${decision.name}")
+                }
                 write(query.reply(decision.response))
             }
             DnsDecision.Forward -> inBackground {
@@ -153,7 +159,10 @@ internal class DnsTunnel(
         val refusal = TcpResets.reset(buffer, length) ?: return
         write(refusal.packet)
         val ours = refusal.destinationAddress.contentEquals(OWN_DNS_ADDRESS)
-        if (!ours && refusal.destinationPort in ENCRYPTED_DNS_PORTS) outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+        if (!ours && refusal.destinationPort in ENCRYPTED_DNS_PORTS) {
+            outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+            if (logOutsideDns) Log.d(TAG, "outside DNS connection refused: ${refusal.destinationAddress.joinToString(".") { (it.toInt() and 0xFF).toString() }} port ${refusal.destinationPort}")
+        }
     }
 
     /** Whether something tried an outside encrypted-DNS service within the last [windowMs]. */
@@ -211,6 +220,7 @@ internal class DnsTunnel(
 
     private companion object {
         const val DNS_PORT = 53
+        const val TAG = "IdentityDns"
 
         /** Identity's own DNS address inside the tunnel (see IdentityVpnService). */
         val OWN_DNS_ADDRESS = byteArrayOf(10, 111, 222.toByte(), 1)

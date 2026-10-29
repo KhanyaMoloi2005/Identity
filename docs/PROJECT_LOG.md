@@ -10,7 +10,7 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ## 2026-10-29: M3.7b Close the Chrome secure-DNS bypass (branch `m3/resolver-block`)
 
-> ✅ **Verified on a computer:** 121 `:filter-core` unit tests ran (0 failed, 0 skipped): 105 existing plus 16 new (TCP resets for IPv4 and IPv6 with checksum checks and junk-input fuzzing, the resolver list, the encrypted-DNS names including look-alike names that must not be blocked, the new health problem, the filter flag). `assembleDebug` and `lintDebug` pass. ✅ **Phone (checked over USB with screenshots, 2026-10-29):** the 40-odd resolver routes appear on the tunnel (`ip route`), normal browsing (BBC) kept working with them in place, and with Chrome's secure DNS set to Cloudflare the blocked test site and a normal site both failed with `DNS_PROBE_FINISHED_BAD_SECURE_CONFIG`; Home read "On, but needs attention" with the explanation and a history entry was written. ⏳ **Not yet verified:** a final normal-browsing and blocked-site check after Chrome is set back to the default; an app with its own DNS server; a Private DNS hostname pointing at a listed provider; CI on a pull request.
+> ✅ **Verified on a computer:** 121 `:filter-core` unit tests ran (0 failed, 0 skipped): 105 existing plus 16 new (TCP resets for IPv4 and IPv6 with checksum checks and junk-input fuzzing, the resolver list, the encrypted-DNS names including look-alike names that must not be blocked, the new health problem, the filter flag). `assembleDebug` and `lintDebug` pass. ✅ **Phone (checked over USB with screenshots, 2026-10-29):** the 40-odd resolver routes appear on the tunnel (`ip route`), normal browsing (BBC) kept working with them in place, and with Chrome's secure DNS set to Cloudflare the blocked test site and a normal site both failed with `DNS_PROBE_FINISHED_BAD_SECURE_CONFIG`; Home read "On, but needs attention" with the explanation and a history entry was written. ✅ **Final phone check (2026-10-29, after the product owner set Chrome back to the default):** BBC loaded fully, a fresh `example.com` address was blocked (`DNS_PROBE_FINISHED_NXDOMAIN`), and Home read plain "On. Adult sites are blocked on this phone." ⏳ **Not yet verified:** an app with its own DNS server; a Private DNS hostname pointing at a listed provider; CI on a pull request. **One thing not fully explained:** at 22:14 Home still said "needs attention", seven minutes after the last attempt I had seen (22:07), although the notice lasts 5 minutes. A debug-only log (added in this slice; it records only the encrypted-DNS server name or address that was refused, never anything else, and only in debug builds) showed **no** refusals either while the phone was idle or while browsing normally with Chrome at its default. The likeliest cause is Chrome retrying its old secure-DNS server for a few minutes after the setting was changed (around 22:10, during my last check); reinstalling the app to add the log reset the timer, so this could not be confirmed.
 
 **Task:** close the confirmed bypass from 3.7 (Chrome "Use secure DNS" on a custom provider) and apps with their own DNS, as the product owner agreed (D-036).
 
@@ -26,13 +26,15 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 - Health and Home: a new problem `OUTSIDE_DNS_BLOCKED` ("On, but needs attention" for 5 minutes, with the Chrome steps) and a history entry.
 - **No new permission.**
 
+**Debug log:** in debug builds only, `DnsTunnel` logs (tag `IdentityDns`) which encrypted-DNS server name or address was refused. `DnsDecision.Answer` carries the name only for those servers, never for a user's own blocks.
+
 **Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{PublicResolvers.kt,TcpReset.kt (new),BlockPresets.kt,DnsFilter.kt,ProtectionHealth.kt,InterruptionLog.kt}`, `android/filter-core/src/test/kotlin/app/identity/filter/{PublicResolversTest.kt,TcpResetTest.kt (new),BlockPresetsTest.kt,DnsFilterTest.kt,ProtectionHealthTest.kt}`, `android/app/src/main/java/app/identity/protection/{IdentityVpnService.kt,DnsTunnel.kt,HealthMonitor.kt,Blocklist.kt}`, `android/app/src/main/java/app/identity/feature/home/HomeScreen.kt`, `android/app/src/main/res/values/strings.xml`, `docs/bypass-tests.md`, `docs/decision-log.md` (D-036), `docs/risk-register.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
 
 **Acceptance criteria**
 1. Reset packets valid for IPv4 and IPv6; junk and resets ignored; list entries valid, public and unique; own upstream excluded; look-alike names not blocked: ✅ tested
 2. Build and lint: ✅ (local); CI on a pull request: ⏳
 3. Phone: Chrome secure DNS on Cloudflare no longer bypasses; Home explains it: ✅
-4. Phone: with Chrome back on the default, normal sites load and the blocked site is blocked: ⏳ final check after the product owner resets Chrome
+4. Phone: with Chrome back on the default, normal sites load and the blocked site is blocked: ✅
 5. Phone: an app with its own DNS server is filtered: ⏳
 
 **Limits to know:** see D-036. The most visible: Chrome loads nothing while its secure DNS is on a custom provider.
