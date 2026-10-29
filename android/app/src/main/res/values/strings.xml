@@ -33,5 +33,6 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="settings_placeholder">Settings will appear here as features are added.</string>
+    <string name="settings_protection_heading">Protection</string>
+    <string name="settings_protection_always_on">While protection is on, Identity always blocks adult websites, X and Reddit (websites, apps and posts shown on other sites), and the pictures in Google, Bing and DuckDuckGo image results. Normal search, YouTube in Restricted Mode, Gmail and Maps keep working.</string>
 </resources>

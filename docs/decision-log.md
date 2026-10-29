@@ -149,3 +149,11 @@ _Last updated: 2026-10-27._
 **Order:** a blocked name stays blocked (NXDOMAIN) even if it's a search engine; otherwise SafeSearch applies; otherwise the query is forwarded.
 **Safety:** an upstream answer that isn't about the safe hostname is rejected.
 **Not covered:** other search engines (e.g. Brave Search, Yandex, Ecosia's own pages) and image searches inside other apps. Listed for the bypass checklist (3.7).
+
+### D-028: Always block X/Reddit and image-search pictures, with no user switches (M3.3a, 2026-10-29)
+**Why:** in the M3.2 phone test, explicit images got through on X/Twitter and Reddit, and "View image" on a SafeSearch result showed the original picture. Neither X nor Reddit has a safe mode that can be enforced on the network, and DNS can't see what's inside a picture.
+**Decision (product owner):** both are **always on, with no switches for users**. They are added to the bundled blocklist itself (`Blocklist.load`). Settings explains what is blocked but offers nothing to change.
+- **X and Reddit:** `x.com`, `twitter.com`, `twimg.com`, `t.co`, `reddit.com`, `redd.it`, `redditmedia.com`, `redditstatic.com`, `reddituploads.com` and their subdomains. Blocks the websites, the apps, and their posts embedded in other sites.
+- **Image-search pictures:** Google `encrypted-tbn0..3.gstatic.com`, Bing `mm.bing.net` and `th.bing.com`, DuckDuckGo `external-content.duckduckgo.com`. Normal search, Gmail and Maps use other servers and keep working (tested). Thumbnails in ordinary search results (e.g. news pictures) also go blank.
+**Limit, stated plainly:** blanking image-search pictures reduces exposure but isn't a wall: opening a result can still load the full picture from the website that hosts it, unless that site is on the blocklist.
+**History:** switches (on by default) were built first, then removed before pushing at the product owner's request. If switches return, it will be in M7, behind the loosening cooldown.
