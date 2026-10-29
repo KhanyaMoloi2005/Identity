@@ -17,6 +17,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Handles the DNS queries that arrive through the tunnel: blocked names get "no such domain"
@@ -45,6 +46,12 @@ internal class DnsTunnel(
     @Volatile private var filter: DnsFilter? = null
 
     fun start() = reader.start()
+
+    // What HealthMonitor observes (M3.5): is the reader thread alive, and did the last lookups reach upstream?
+    private val upstreamFailures = AtomicInteger(0)
+
+    fun handlerAlive(): Boolean = reader.isAlive
+    fun upstreamFailures(): Int = upstreamFailures.get()
 
     /** Rebuilds the filter after the user's rules change, in the background. Until then the old rules apply. */
     fun reload() = inBackground {
@@ -138,6 +145,12 @@ internal class DnsTunnel(
      * the app that asked then retries by itself.
      */
     private fun askUpstream(message: ByteArray): ByteArray? {
+        val answer = tryUpstreams(message)
+        if (answer != null) upstreamFailures.set(0) else upstreamFailures.incrementAndGet()
+        return answer
+    }
+
+    private fun tryUpstreams(message: ByteArray): ByteArray? {
         for (server in UPSTREAM_SERVERS) {
             try {
                 DatagramSocket().use { socket ->

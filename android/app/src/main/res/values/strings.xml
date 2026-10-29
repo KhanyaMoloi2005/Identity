@@ -89,4 +89,16 @@
     <string name="home_always_on_title">Keep protection from being turned off by accident</string>
     <string name="home_always_on_body">In Android\'s VPN settings, tap the gear next to Identity and turn on Always-on VPN. Leave Block connections without VPN off: Identity only filters web lookups, so that setting would cut your internet.</string>
     <string name="home_always_on_button">Open VPN settings</string>
+    <string name="home_protection_status_attention">On, but needs attention.</string>
+    <string name="home_problem_dns_stopped">Identity stopped answering web lookups, so websites may not load. Turn protection off and on again.</string>
+    <string name="home_problem_unreachable">Identity cannot reach its filtering service. Check your internet connection.</string>
+    <string name="home_problem_private_dns">Private DNS is set to a custom provider, so web lookups go around Identity. See the card below.</string>
+    <string name="history_title">Protection history</string>
+    <string name="history_note">Kept on this phone for 30 days, then deleted. It records only what protection did and when, never what you browse.</string>
+    <string name="history_empty">Nothing yet.</string>
+    <string name="history_row">%1$s: %2$s</string>
+    <string name="history_turned_on">Protection turned on</string>
+    <string name="history_turned_off">Protection turned off</string>
+    <string name="history_turned_off_in_android">Protection turned off in Android settings or by another VPN</string>
+    <string name="history_ended_unexpectedly">Protection stopped unexpectedly, then restarted (cause unknown)</string>
 </resources>
