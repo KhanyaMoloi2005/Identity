@@ -4,7 +4,8 @@
   Each permission is added only by the milestone that needs it, and recorded in
   docs/PROJECT_LOG.md. Still no internet permission: nothing leaves the phone yet.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- M2.2: run the VPN as a foreground service with a visible notification (D-022). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -37,12 +38,15 @@
         <!--
           The VPN. Not exported, and BIND_VPN_SERVICE means only Android itself can bind to it;
           other apps cannot start or control it.
+          tools:ignore: lint thinks systemExempted also needs an exact-alarm permission. Android also
+          accepts the user's VPN approval instead, which lint can't see (D-022).
         -->
         <service
             android:name=".protection.IdentityVpnService"
             android:exported="false"
             android:foregroundServiceType="systemExempted"
-            android:permission="android.permission.BIND_VPN_SERVICE">
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            tools:ignore="ForegroundServicePermission">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
             </intent-filter>
