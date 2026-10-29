@@ -9,7 +9,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
 | M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
-| M3 | Reliable protection | 🟡 In progress (3.1, 3.2 written) |
+| M3 | Reliable protection | 🟡 In progress (3.1 merged, 3.2 phone-tested, 3.3a written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -72,7 +72,8 @@ Acceptance criteria for M2 as a whole:
 Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [ ] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain — written, 38 filter-core tests pass locally; awaiting CI ✅ and phone check
 - [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) — phone-tested ✅
-- [ ] 3.3 Custom allow/block rules, applied predictably (allow wins)
+- [ ] 3.3a Always block X/Reddit and image-search pictures, no user switches (D-028) — written, 50 filter-core tests pass locally; awaiting CI ✅ and phone check
+- [ ] 3.3b Custom allow/block rules typed by the user, applied predictably (allow wins)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
@@ -100,7 +101,7 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 
 ## M7: Commitment controls
 - Tightening protection applies immediately; loosening waits through a user-chosen cooldown
-- Optional partner notification of loosening; all limits disclosed before enabling
+- Optional partner notification of loosening; all limits disclosed before enabling (if user switches for the D-028 blocks are ever added, they belong here, behind the cooldown)
 - **Uninstall friction + tamper alert (D-024, product owner request 2026-10-29):** optional, off by default. When on, Identity holds the Device Admin role, so the user must first turn that role off in Settings before uninstalling; Identity shows a pause message at that moment, and the partner (if any, M5) is told neutrally that protection was removed or the device stopped checking in. Removing the role can be tied to the loosening cooldown above. **Cannot make uninstalling impossible** (Safe Mode, factory reset and computer uninstall always work); the app says so before it is enabled.
   - **Gate before building:** check the current Google Play Device Admin and "Device and Network Abuse" policies (R-03). If Play does not allow this use, record the outcome and keep only the tamper alert.
 

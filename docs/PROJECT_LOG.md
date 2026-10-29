@@ -8,6 +8,37 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.3a Always block X/Reddit and image-search pictures (branch `m3/rule-presets`, stacked on `m3/safesearch`)
+
+> ✅ **Verified on a computer:** 50 `:filter-core` unit tests ran (0 failed, 0 skipped): 45 existing plus 5 new. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
+
+**Task:** answer the two M3.2 findings by blocking X and Reddit completely and blanking out image-search pictures. **Always on, no switches for users** (product owner, D-028).
+
+**What changed and why**
+- `BlockPresets` (`:filter-core`): the two lists of domains (D-028). Tests prove X/Reddit's app and image servers are caught, look-alikes (`max.com`, `t.com`) aren't, and Google Search, Gmail, Maps, Bing and DuckDuckGo search keep working.
+- `Blocklist.load` (app): adds both lists to the bundled blocklist, so they're applied whenever protection is on.
+- **Settings screen:** the placeholder is replaced by a short explanation of what protection always blocks. Nothing to switch.
+- **History:** switches were built first, then removed before pushing at the product owner's request; the unpushed commits were replaced by this one.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/BlockPresets.kt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/BlockPresetsTest.kt` (new), `android/app/src/main/java/app/identity/protection/Blocklist.kt`, `android/app/src/main/java/app/identity/feature/settings/SettingsScreen.kt`, `android/app/src/main/res/values/strings.xml`, `docs/decision-log.md` (D-028), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Lists catch X/Reddit (incl. app and image servers) and image-search picture servers; don't catch look-alikes, Google Search, Gmail, Maps: ✅ tested
+2. CI green: ⏳ pending push
+3. Phone: X and Reddit websites and apps don't load; Google Images shows blank pictures; normal Google search, YouTube, Gmail, Maps work; Settings shows the explanation and no switches: 📱 pending
+
+**Limits to know:** blanking image-search pictures isn't a wall: opening a result may still load the full picture from its own site (D-028). Thumbnails in ordinary results, such as news pictures, also go blank. Apps remember lookups for a few minutes.
+
+**How to verify (phone)**
+1. Install the CI build, turn protection on, and **force-stop Chrome, the X app and the Reddit app**.
+2. `x.com` and `reddit.com` in Chrome and in their apps: shouldn't load.
+3. Google something and open **Images**: pictures blank or missing. Normal results, YouTube, Gmail and Maps work.
+4. Settings: shows the "Protection" explanation, no switches.
+
+**Next step:** after CI ✅ and the phone check, M3.3b: custom allow/block rules (to be confirmed: see the question in chat about whether users may add rules).
+
+---
+
 ## 2026-10-29: M3.2 SafeSearch (branch `m3/safesearch`, stacked on `m3/bundled-blocklist`)
 
 > ✅ **Verified on a computer:** 45 `:filter-core` unit tests ran (0 failed, 0 skipped): 38 existing plus 7 new. Each safe hostname was also resolved through Cloudflare for Families from the laptop: `forcesafesearch.google.com` → 216.239.38.120, `strict.bing.com` → 150.171.27.16, `safe.duckduckgo.com` → 191.235.126.53, `restrictmoderate.youtube.com` → 216.239.38.119. ✅ **CI and phone:** the product owner installed the CI build and reported "safe search works and I cannot view explicit content" (2026-10-29).
