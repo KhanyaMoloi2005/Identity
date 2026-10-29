@@ -8,6 +8,26 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: ⏸ PAUSE POINT: pick up here (end of day)
+
+**Where we are:** M3 is finished and merged. M4 is under way: the plan and decisions (D-037), the database (4.1: 91 of 91 checks pass on the real Supabase project) are merged; **4.2 (accounts in the app) is written, tested and phone-tested on branch `m4/account-app`** (commit `760b1d4`), waiting for the product owner to publish it, open a pull request and merge it once CI is green.
+
+**To resume (new Claude Code session):** ask Claude to read `docs/PROJECT_LOG.md` (this entry and the one below), `docs/CHECKLIST.md`, `docs/plans/m4-accounts-and-partners.md` and `docs/DEVELOPMENT_RULES.md`, then continue. Work on a new branch from `main` after merging `m4/account-app`. Builds run from the terminal: Gradle 8.9 (the cached copy at `%USERPROFILE%\.gradle\wrapper\dists\gradle-8.9-bin\...\bin\gradle.bat`) with JDK 17; install with `adb install -r` (the phone connects over USB; `adb devices` should show `device`).
+
+**Next task: slice 4.3, invitations and partners.** In the app: "Invite a partner" (a one-time code, shown once, shared with Android's share sheet), "Enter an invitation code" for the partner, a list of connections, ending a connection from either side, and the three sharing choices (status on, blocked count off, setting changes off by default). The database functions already exist and are tested (`create_invitation`, `accept_invitation`, `revoke_invitation`, `end_partnership`). **Remember:** read invitations with explicit columns (`id, owner_id, created_at, expires_at, used_at, revoked_at`), never "select everything" (the hash column is deliberately unreadable). To test a partner, Claude can play the second person with a script, so a second phone is not needed.
+
+**Open items (nothing urgent, none lost)**
+- **Unexplained, harmless but worth a look:** the Protection history shows "An app or browser setting tried to use its own encrypted DNS service and was stopped" about every 15 to 20 minutes (seen 22:19, 22:34, 22:53 on 2026-10-29, long after Chrome's secure DNS was set back to the default). Something on the phone does it in the background. Identity refuses it correctly, but it would be a false alarm for partner alerts (M5). The debug build logs which server name or address was refused: run `adb logcat -d -s IdentityDns` (tag `IdentityDns`) soon after one appears in the history to see what it was, then decide whether that name should be left alone. A watcher was left running in the evening; its result is not recorded here.
+- **Before real users (M8 gate):** switch **"Confirm email" back ON** in Supabase (it is OFF so the test script can sign up accounts) and set up real email sending; verify the free-tier terms (pausing after about a week idle, email limits, backups); legal review of special personal information under POPIA; account deletion from the app (4.4) and the web deletion page Google Play needs.
+- **To decide:** whether to clean up old invitations and ended partnerships after a time (the data inventory says they are kept until account deletion); whether the Shorts/Reels switches and the TikTok limit stay as they are (M7).
+- Small checks never done: custom rules surviving a phone restart; the Private-DNS-to-a-listed-provider case; an app with its own DNS server; airplane-mode behaviour of the account screens.
+- The test account created on the product owner's phone stays in the Supabase project until account deletion is built (4.4); it can also be deleted in Supabase, Authentication, Users.
+- GitHub Desktop leftovers: two old stashes (one holds the Gradle 9.7.1 wrapper files from Android Studio; the Gradle wrapper version question is still open).
+
+**Please don't:** switch branches in GitHub Desktop while Claude is working in the folder (it moves files and creates stashes); paste or send the Supabase `service_role` / secret key, the database password or any access token (the public key and project address are already in the repo and are fine).
+
+---
+
 ## 2026-10-29: M4.2 Accounts in the app (branch `m4/account-app`)
 
 > ✅ **Verified on a computer:** 34 new app unit tests (44 in the app module: 0 failed, 0 skipped) and the 121 `:filter-core` tests; `assembleDebug` and `lintDebug` pass. The tests use the server's **real** answers, captured from the project (sign-up, duplicate email, wrong password, weak password, bad email, dead refresh token). ✅ **Phone (product owner, 2026-10-29, checked by screenshot and file listing):** created an account (the Partner tab then showed the signed-in email, the nickname and "This phone is registered to your account"); the encrypted login file exists on the phone; Home still read "On. Adult sites are blocked on this phone." with no new history entries from the account; the product owner changed the nickname, signed out and signed in again: "it all works". ⏳ **Not yet verified:** airplane-mode behaviour; the rows in the server's tables (the product owner can look in Table Editor); signing in on a second phone; CI on a pull request.

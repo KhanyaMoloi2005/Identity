@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M4.2 accounts in the app, branch `m4/account-app`: 34 new unit tests pass, lint clean, phone-tested (create account, nickname, sign out and in, protection unaffected). Still to do: pull request and CI ✅, then merge; then slice 4.3 (invitations and partners). Also open: an unexplained recurring "tried its own encrypted DNS" entry about every 15 minutes (a watcher is capturing the next one). M3 is finished; still open from M3: custom rules surviving a restart.
+**Current task:** ⏸ paused for the night (see the pause point at the top of PROJECT_LOG.md). M4.2 accounts in the app is committed on `m4/account-app` (phone-tested); next: publish it, pull request, CI ✅, merge; then slice 4.3 (invitations and partners). M3 is finished; M4.1 database is merged.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
