@@ -8,6 +8,45 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M4.1 Database and two-account tests (branch `m4/database`)
+
+> ✅ **Verified against the real project (2026-10-29):** the product owner switched off "Confirm email" (confirmed from outside: the project reported autoconfirm on) and ran the SQL in Supabase ("Success. No rows returned"). `python backend/tests/rls_test.py` then ran **90 checks, all passing**, and `--expiry-check` **1 more**: **91 of 91**. The migration was also parse-checked beforehand as valid PostgreSQL (54 statements) and PL/pgSQL (6 function bodies).
+>
+> **One thing the first run found (a mistake in my test, not in the database):** 4 of the first 89 checks failed, all because the test asked for *every* column of an invitation, which the database correctly refuses (the hash column is deliberately unreadable). Reading with the allowed columns showed the owner sees their own invitation, a different person sees none, and "select everything" gets 403. The test now names the columns and also checks that "select everything" is refused. **Consequence for the app (4.3): always name the invitation columns** (`id, owner_id, created_at, expires_at, used_at, revoked_at`), never select everything.
+
+**Setup (slice 4.0):** the product owner created the Supabase project. The key sent was decoded and is the public `anon` key for that project (not the secret key); the project address is `https://enrljisgutpgtnyvkmdb.supabase.co`. Both are public by design and are in `backend/project.properties`. The secret key and database password were not sent and are not needed.
+
+**What changed and why**
+- **Migration** `backend/supabase/migrations/20261029000001_accounts_and_partners.sql`: five tables (`profiles`, `devices`, `invitations`, `invitation_attempts`, `partnerships`), each with Row Level Security on and everything revoked from signed-out visitors; column-level grants so, for example, nobody can read an invitation's hash or change who a partnership is between; a trigger limiting an account to 10 phones; and five functions that do everything sensitive on the server: `create_invitation` (128-bit random code, only its hash stored, 48 hours, at most 5 pending, none once 3 partners are active), `accept_invitation` (case and spaces forgiven, one use, at most 10 tries an hour, refuses own code, expired, used, revoked, already connected, 4th partner), `revoke_invitation`, `end_partnership` (either side) and `delete_my_account` (cascades through every table). Expected failures come back as `{ok:false,error}` rather than database errors, so that a failed guess is still counted.
+- **Test script** `backend/tests/rls_test.py`: creates test accounts (a supported person, four partners, a stranger and a guesser), checks about 75 things over the real Supabase interface (signed-out access, profiles, phones, invitations, accepting, what partners and strangers can see, sharing choices, a revoked partner, account deletion), deletes the accounts again, and prepares a two-step expiry check (the one thing a client cannot do is move an expiry into the past).
+- `backend/README.md` and `backend/project.properties`.
+
+**Files:** `backend/{README.md,project.properties}`, `backend/supabase/migrations/20261029000001_accounts_and_partners.sql`, `backend/tests/rls_test.py`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria (from the plan)**
+1. A stranger sees nothing of another person's data: ✅ tested
+2. A partner sees only their own partnership and the supported person's nickname; a revoked partner sees nothing: ✅ tested
+3. Expired, reused, revoked, guessed (rate limited), self and 4th-partner invitations all fail: ✅ tested (expiry with the one manual SQL step)
+4. Deleting an account removes everything and the person can no longer sign in: ✅ tested
+
+**Notes:** the SQL file in the repo is the record of what was run; the one-off expiry `update` was a test step and is not part of the database. Test accounts are deleted by the test itself. Security of the hash column, the limits (10 phones, 5 pending invitations, 3 partners, 10 tries an hour) and account deletion all hold on the real project.
+
+**Next step:** merge `m4/plan` then `m4/database`; slice 4.2 (the app: sign up, sign in, sign out, secure session storage, registering the phone).
+
+---
+
+## 2026-10-29: M4 plan written (branch `m4/plan`, docs only)
+
+**What changed and why:** the product owner asked for the M4 plan (accounts, partners, account deletion). Written as [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md): what M4 is and is not (reports and alerts are M5; accounts stay optional and filtering never depends on them), what the server will and will never know, the design (Supabase free tier, tables with Row Level Security, four database functions instead of Edge Functions for M4, hashed single-use 48-hour invitation codes shared with the share sheet, sharing choices stored for M5, account deletion by cascade), six slices (4.0 to 4.5), risks to verify (free-tier pausing, sign-up email limits, South African POPIA special personal information, public repo), and six decisions needed from the product owner. Nothing is built; no code, permissions or data changed.
+
+**Files:** `docs/plans/m4-accounts-and-partners.md` (new), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`. Docs only.
+
+**Decisions (same day):** the product owner chose the recommended option for all four questions asked: email and password, a one-time code shared with the share sheet, up to 3 partners with either side able to end, and nickname-only with status on / counts off / changes off by default. Recorded as D-037; the plan's status line and section 6 updated.
+
+**Next step:** slice 4.0 (the product owner creates the Supabase project and sends the project address and publishable key), then 4.1 (database and test script).
+
+---
+
 ## 2026-10-29: M3.7b Close the Chrome secure-DNS bypass (branch `m3/resolver-block`)
 
 > ✅ **Verified on a computer:** 121 `:filter-core` unit tests ran (0 failed, 0 skipped): 105 existing plus 16 new (TCP resets for IPv4 and IPv6 with checksum checks and junk-input fuzzing, the resolver list, the encrypted-DNS names including look-alike names that must not be blocked, the new health problem, the filter flag). `assembleDebug` and `lintDebug` pass. ✅ **Phone (checked over USB with screenshots, 2026-10-29):** the 40-odd resolver routes appear on the tunnel (`ip route`), normal browsing (BBC) kept working with them in place, and with Chrome's secure DNS set to Cloudflare the blocked test site and a normal site both failed with `DNS_PROBE_FINISHED_BAD_SECURE_CONFIG`; Home read "On, but needs attention" with the explanation and a history entry was written. ✅ **Final phone check (2026-10-29, after the product owner set Chrome back to the default):** BBC loaded fully, a fresh `example.com` address was blocked (`DNS_PROBE_FINISHED_NXDOMAIN`), and Home read plain "On. Adult sites are blocked on this phone." ⏳ **Not yet verified:** an app with its own DNS server; a Private DNS hostname pointing at a listed provider; CI on a pull request. **One thing not fully explained:** at 22:14 Home still said "needs attention", seven minutes after the last attempt I had seen (22:07), although the notice lasts 5 minutes. A debug-only log (added in this slice; it records only the encrypted-DNS server name or address that was refused, never anything else, and only in debug builds) showed **no** refusals either while the phone was idle or while browsing normally with Chrome at its default. The likeliest cause is Chrome retrying its old secure-DNS server for a few minutes after the setting was changed (around 22:10, during my last check); reinstalling the app to add the log reset the timer, so this could not be confirmed.

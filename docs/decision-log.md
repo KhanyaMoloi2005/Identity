@@ -227,3 +227,13 @@ Not scheduled yet: M6.
 - Identity's own upstream (Cloudflare for Families, `1.1.1.3` and `1.0.0.3`) is never routed into the tunnel (a test enforces it).
 **Consequences, stated plainly:** with Chrome's secure DNS set to a custom provider, **Chrome loads nothing** until the setting is turned off (its secure mode has no fallback). The websites of 1.1.1.1 and 8.8.8.8, the 1.1.1.1 WARP app, and a Private DNS setting pointing at a listed provider also stop working while protection is on. A resolver on neither list still bypasses (R-02). The lists are in the app and change only with an app update.
 **Not changed:** the always-on blocks, SafeSearch, custom rules and signed list updates; the names are blocked as part of the always-on list, not through the signed update.
+
+### D-037: M4 decisions: email and password, code invitations, 3 partners, nickname only (2026-10-29)
+**Decision (product owner, accepting the recommendations in [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md)):**
+- **Backend:** Supabase free tier, as D-005 (not re-asked). For M4 the server-side actions are database functions rather than Edge Functions.
+- **Sign-in:** email and password. Custom email sending (a domain, about R150 to R250 a year, D-004) is needed before the beta, because Supabase's built-in sender is for testing only.
+- **Invitations:** a random one-time code, stored only as a hash, valid for 48 hours, shared with Android's share sheet and pasted into the partner's app. No website or domain needed.
+- **Limits:** up to 3 partners per person. Either side can end a connection at any time; the other is told in plain words.
+- **What a partner sees:** only the nickname the person chooses, never their email. Sharing choices per partnership, changeable at any time: protection status and interruptions (default on), daily blocked count (default off), changes to protection settings (default off). Domain names are never shared.
+- **Accounts are optional:** nothing in protection, Scripture or the other features depends on one.
+**Still to do before real users:** verify the free-tier terms (pausing, email limits, backups), custom email sending, and a legal review of special personal information under POPIA (M8 gate).
