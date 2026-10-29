@@ -27,10 +27,11 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 **Acceptance criteria**
 1. Typed/pasted sites cleaned; invalid input rejected; words need 4+ letters; word rules match names containing them; undo only within 10 minutes of the same boot; connectivity check never blocked: ✅ tested
-2. CI green: ⏳ pending push
-3. Phone: add a site → it stops loading (after force-stopping Chrome); Undo within 10 minutes → it loads again: 📱 pending
-4. Phone: after 10 minutes a rule shows "Permanent" with no Undo: 📱 pending
-5. Phone: restarting the phone keeps the rules: 📱 pending
+2. CI green: ✅ (the product owner installed the CI build)
+3. Phone: add a site → it stops loading: ✅ `wikipedia.org` blocked (product owner, 2026-10-29). Undo: ⏳ not reported yet
+4. Phone: after 10 minutes a rule shows "Permanent" with no Undo: ⏳ product owner testing on the way home
+5. Phone: restarting the phone keeps the rules: ⏳ product owner testing
+6. Phone: a word rule blocks sites containing it: ⏳ not tested yet (needs a word the product owner wants blocked permanently)
 
 **Limits to know:** a word rule blocks every site containing it, and after 10 minutes it can't be removed (until M7), so choose words carefully. Rules match site names only, not page text. Apps remember lookups for a few minutes.
 
