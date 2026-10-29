@@ -21,6 +21,9 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 STATE_FILE = ROOT / "build" / "expiry-check.json"
 PASSWORD = "Test-" + secrets.token_hex(8)  # throw-away accounts only
+# The invitation columns a person may read. The hash column is deliberately not readable, so "select everything"
+# is refused: the app must always name these columns.
+INV_COLS = "id,owner_id,created_at,expires_at,used_at,revoked_at"
 
 
 def load_config():
@@ -166,15 +169,16 @@ def main_run():
     code = [i["code"] for i in inv]
     ids = [i["invitation_id"] for i in inv]
     check("code looks like 8 groups of 4", len(code[0].split("-")) == 8 and len(code[0].replace("-", "")) == 32, code[0])
-    check("a sees own invitations", len(a.get("invitations")[1]) == 5)
-    check("a stranger sees no invitations", c.get("invitations")[1] == [])
+    check("a sees own invitations", len(a.get(f"invitations?select={INV_COLS}")[1]) == 5)
+    check("asking for every column of an invitation is refused (the hash is hidden)", denied(a.get("invitations")[0]))
+    check("a stranger sees no invitations", c.get(f"invitations?select={INV_COLS}")[1] == [])
     check("the code hash cannot be read", denied(a.get("invitations?select=code_hash")[0]))
     check("a cannot create an invitation directly", denied(a.post("invitations", {"owner_id": a.id, "code_hash": "\\x00", "expires_at": "2099-01-01"})[0]))
     status, rows = a.patch(f"invitations?id=eq.{ids[0]}", {"expires_at": "2099-01-01"})
     check("a cannot edit an invitation directly", denied(status), (status, rows))
     status, rows = a.delete(f"invitations?id=eq.{ids[0]}")
     check("a cannot delete an invitation directly", denied(status), (status, rows))
-    check("a stranger cannot read a's invitation by id", c.get(f"invitations?id=eq.{ids[0]}")[1] == [])
+    check("a stranger cannot read a's invitation by id", c.get(f"invitations?id=eq.{ids[0]}&select={INV_COLS}")[1] == [])
 
     print("\n5. Accepting a code")
     wrong = [e.rpc("accept_invitation", {"p_code": f"WRONG-{i}"}) for i in range(10)]
@@ -206,7 +210,7 @@ def main_run():
     check("b2 cannot read b1's nickname (partners are not linked to each other)", b2.nickname_seen(b1.id) == [])
     check("a stranger cannot read a's nickname", c.nickname_seen(a.id) == [])
     check("a partner cannot see a's phones", b1.get("devices")[1] == [])
-    check("a partner cannot see a's invitations", b1.get("invitations")[1] == [])
+    check("a partner cannot see a's invitations", b1.get(f"invitations?select={INV_COLS}")[1] == [])
     check("a partner cannot read attempts", denied(b1.get("invitation_attempts")[0]))
 
     print("\n7. Sharing choices")

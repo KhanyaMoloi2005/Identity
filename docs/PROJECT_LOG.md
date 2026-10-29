@@ -10,7 +10,9 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ## 2026-10-29: M4.1 Database and two-account tests (branch `m4/database`)
 
-> ✅ **Verified on a computer:** the migration parses as valid PostgreSQL (54 statements) and all six function bodies parse as valid PL/pgSQL (checked with a PostgreSQL parser library; PostgreSQL itself is not installed here). The test script parses, reaches the product owner's project with the public key, and correctly stops while "Confirm email" is on. ⏳ **Not yet verified:** the SQL has not been run (the product owner pastes it into Supabase); none of the ~75 database checks has run.
+> ✅ **Verified against the real project (2026-10-29):** the product owner switched off "Confirm email" (confirmed from outside: the project reported autoconfirm on) and ran the SQL in Supabase ("Success. No rows returned"). `python backend/tests/rls_test.py` then ran **90 checks, all passing**, and `--expiry-check` **1 more**: **91 of 91**. The migration was also parse-checked beforehand as valid PostgreSQL (54 statements) and PL/pgSQL (6 function bodies).
+>
+> **One thing the first run found (a mistake in my test, not in the database):** 4 of the first 89 checks failed, all because the test asked for *every* column of an invitation, which the database correctly refuses (the hash column is deliberately unreadable). Reading with the allowed columns showed the owner sees their own invitation, a different person sees none, and "select everything" gets 403. The test now names the columns and also checks that "select everything" is refused. **Consequence for the app (4.3): always name the invitation columns** (`id, owner_id, created_at, expires_at, used_at, revoked_at`), never select everything.
 
 **Setup (slice 4.0):** the product owner created the Supabase project. The key sent was decoded and is the public `anon` key for that project (not the secret key); the project address is `https://enrljisgutpgtnyvkmdb.supabase.co`. Both are public by design and are in `backend/project.properties`. The secret key and database password were not sent and are not needed.
 
@@ -22,12 +24,14 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 **Files:** `backend/{README.md,project.properties}`, `backend/supabase/migrations/20261029000001_accounts_and_partners.sql`, `backend/tests/rls_test.py`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
 
 **Acceptance criteria (from the plan)**
-1. A stranger sees nothing of another person's data: ⏳ run the tests
-2. A partner sees only their own partnership and the supported person's nickname; a revoked partner sees nothing: ⏳
-3. Expired, reused, revoked, guessed (rate limited), self and 4th-partner invitations all fail: ⏳ (expiry needs the manual step)
-4. Deleting an account removes everything and the person can no longer sign in: ⏳
+1. A stranger sees nothing of another person's data: ✅ tested
+2. A partner sees only their own partnership and the supported person's nickname; a revoked partner sees nothing: ✅ tested
+3. Expired, reused, revoked, guessed (rate limited), self and 4th-partner invitations all fail: ✅ tested (expiry with the one manual SQL step)
+4. Deleting an account removes everything and the person can no longer sign in: ✅ tested
 
-**Next step:** the product owner switches off "Confirm email" and runs the SQL; I run the tests, fix anything they find, and record the results here.
+**Notes:** the SQL file in the repo is the record of what was run; the one-off expiry `update` was a test step and is not part of the database. Test accounts are deleted by the test itself. Security of the hash column, the limits (10 phones, 5 pending invitations, 3 partners, 10 tries an hour) and account deletion all hold on the real project.
+
+**Next step:** merge `m4/plan` then `m4/database`; slice 4.2 (the app: sign up, sign in, sign out, secure session storage, registering the phone).
 
 ---
 
