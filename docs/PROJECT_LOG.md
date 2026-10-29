@@ -8,6 +8,58 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: ⏸ PAUSE POINT: pick up here (end of day)
+
+**Where we are:** M3 is finished and merged. M4 is under way: the plan and decisions (D-037), the database (4.1: 91 of 91 checks pass on the real Supabase project) are merged; **4.2 (accounts in the app) is written, tested and phone-tested on branch `m4/account-app`** (commit `760b1d4`), waiting for the product owner to publish it, open a pull request and merge it once CI is green.
+
+**To resume (new Claude Code session):** ask Claude to read `docs/PROJECT_LOG.md` (this entry and the one below), `docs/CHECKLIST.md`, `docs/plans/m4-accounts-and-partners.md` and `docs/DEVELOPMENT_RULES.md`, then continue. Work on a new branch from `main` after merging `m4/account-app`. Builds run from the terminal: Gradle 8.9 (the cached copy at `%USERPROFILE%\.gradle\wrapper\dists\gradle-8.9-bin\...\bin\gradle.bat`) with JDK 17; install with `adb install -r` (the phone connects over USB; `adb devices` should show `device`).
+
+**Next task: slice 4.3, invitations and partners.** In the app: "Invite a partner" (a one-time code, shown once, shared with Android's share sheet), "Enter an invitation code" for the partner, a list of connections, ending a connection from either side, and the three sharing choices (status on, blocked count off, setting changes off by default). The database functions already exist and are tested (`create_invitation`, `accept_invitation`, `revoke_invitation`, `end_partnership`). **Remember:** read invitations with explicit columns (`id, owner_id, created_at, expires_at, used_at, revoked_at`), never "select everything" (the hash column is deliberately unreadable). To test a partner, Claude can play the second person with a script, so a second phone is not needed.
+
+**Open items (nothing urgent, none lost)**
+- **Unexplained, harmless but worth a look:** the Protection history shows "An app or browser setting tried to use its own encrypted DNS service and was stopped" about every 15 to 20 minutes (seen 22:19, 22:34, 22:53 on 2026-10-29, long after Chrome's secure DNS was set back to the default). Something on the phone does it in the background. Identity refuses it correctly, but it would be a false alarm for partner alerts (M5). The debug build logs which server name or address was refused: run `adb logcat -d -s IdentityDns` (tag `IdentityDns`) soon after one appears in the history to see what it was, then decide whether that name should be left alone. A watcher was left running in the evening; its result is not recorded here.
+- **Before real users (M8 gate):** switch **"Confirm email" back ON** in Supabase (it is OFF so the test script can sign up accounts) and set up real email sending; verify the free-tier terms (pausing after about a week idle, email limits, backups); legal review of special personal information under POPIA; account deletion from the app (4.4) and the web deletion page Google Play needs.
+- **To decide:** whether to clean up old invitations and ended partnerships after a time (the data inventory says they are kept until account deletion); whether the Shorts/Reels switches and the TikTok limit stay as they are (M7).
+- Small checks never done: custom rules surviving a phone restart; the Private-DNS-to-a-listed-provider case; an app with its own DNS server; airplane-mode behaviour of the account screens.
+- The test account created on the product owner's phone stays in the Supabase project until account deletion is built (4.4); it can also be deleted in Supabase, Authentication, Users.
+- GitHub Desktop leftovers: two old stashes (one holds the Gradle 9.7.1 wrapper files from Android Studio; the Gradle wrapper version question is still open).
+
+**Please don't:** switch branches in GitHub Desktop while Claude is working in the folder (it moves files and creates stashes); paste or send the Supabase `service_role` / secret key, the database password or any access token (the public key and project address are already in the repo and are fine).
+
+---
+
+## 2026-10-29: M4.2 Accounts in the app (branch `m4/account-app`)
+
+> ✅ **Verified on a computer:** 34 new app unit tests (44 in the app module: 0 failed, 0 skipped) and the 121 `:filter-core` tests; `assembleDebug` and `lintDebug` pass. The tests use the server's **real** answers, captured from the project (sign-up, duplicate email, wrong password, weak password, bad email, dead refresh token). ✅ **Phone (product owner, 2026-10-29, checked by screenshot and file listing):** created an account (the Partner tab then showed the signed-in email, the nickname and "This phone is registered to your account"); the encrypted login file exists on the phone; Home still read "On. Adult sites are blocked on this phone." with no new history entries from the account; the product owner changed the nickname, signed out and signed in again: "it all works". ⏳ **Not yet verified:** airplane-mode behaviour; the rows in the server's tables (the product owner can look in Table Editor); signing in on a second phone; CI on a pull request.
+
+**Task:** let a person create an account, sign in and out, keep the login safely, and register the phone, as an optional extra (D-037).
+
+**What changed and why**
+- `app.identity.account` (new): `AccountValidation` (email, password 8 to 72 bytes, nickname 1 to 30), `AuthParsing` (reads Supabase's answers and sorts failures into kinds the screens can explain), `HttpTransport` (Android's built-in HTTPS client, HTTPS only, nothing logged), `AccountApi` (sign up, sign in, refresh, sign out this phone only, nickname, register, mark seen, remove phone), `SessionStore` + `KeystoreCipher` (the login saved as one file, encrypted with a key that never leaves Android's hardware keystore, written safely so a crash can't corrupt it), `AccountRepository` (ties it together: refreshes the login a minute before it expires, retries anything that failed earlier, marks the phone seen at most every 6 hours, never throws, signing out always works offline).
+- **No new library (D-038)**: instead of `supabase-kt`, a small client with the tools the app already has.
+- **Partner tab:** signed out, it explains what is sent and stored in plain words and requires a ticked consent box before an account can be created; sign in; signed in, it shows the email, an editable nickname, whether this phone is registered (with a Try again button) and Sign out. Signing in or out, or being offline, never touches protection.
+- `MainActivity` refreshes the account in the background when the app opens.
+- **No new permission** (INTERNET was already declared).
+
+**Found while testing:** the server answers a dead refresh token with "validation failed" (the same code it uses for a bad email). The first version of the error mapping would have read that as an invalid email and left a dead login in place. Fixed, with tests using the real answer.
+
+**Files:** `android/app/src/main/java/app/identity/account/{BackendConfig.kt,AccountValidation.kt,AuthParsing.kt,HttpTransport.kt,AccountApi.kt,SessionStore.kt,AccountRepository.kt}` (new), `android/app/src/test/java/app/identity/account/{AccountValidationAndParsingTest.kt,AccountRepositoryTest.kt}` (new), `android/app/src/main/java/app/identity/feature/accountability/PartnerScreen.kt`, `android/app/src/main/java/app/identity/MainActivity.kt`, `android/app/src/main/res/values/strings.xml`, `docs/privacy/data-inventory.md`, `docs/decision-log.md` (D-038), `docs/plans/m4-accounts-and-partners.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Data inventory corrected:** the backend section still described the early plan (for example, invitations deleted after 7 days, ended partnerships removed after 30 days). Those clean-ups are **not built**; the inventory now says what is true and marks them "to decide".
+
+**Acceptance criteria**
+1. Sign up, sign in, sign out, nickname change: ✅ phone
+2. The login is encrypted at rest and no password is stored: ✅ tested (the saved file contains no token, email or password in the clear); the key is hardware-backed
+3. Protection is unaffected by signing in, out, or being offline: ✅ phone (Home unchanged); offline ⏳
+4. A dead or expired login is handled, offline never signs you out, signing out works offline: ✅ tested
+5. This phone is registered, kept current at most every 6 hours, and removed on sign out: ✅ tested and phone (registration shown)
+
+**Limits to know:** with "Confirm email" off (development), anyone can create an account with any email address. Turn it back on, with real email sending, before real users. A chosen nickname is lost (replaced by "Friend", editable) if the profile could not be created at sign-up because the connection dropped at that moment. There is no way yet to delete an account from the app (4.4).
+
+**Next step:** pull request and CI ✅, merge. Then 4.3: invite a partner (a code and the share sheet), accept, list, end, and sharing choices.
+
+---
+
 ## 2026-10-29: M4.1 Database and two-account tests (branch `m4/database`)
 
 > ✅ **Verified against the real project (2026-10-29):** the product owner switched off "Confirm email" (confirmed from outside: the project reported autoconfirm on) and ran the SQL in Supabase ("Success. No rows returned"). `python backend/tests/rls_test.py` then ran **90 checks, all passing**, and `--expiry-check` **1 more**: **91 of 91**. The migration was also parse-checked beforehand as valid PostgreSQL (54 statements) and PL/pgSQL (6 function bodies).

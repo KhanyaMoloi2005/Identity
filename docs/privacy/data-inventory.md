@@ -2,7 +2,7 @@
 
 What data Identity handles, where it lives, who can see it, and how long it's kept. **Update this whenever a feature adds or changes data.**
 
-_Last updated: 2026-10-29 (M2.3: DNS forwarding is the first data that leaves the phone)._
+_Last updated: 2026-10-29 (M4.2: accounts. Personal data now leaves the phone, only if the user creates an account)._
 
 ## Principles
 1. Collect only what an enabled feature needs.
@@ -25,7 +25,7 @@ _Last updated: 2026-10-29 (M2.3: DNS forwarding is the first data that leaves th
 | Blocked-domain events (domain + time) | Room | **No**, only daily counts are sent if the user consents | 30 days, then auto-deleted | M3 |
 | Protection status events (VPN started/stopped, list update failed) | Room | Summary only, if consented | 30 days | M3 |
 | Scripture First sessions (scheduled, completed, missed) | Room | Only if user enables sharing (off by default) | 90 days | M6 |
-| Auth session token | Encrypted local storage | Sent to Supabase for authentication only | Until sign-out | M4 |
+| Signed-in account: email, the sign-in and refresh tokens, nickname, and this phone's registration id. One file, encrypted with a key held in Android's hardware keystore. **No password is ever stored.** | `account/account.bin` in app storage, excluded from backup | Tokens are sent to Supabase only to sign in, refresh and make requests; the email and nickname are what the person chose to give (see Backend data) | Until sign-out, or until the server says the sign-in is no longer valid | M4.2 |
 
 All of the above (except the bundled library) are **excluded from Android cloud backup**.
 
@@ -41,10 +41,12 @@ This replaces whichever DNS server the phone used before (usually the mobile net
 
 | Data | Who can read | Retention | Milestone |
 |---|---|---|---|
-| Account (email, auth id) | User only | Until account deletion | M4 |
-| Device record (name, last check-in, protection state) | User; partner only if consented | Until device removed / account deleted | M4 |
-| Invitation (token **hash**, expiry, used flag) | Inviter only | Deleted 7 days after expiry/use | M4 |
-| Partnership (users, status, consented categories) | Both parties | Until revoked + 30 days, then deleted | M4 |
+| Account: email, an account id, and the password **hash** (held by Supabase Auth; Identity never sees the password after sign-in) | The person only | Until the account is deleted (deletion arrives in M4.4) | M4.2 |
+| Nickname (the only name a partner sees) | The person; an actively connected partner | Until the account is deleted | M4.2 |
+| Registered phones: model, Android version, app version, registered and last-seen times. At most 10 per account. | The person only (a partner will see "last seen" in M5, only if shared) | Until the phone is removed (signing out removes it) or the account is deleted | M4.2 |
+| Invitation: a **hash** of the code, expiry, used or revoked | The inviter, never the hash | **Kept until the account is deleted. Cleaning up old invitations is not built yet** (to decide) | M4.1 |
+| Partnership: the two people, when it started and ended, who ended it, and the sharing choices | Both people | **Kept (also after it ends) until either account is deleted. Removing ended connections after 30 days is not built yet** (to decide) | M4.1 |
+| Failed invitation-code tries (who, when) | Nobody (only the database functions) | Cleared after 1 day | M4.1 |
 | Daily report (counts per consented category) | User; active consented partner | 90 days | M5 |
 
 **Never sent to the backend:** domain names, URLs, browsing history, reflections, saved verses, screenshots.
