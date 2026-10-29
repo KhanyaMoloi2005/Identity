@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M4 accounts and partners: plan written and decided (D-037), branch `m4/plan` (docs only). Next: slice 4.0 (the product owner creates the Supabase project and sends the project address and publishable key), then 4.1 (database and two-account test script). M3 is finished (3.1 to 3.7b merged); still open from M3: custom rules surviving a restart.
+**Current task:** M4.1 database, branch `m4/database` (stacked on `m4/plan`, which is not merged yet): SQL written and syntax-checked, test script written; waiting for the product owner to switch off 'Confirm email' and run the SQL in Supabase, then the tests run. M3 is finished; still open from M3: custom rules surviving a restart.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.

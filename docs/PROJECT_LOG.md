@@ -8,6 +8,29 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M4.1 Database and two-account tests (branch `m4/database`)
+
+> ✅ **Verified on a computer:** the migration parses as valid PostgreSQL (54 statements) and all six function bodies parse as valid PL/pgSQL (checked with a PostgreSQL parser library; PostgreSQL itself is not installed here). The test script parses, reaches the product owner's project with the public key, and correctly stops while "Confirm email" is on. ⏳ **Not yet verified:** the SQL has not been run (the product owner pastes it into Supabase); none of the ~75 database checks has run.
+
+**Setup (slice 4.0):** the product owner created the Supabase project. The key sent was decoded and is the public `anon` key for that project (not the secret key); the project address is `https://enrljisgutpgtnyvkmdb.supabase.co`. Both are public by design and are in `backend/project.properties`. The secret key and database password were not sent and are not needed.
+
+**What changed and why**
+- **Migration** `backend/supabase/migrations/20261029000001_accounts_and_partners.sql`: five tables (`profiles`, `devices`, `invitations`, `invitation_attempts`, `partnerships`), each with Row Level Security on and everything revoked from signed-out visitors; column-level grants so, for example, nobody can read an invitation's hash or change who a partnership is between; a trigger limiting an account to 10 phones; and five functions that do everything sensitive on the server: `create_invitation` (128-bit random code, only its hash stored, 48 hours, at most 5 pending, none once 3 partners are active), `accept_invitation` (case and spaces forgiven, one use, at most 10 tries an hour, refuses own code, expired, used, revoked, already connected, 4th partner), `revoke_invitation`, `end_partnership` (either side) and `delete_my_account` (cascades through every table). Expected failures come back as `{ok:false,error}` rather than database errors, so that a failed guess is still counted.
+- **Test script** `backend/tests/rls_test.py`: creates test accounts (a supported person, four partners, a stranger and a guesser), checks about 75 things over the real Supabase interface (signed-out access, profiles, phones, invitations, accepting, what partners and strangers can see, sharing choices, a revoked partner, account deletion), deletes the accounts again, and prepares a two-step expiry check (the one thing a client cannot do is move an expiry into the past).
+- `backend/README.md` and `backend/project.properties`.
+
+**Files:** `backend/{README.md,project.properties}`, `backend/supabase/migrations/20261029000001_accounts_and_partners.sql`, `backend/tests/rls_test.py`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria (from the plan)**
+1. A stranger sees nothing of another person's data: ⏳ run the tests
+2. A partner sees only their own partnership and the supported person's nickname; a revoked partner sees nothing: ⏳
+3. Expired, reused, revoked, guessed (rate limited), self and 4th-partner invitations all fail: ⏳ (expiry needs the manual step)
+4. Deleting an account removes everything and the person can no longer sign in: ⏳
+
+**Next step:** the product owner switches off "Confirm email" and runs the SQL; I run the tests, fix anything they find, and record the results here.
+
+---
+
 ## 2026-10-29: M4 plan written (branch `m4/plan`, docs only)
 
 **What changed and why:** the product owner asked for the M4 plan (accounts, partners, account deletion). Written as [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md): what M4 is and is not (reports and alerts are M5; accounts stay optional and filtering never depends on them), what the server will and will never know, the design (Supabase free tier, tables with Row Level Security, four database functions instead of Edge Functions for M4, hashed single-use 48-hour invitation codes shared with the share sheet, sharing choices stored for M5, account deletion by cascade), six slices (4.0 to 4.5), risks to verify (free-tier pausing, sign-up email limits, South African POPIA special personal information, public repo), and six decisions needed from the product owner. Nothing is built; no code, permissions or data changed.
