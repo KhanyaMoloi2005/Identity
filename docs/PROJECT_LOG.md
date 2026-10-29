@@ -23,7 +23,13 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ## 2026-10-29: M2.3 Block a test domain, forward the rest (branch `m2/block-test-domain`)
 
-> ✅ **Verified on a computer:** 32 `:filter-core` unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses: the 18 existing tests plus 14 new ones. ⏳ **Not yet verified:** the `app` module (this laptop has no Android SDK, so CI builds it). 📱 **Phone check pending.**
+> ✅ **Verified on a computer:** 32 `:filter-core` unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses: the 18 existing tests plus 14 new ones. ✅ **CI:** the product owner reported the branch build had no failures. 📱 **Phone-checked by the product owner** (2026-10-29): see "Phone result" below.
+
+**Phone result**
+- Protection on: `example.com` → "This site can't be reached". Protection off: it loads. ✅
+- Protection on: `wikipedia.org` loads in Chrome, Instagram works. ✅
+- **Finding:** the phone's Private DNS was first set to a **custom hostname**. With protection on, Android then showed "Network has no internet access" and "Private DNS server cannot be accessed". After switching Private DNS to **Automatic**, the warnings stopped and everything worked. Android sends all lookups to a custom Private DNS provider, so it fights a DNS-filtering VPN and can bypass it (risk R-02). **M3 must detect a custom Private DNS and guide the user to Automatic** (already listed as an R-02 mitigation).
+- Not reported separately: Cancel in the VPN dialog, turning it off from system Settings, and the Android version. To be repeated in M2.4.
 
 **M2.2 phone result (recorded here; merged as PR #9):** the product owner installed the CI build and reported that the VPN turns on, the notification shows, and "everything looks good". Individual criteria 3 to 6 (Cancel, browsing while on, Turn off, turning it off from Settings) and the Android version were not reported separately; they are repeated in this slice's phone check.
 
@@ -42,11 +48,11 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 **Acceptance criteria**
 1. Packet reading/building and block/forward decisions unit-tested, incl. checksums, IP options, fragments, junk input: ✅ tested (computer)
-2. CI green (build, lint, all unit tests): ⏳ pending push
-3. Protection on → `example.com` and `www.example.com` fail in Chrome ("site can't be reached"): 📱 pending
-4. Protection on → other sites (e.g. wikipedia.org, YouTube) load normally; apps work: 📱 pending
-5. Turn off → `example.com` loads again: 📱 pending
-6. Cancel in the VPN dialog → stays Off, no crash; turning it off in Settings → Network → VPN shows "Off" in the app: 📱 pending
+2. CI green (build, lint, all unit tests): ✅ (reported by product owner)
+3. Protection on → `example.com` fails in Chrome ("site can't be reached"): ✅ phone (`www.example.com` not reported separately)
+4. Protection on → other sites load normally; apps work: ✅ phone (wikipedia.org, Instagram), with Private DNS on Automatic
+5. Turn off → `example.com` loads again: ✅ phone
+6. Cancel in the VPN dialog; turning it off from system Settings: ⏳ not reported; repeat in M2.4
 
 **Limits to know:** only one test domain. IPv4 DNS only; IPv6, network switching and battery are M2.4. If the phone's **Private DNS** is set to a specific provider, or Chrome's **"Use secure DNS"** is set to a custom provider, lookups skip Identity (risk R-02). If the reader thread hits an unexpected error, websites stop loading while protection is on ("fail closed", D-023). The release (shrunk) build is still not checked with dnsjava (D-021); CI builds debug only.
 
