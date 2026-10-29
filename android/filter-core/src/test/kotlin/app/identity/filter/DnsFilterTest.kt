@@ -17,6 +17,20 @@ class DnsFilterTest {
         Message.newQuery(Record.newRecord(Name.fromString("$name."), type, 1)).toWire()
 
     @Test
+    fun anEncryptedDnsServerNameIsAnsweredNoSuchDomainAndFlagged() {
+        val withDoh = DnsFilter(
+            DomainMatcher(blocked = listOf("example.com") + BlockPresets.DOH_ENDPOINTS),
+            DomainMatcher(BlockPresets.DOH_ENDPOINTS),
+        )
+        val doh = withDoh.decide(query("chrome.cloudflare-dns.com")) as DnsDecision.Answer
+        assertEquals(Rcode.NXDOMAIN, Message(doh.response).header.rcode)
+        assertTrue(doh.outsideDns)
+        val ordinary = withDoh.decide(query("www.example.com")) as DnsDecision.Answer
+        assertTrue(!ordinary.outsideDns) // blocked for another reason: not an encrypted-DNS attempt
+        assertSame(DnsDecision.Forward, withDoh.decide(query("wikipedia.org")))
+    }
+
+    @Test
     fun blockedNameGetsNxDomain() {
         val decision = filter.decide(query("www.example.com"))
         assertTrue(decision is DnsDecision.Answer)

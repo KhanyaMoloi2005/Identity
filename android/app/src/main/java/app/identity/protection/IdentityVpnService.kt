@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
@@ -19,9 +20,11 @@ import app.identity.MainActivity
 import app.identity.R
 import app.identity.filter.BlockPresets
 import app.identity.filter.DnsFilter
+import app.identity.filter.DomainMatcher
 import app.identity.filter.DomainSet
 import app.identity.filter.InterruptionLog
 import app.identity.filter.ProtectionHealth
+import app.identity.filter.PublicResolvers
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -99,10 +102,11 @@ class IdentityVpnService : VpnService() {
                 .setSession(getString(R.string.app_name))
                 .addAddress(TUNNEL_ADDRESS, 32)
                 .addDnsServer(DNS_ADDRESS)
-                .addRoute(DNS_ADDRESS, 32) // only DNS enters the tunnel
+                .addRoute(DNS_ADDRESS, 32) // our own DNS address
+                .apply { routePublicResolvers() }
                 .establish()
             tunnel?.let { fd ->
-                dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect).also { it.start() }
+                dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect, logOutsideDns = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0).also { it.start() }
                 tiktokMonitor = TikTokLimitMonitor(this) { dnsTunnel?.reload() }.also { it.start() }
             }
         } catch (e: Exception) {
@@ -125,6 +129,18 @@ class IdentityVpnService : VpnService() {
         }
     }
 
+    /**
+     * Also route the well-known public DNS resolvers into the tunnel (M3.7b, D-036): plain DNS sent
+     * to them is answered by Identity's filter, and encrypted DNS to them is refused, so a browser's
+     * "secure DNS" or an app's own DNS server can't go around Identity. Only these few addresses:
+     * all other traffic still bypasses the VPN.
+     */
+    private fun Builder.routePublicResolvers() {
+        for (address in PublicResolvers.IPV4) addRoute(address, 32)
+        addAddress(TUNNEL_ADDRESS_V6, 128) // a source address, so IPv6 connections to the resolvers also enter the tunnel
+        for (address in PublicResolvers.IPV6) addRoute(address, 128)
+    }
+
     /** Whether the user has set Identity as Android's Always-on VPN (Android 10+). */
     private fun isAlwaysOnVpn(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isAlwaysOn
 
@@ -134,7 +150,10 @@ class IdentityVpnService : VpnService() {
         val list = bundled ?: Blocklist.load(this).also { bundled = it }
         // TikTok's servers are blocked only once today's allowance is used up (D-030).
         val tiktok = if (TikTokLimit(this).isOver()) DomainSet.of(BlockPresets.TIKTOK) else DomainSet.EMPTY
-        return DnsFilter(Blocklist.withCustomRules(list, CustomRulesStore(this).load(), tiktok))
+        return DnsFilter(
+            Blocklist.withCustomRules(list, CustomRulesStore(this).load(), tiktok),
+            DomainMatcher(BlockPresets.DOH_ENDPOINTS),
+        )
     }
 
     private fun stopProtection() {
@@ -220,6 +239,7 @@ class IdentityVpnService : VpnService() {
 
         /** Private addresses: the phone's end of the tunnel, and the DNS server only we answer. */
         private const val TUNNEL_ADDRESS = "10.111.222.2"
+        private const val TUNNEL_ADDRESS_V6 = "fd69:6465:6e74:1::2"
         private const val DNS_ADDRESS = "10.111.222.1"
 
         /**

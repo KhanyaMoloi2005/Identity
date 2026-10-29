@@ -17,9 +17,11 @@ object ProtectionHealth {
         val consecutiveUpstreamFailures: Int = 0,
         /** Android's Private DNS is set to a custom provider (R-02). */
         val privateDnsBypass: Boolean = false,
+        /** Something on the phone tried to use an outside encrypted-DNS service and was refused (M3.7b). */
+        val outsideDnsBlockedRecently: Boolean = false,
     )
 
-    enum class Problem { DNS_HANDLER_STOPPED, FILTER_SERVICE_UNREACHABLE, PRIVATE_DNS_BYPASS }
+    enum class Problem { DNS_HANDLER_STOPPED, FILTER_SERVICE_UNREACHABLE, PRIVATE_DNS_BYPASS, OUTSIDE_DNS_BLOCKED }
 
     enum class State { OFF, PROTECTED, NEEDS_ATTENTION, INTERRUPTED }
 
@@ -36,6 +38,7 @@ object ProtectionHealth {
             if (!observation.dnsHandlerAlive) add(Problem.DNS_HANDLER_STOPPED)
             if (observation.consecutiveUpstreamFailures >= UNREACHABLE_AFTER_FAILURES) add(Problem.FILTER_SERVICE_UNREACHABLE)
             if (observation.privateDnsBypass) add(Problem.PRIVATE_DNS_BYPASS)
+            if (observation.outsideDnsBlockedRecently) add(Problem.OUTSIDE_DNS_BLOCKED)
         }
         return Report(if (problems.isEmpty()) State.PROTECTED else State.NEEDS_ATTENTION, problems)
     }

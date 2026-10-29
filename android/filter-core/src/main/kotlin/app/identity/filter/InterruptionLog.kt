@@ -21,6 +21,9 @@ object InterruptionLog {
         FILTER_SERVICE_UNREACHABLE,
         PRIVATE_DNS_BYPASS,
 
+        /** Something tried to use an outside encrypted-DNS service (for example Chrome's secure DNS) and Identity refused (M3.7b). */
+        OUTSIDE_DNS_BLOCKED,
+
         /** A signed blocklist update was installed (M3.6). */
         BLOCKLIST_UPDATED,
 
@@ -45,5 +48,6 @@ object InterruptionLog {
         ProtectionHealth.Problem.DNS_HANDLER_STOPPED -> Kind.DNS_HANDLER_STOPPED
         ProtectionHealth.Problem.FILTER_SERVICE_UNREACHABLE -> Kind.FILTER_SERVICE_UNREACHABLE
         ProtectionHealth.Problem.PRIVATE_DNS_BYPASS -> Kind.PRIVATE_DNS_BYPASS
+        ProtectionHealth.Problem.OUTSIDE_DNS_BLOCKED -> Kind.OUTSIDE_DNS_BLOCKED
     }
 }

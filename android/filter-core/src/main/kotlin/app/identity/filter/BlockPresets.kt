@@ -35,6 +35,31 @@ object BlockPresets {
     val DOH_CANARY: List<String> = listOf("use-application-dns.net")
 
     /**
+     * The names of well-known encrypted-DNS (DNS over HTTPS / TLS) servers (M3.7b, D-036). A browser
+     * or phone setting that wants one of them first looks up its name through Identity; answering
+     * "no such domain" leaves it unable to find the server. Found on the phone: routing the
+     * resolvers' main addresses was not enough, because Chrome reaches Cloudflare's encrypted
+     * service through other addresses it learns from the name. Always on.
+     */
+    val DOH_ENDPOINTS: List<String> = listOf(
+        // Cloudflare (Chrome and Firefox both use these)
+        "cloudflare-dns.com", "one.one.one.one", "1dot1dot1dot1.cloudflare-dns.com",
+        // Google
+        "dns.google", "dns.google.com",
+        // Quad9
+        "dns.quad9.net", "dns9.quad9.net", "dns10.quad9.net", "dns11.quad9.net", "dns12.quad9.net",
+        // OpenDNS / Cisco
+        "doh.opendns.com", "doh.familyshield.opendns.com", "dns.umbrella.com",
+        // AdGuard
+        "dns.adguard.com", "dns-family.adguard.com", "adguard-dns.com",
+        // CleanBrowsing, DNS.SB, NextDNS, Mullvad
+        "doh.cleanbrowsing.org", "dns.sb", "dns.nextdns.io", "dns.mullvad.net", "doh.mullvad.net",
+        // Others offered in browser and phone lists
+        "dns.alidns.com", "doh.pub", "dns.pub", "doh.360.cn", "doh.libredns.gr", "doh.applied-privacy.net",
+        "dns.switch.ch", "doh.ffmuc.net", "dns.digitalcourage.de", "doh.tiarap.org", "dnsforge.de",
+    )
+
+    /**
      * TikTok's app, video and image servers. Not always on: they are blocked only once the user's
      * daily TikTok allowance is used up (M3.3c-1, D-030).
      */
