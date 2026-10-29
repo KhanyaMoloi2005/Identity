@@ -36,7 +36,8 @@ class IdentityVpnService : VpnService() {
     @Volatile private var bundled: DomainSet? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Anything other than "stop" or "reload" means start, including Android starting us for Always-on VPN.
+        // Anything other than "stop" or "reload" means start: the user, the boot receiver, Android
+        // restarting us after ending the service (null intent), or Always-on VPN.
         when (intent?.action) {
             ACTION_STOP -> stopProtection()
             ACTION_RELOAD -> if (tunnel == null) {
@@ -45,14 +46,20 @@ class IdentityVpnService : VpnService() {
                 dnsTunnel?.reload()
                 tiktokMonitor?.refresh()
             }
-            else -> startProtection()
+            else -> {
+                val choice = ProtectionPrefs(this)
+                if (isAlwaysOnVpn()) choice.wantsProtection = true // Android itself started us for Always-on VPN
+                if (choice.wantsProtection) startProtection() else stopSelf()
+            }
         }
-        // Not restarted automatically yet; restart after a crash or reboot is M3 work.
-        return START_NOT_STICKY
+        // If Android ends the service while the user wants protection on, it restarts us (M3.4).
+        return if (ProtectionPrefs(this).wantsProtection) START_STICKY else START_NOT_STICKY
     }
 
     override fun onRevoke() {
         // Called when the user turns us off in system Settings or another VPN app takes over.
+        // Respect that: don't bring protection back by itself after the next restart.
+        ProtectionPrefs(this).wantsProtection = false
         stopProtection()
     }
 
@@ -85,8 +92,16 @@ class IdentityVpnService : VpnService() {
             // Stop cleanly rather than crash.
             closeTunnel()
         }
-        if (tunnel == null) stopProtection() else isRunning = true
+        if (tunnel == null) {
+            stopProtection()
+        } else {
+            isRunning = true
+            alwaysOn = isAlwaysOnVpn()
+        }
     }
+
+    /** Whether the user has set Identity as Android's Always-on VPN (Android 10+). */
+    private fun isAlwaysOnVpn(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && isAlwaysOn
 
     /** Runs on a background thread, one call at a time. The lists stay in memory only while protection is on. */
     @Synchronized
@@ -111,6 +126,7 @@ class IdentityVpnService : VpnService() {
         tunnel?.close()
         tunnel = null
         isRunning = false
+        alwaysOn = false
     }
 
     /** The visible "Identity protection is on" notification. Android requires it for a long-running service. */
@@ -161,8 +177,13 @@ class IdentityVpnService : VpnService() {
         var isRunning by mutableStateOf(false)
             private set
 
+        /** Whether Android's "Always-on VPN" is set for Identity. Only known while protection runs. */
+        var alwaysOn by mutableStateOf(false)
+            private set
+
         /** Call only after the user has allowed the VPN (see [VpnService.prepare]). */
         fun start(context: Context) {
+            ProtectionPrefs(context).wantsProtection = true
             context.startService(Intent(context, IdentityVpnService::class.java))
         }
 
@@ -172,6 +193,7 @@ class IdentityVpnService : VpnService() {
         }
 
         fun stop(context: Context) {
+            ProtectionPrefs(context).wantsProtection = false
             context.startService(Intent(context, IdentityVpnService::class.java).setAction(ACTION_STOP))
         }
     }

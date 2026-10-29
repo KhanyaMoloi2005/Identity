@@ -8,6 +8,40 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.4 Staying on (branch `m3/staying-on`)
+
+> ✅ **Verified on a computer:** 75 `:filter-core` unit tests ran (0 failed, 0 skipped): 72 existing plus 3 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (checked from the computer over USB, 2026-10-29):** after reinstalling the app, protection kept running; after killing the app's process, Android restarted it under a new process id; after a force-stop it stayed stopped (Android's rule) and Always-on VPN brought it back when the app was opened. ✅ **Phone (product owner):** after a real restart with Always-on off, protection came back (the service was running 2 minutes after boot, by the `BootReceiver`) and Home showed On plus the Always-on card; the product owner then set Always-on VPN with **Block connections without VPN** and after a restart had working internet and protection within minutes. ⏳ **Not yet verified:** the Private DNS warning card on the phone; the "Interrupted" message (it cannot show while Always-on is set); how many seconds protection takes to return after a restart (reported only as "within minutes"); CI on a pull request.
+
+**Task:** make protection stay on without the user having to remember (M3 reliability), and tell the user about the two settings that can quietly defeat it.
+
+**What changed and why**
+- `ProtectionPrefs` (app): one saved choice, "the user wants protection on". Set by Turn on, cleared by Turn off and by turning the VPN off in Android's settings or another VPN taking over (`onRevoke`), so protection never comes back against the user's wish.
+- `BootReceiver` (app): after a phone restart (`BOOT_COMPLETED`) or an app update (`MY_PACKAGE_REPLACED`), starts protection, only if the user wants it and still has the VPN permission. New permission `RECEIVE_BOOT_COMPLETED`.
+- `IdentityVpnService`: restarts itself if Android ends it while the user wants protection (`START_STICKY`); notes whether Android's Always-on VPN is set; if Android itself starts it for Always-on VPN, that counts as "wanted".
+- `PrivateDns` (`:filter-core`): decides whether Android's Private DNS setting is a custom provider ("hostname"), which sends lookups around Identity (R-02). Tested.
+- Home: a status of **Interrupted** (meant to be on, not running) instead of a plain "Off"; a card when Private DNS is custom, with the fix and a button; a card suggesting Always-on VPN and Block connections without VPN while protection runs without it.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/PrivateDns.kt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/PrivateDnsTest.kt` (new), `android/app/src/main/java/app/identity/protection/{ProtectionPrefs.kt,BootReceiver.kt}` (new), `android/app/src/main/java/app/identity/protection/IdentityVpnService.kt`, `android/app/src/main/java/app/identity/feature/home/HomeScreen.kt`, `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/strings.xml`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Private DNS classification (custom hostname flagged; off, automatic, missing and unknown values not): ✅ tested
+2. Build and lint: ✅ (local); CI on a pull request: ⏳
+3. Phone: protection returns after an app update, a killed process and a phone restart: ✅
+4. Phone: Always-on guidance appears when it is off and disappears when set: ✅
+5. Phone: Private DNS card appears for a custom provider and disappears on Automatic: ⏳ product owner to test
+6. Phone: Home shows Interrupted when protection was cut off: ⏳ (needs Always-on off and a force-stop)
+
+**Limits to know:** without Always-on VPN, Android only lets Identity restart after the user first unlocks the phone, so the phone is unprotected between switching on and unlocking. Always-on VPN plus **Block connections without VPN** closes that gap, so it is recommended on Home but not forced. A user can still turn Always-on off or turn the VPN off in Android's settings; making that harder is M7. Turning the VPN off from Android's settings is treated as the user's choice and protection does not come back by itself until they turn it on. The Private DNS check can only warn: Android doesn't allow an app to change that setting.
+
+**How to verify (phone)**
+1. Turn protection on. Restart the phone and unlock it without opening Identity: the key icon and notification should return.
+2. Settings → Network → VPN → Identity: set Always-on VPN and Block connections without VPN. Restart: internet and protection return together.
+3. Set Private DNS to a hostname (for example `dns.google`): Home shows "Your phone is set to bypass Identity". Set it to Automatic: the card disappears.
+
+**Next step:** pull request and CI ✅, merge. Then 3.5 (observed status on Home, interruption log kept for 30 days).
+
+---
+
 ## 2026-10-29: M3.3c-2 Leave YouTube Shorts and Instagram Reels, with two switches (branch `m3/shorts-reels`)
 
 > ✅ **Verified on a computer:** 72 `:filter-core` unit tests ran (0 failed, 0 skipped): 69 existing plus 3 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (product owner, 2026-10-29):** with the service on, Shorts and Reels both show a short message and take the user out of the app; with each switch off, that one plays normally and the other still closes; the switches keep their setting. Opening a Reels link and a Shorts link from the computer also ended on the phone's home screen. ⏳ **Not yet verified:** CI on a pull request; whether normal YouTube/Instagram use (feed, Stories, messages, a Reel shared in a message) is ever blocked by mistake over longer use.

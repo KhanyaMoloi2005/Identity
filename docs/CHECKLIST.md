@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.3c-2 Shorts and Reels blocker with two switches, branch `m3/shorts-reels`: written, 72 filter-core tests pass, lint clean, phone-tested (Shorts and Reels both close; each switch works). Still to do: pull request and CI ✅, then merge. Next: 3.4 staying on (restart, Always-on VPN, custom Private DNS). M3.1 to M3.3c-1 merged. Not yet checked: custom rules surviving a restart.
+**Current task:** M3.4 Staying on, branch `m3/staying-on`: written, 75 filter-core tests pass, lint clean, phone-tested (restarts after an update, a killed process and a phone restart; Always-on + Block connections without VPN set). Still to do: the Private DNS card check on the phone, pull request and CI ✅, then merge. Next: 3.5 observed status and interruption log. M3.1 to M3.3c merged. Not yet checked: custom rules surviving a restart.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
@@ -48,7 +48,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [ ] 3.3c App blocking
     - [ ] 3.3c-1 TikTok daily time limit (D-030): phone ✅; PR + CI ✅ then merge
     - [x] 3.3c-2 YouTube Shorts / Instagram Reels only (Accessibility Service, D-031), two switches; phone-tested; PR + CI ✅ then merge
-  - [ ] 3.4 Staying on: reboot, Always-on, Private DNS detection
+  - [x] 3.4 Staying on: reboot, Always-on guidance, Private DNS warning (phone-tested except the Private DNS card; PR + CI ✅ then merge)
   - [ ] 3.5 Observed status + interruption log
   - [ ] 3.6 Signed list updates
   - [ ] 3.7 Bypass test checklist

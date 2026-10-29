@@ -9,7 +9,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
 | M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
-| M3 | Reliable protection | 🟡 In progress (3.1 to 3.3b merged; 3.3c-1 written) |
+| M3 | Reliable protection | 🟡 In progress (3.1 to 3.3c merged; 3.4 written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -77,7 +77,7 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [ ] 3.3c App blocking (chosen over cutting the app's internet, D-029)
   - [x] 3.3c-1 TikTok daily time limit: fixed allowances, "time is up" page over TikTok, DNS cut-off, raising starts tomorrow (D-030). Phone-tested by the product owner; the 30-day lock is M7
   - [x] 3.3c-2 YouTube Shorts and Instagram Reels only (not the whole apps): an Accessibility Service sends the user back to the app's home screen or closes the app; they can open it again (D-031). Two switches, one per app. Phone-tested by the product owner. Google Play policy risk (R-03)
-- [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
+- [x] 3.4 Staying on: restart after reboot, update or Android ending the service; Always-on VPN guidance; custom Private DNS warning (M2.3 finding). Phone-tested except the Private DNS card
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
 - [ ] 3.7 Bypass test checklist documented with results (include: a page opened before protection was on can reappear through the browser's Back button until refreshed, found 2026-10-29)

@@ -20,6 +20,8 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- M3.4: bring protection back after a restart or an update, if the user had it on. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- Android 13+: asked for once, so the "protection is on" notification can be shown. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -61,6 +63,16 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
+
+        <!-- M3.4: only reacts to the system's restart and update broadcasts. -->
+        <receiver
+            android:name=".protection.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <!--
           M3.3c-2 (D-031): leaves YouTube Shorts and Instagram Reels. Exported because Android itself
