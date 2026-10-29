@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import app.identity.account.AccountRepository
 import app.identity.protection.IdentityVpnService
 import app.identity.ui.navigation.IdentityApp
 import app.identity.ui.theme.IdentityTheme
@@ -14,6 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         // The user is looking at the app, so protection that should be on but was ended can start again.
         IdentityVpnService.resumeIfWanted(this)
+        // A signed-in account refreshes its login and marks this phone as seen (at most every 6 hours).
+        AccountRepository.touchInBackground(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

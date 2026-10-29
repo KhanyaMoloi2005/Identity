@@ -29,7 +29,39 @@
 
     <!-- Partner -->
     <string name="partner_title">Accountability partner</string>
-    <string name="partner_placeholder">Optional. When this arrives, you choose who to invite and exactly what they can see, and you can stop sharing at any time.</string>
+    <string name="partner_intro">An account is optional. Protection, your limits and Scripture work without one, and without internet. An account lets you invite someone you trust to support you, and you choose exactly what they can see.</string>
+    <string name="partner_create_tab">Create account</string>
+    <string name="partner_signin_tab">Sign in</string>
+    <string name="partner_email">Email</string>
+    <string name="partner_password">Password</string>
+    <string name="partner_password_hint">At least 8 characters.</string>
+    <string name="partner_nickname">Nickname</string>
+    <string name="partner_nickname_hint">This is the only name a partner sees. Not your email.</string>
+    <string name="partner_what_is_shared">What is sent to Identity and stored: your email, the nickname you choose, and the model, Android version and app version of this phone. Never the websites you visit, your searches, or your Scripture notes. You can change your nickname at any time, and deleting your account will be possible from this screen in an upcoming update.</string>
+    <string name="partner_consent">I understand what is sent and stored, and I agree.</string>
+    <string name="partner_create_button">Create account</string>
+    <string name="partner_signin_button">Sign in</string>
+    <string name="partner_working">Please wait...</string>
+    <string name="partner_confirm_email">Account created. Open the email we sent you and tap the link, then sign in here.</string>
+    <string name="partner_signed_in_as">Signed in as %1$s</string>
+    <string name="partner_save_nickname">Save nickname</string>
+    <string name="partner_phone_registered">This phone is registered to your account.</string>
+    <string name="partner_phone_not_registered">This phone is not registered yet.</string>
+    <string name="partner_retry">Try again</string>
+    <string name="partner_partners_soon">Inviting an accountability partner is coming in the next update.</string>
+    <string name="partner_sign_out">Sign out</string>
+    <string name="partner_error_email">That does not look like an email address.</string>
+    <string name="partner_error_password_short">The password needs at least 8 characters.</string>
+    <string name="partner_error_password_long">That password is too long. Use 72 characters or fewer.</string>
+    <string name="partner_error_nickname_empty">Choose a nickname.</string>
+    <string name="partner_error_nickname_long">The nickname can be at most 30 characters.</string>
+    <string name="partner_error_taken">There is already an account with that email. Try signing in.</string>
+    <string name="partner_error_wrong_login">The email or password is not right.</string>
+    <string name="partner_error_weak">That password is too easy to guess. Try a longer one.</string>
+    <string name="partner_error_rate">Too many tries. Wait a few minutes and try again.</string>
+    <string name="partner_error_offline">Cannot reach the server. Check your internet connection. Protection keeps working either way.</string>
+    <string name="partner_error_session">Your sign-in ran out. Please sign in again.</string>
+    <string name="partner_error_generic">Something went wrong. Please try again.</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
