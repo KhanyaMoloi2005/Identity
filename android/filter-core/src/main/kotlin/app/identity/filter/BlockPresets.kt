@@ -26,4 +26,13 @@ object BlockPresets {
         "mm.bing.net", "th.bing.com", // Bing thumbnails
         "external-content.duckduckgo.com", // DuckDuckGo's image proxy
     )
+
+    /**
+     * TikTok's app, video and image servers. Not always on: they are blocked only once the user's
+     * daily TikTok allowance is used up (M3.3c-1, D-030).
+     */
+    val TIKTOK: List<String> = listOf(
+        "tiktok.com", "tiktokv.com", "tiktokv.us", "tiktokcdn.com", "tiktokcdn-us.com", "tiktokcdn-eu.com",
+        "tiktokw.us", "tiktokw.eu", "musical.ly", "muscdn.com", "byteoversea.com", "ibytedtos.com",
+    )
 }

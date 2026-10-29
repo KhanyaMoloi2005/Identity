@@ -44,6 +44,17 @@ class BlockPresetsTest {
 
     @Test
     fun everyRuleIsAValidDomain() {
-        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH) assertEquals(rule, normalizeDomain(rule))
+        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH + BlockPresets.TIKTOK) assertEquals(rule, normalizeDomain(rule))
+    }
+
+    @Test
+    fun tiktokIsBlockedWithItsVideoServersButNotLookAlikes() {
+        val tiktok = DomainMatcher(BlockPresets.TIKTOK)
+        for (name in listOf("tiktok.com", "www.tiktok.com", "v16m.tiktokcdn.com", "api16-normal.tiktokv.com", "musical.ly")) {
+            assertTrue(name, tiktok.isBlocked(name))
+        }
+        for (name in listOf("nottiktok.com", "google.com", "youtube.com", "instagram.com")) {
+            assertFalse(name, tiktok.isBlocked(name))
+        }
     }
 }

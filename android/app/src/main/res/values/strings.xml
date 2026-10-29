@@ -51,4 +51,24 @@
     <string name="settings_rule_kind_word">Word in site names</string>
     <string name="settings_rule_undo">Undo</string>
     <string name="settings_rule_permanent">Permanent</string>
+    <string name="settings_tiktok_heading">TikTok time limit</string>
+    <string name="settings_tiktok_explanation">Choose how long TikTok may be used each day. When the time is used up, TikTok is covered with a reminder page and its servers are blocked until tomorrow. You can lower the limit at any time. A higher limit only starts tomorrow.</string>
+    <string name="settings_tiktok_usage_access_needed">Identity needs Usage access to count the time TikTok is open. It only sees how long TikTok is open, and nothing leaves your phone.</string>
+    <string name="settings_tiktok_usage_access_button">Allow usage access</string>
+    <string name="settings_tiktok_overlay_needed">To show the reminder page on top of TikTok, Identity needs permission to display over other apps. Without it, TikTok is still blocked when the time is up.</string>
+    <string name="settings_tiktok_overlay_button">Allow display over other apps</string>
+    <string name="settings_tiktok_choose">Daily limit</string>
+    <string name="settings_tiktok_none">No limit set yet. TikTok is not restricted.</string>
+    <string name="settings_tiktok_status">Limit: %1$s a day. Used today: %2$s.</string>
+    <string name="settings_tiktok_over">Today\'s time is used up.</string>
+    <string name="settings_tiktok_pending">Changing to %1$s starts tomorrow.</string>
+    <string name="settings_tiktok_off_warning">Time limits only work while protection is on.</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_hours">%1$d h</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="limit_reached_title">TikTok time is up for today</string>
+    <string name="limit_reached_body">You chose this limit yourself. It resets tomorrow.</string>
+    <string name="limit_reached_leave">Leave TikTok</string>
+    <string name="limit_reached_fallback_reference">Galatians 5:22-23</string>
+    <string name="limit_reached_fallback_verse">But the fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control.</string>
 </resources>

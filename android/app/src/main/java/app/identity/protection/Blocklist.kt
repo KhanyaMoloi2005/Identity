@@ -29,11 +29,16 @@ internal object Blocklist {
     }
 
     /** The bundled list plus the user's own sites and words. Custom rules never block [CustomRules.NEVER_BLOCKED]. */
-    fun withCustomRules(bundled: DomainSet, rules: List<CustomRule>): DomainMatcher {
+    fun withCustomRules(
+        bundled: DomainSet,
+        rules: List<CustomRule>,
+        /** Extra blocks that are only sometimes on, such as TikTok once its daily allowance is used up. */
+        timeLimited: DomainSet = DomainSet.EMPTY,
+    ): DomainMatcher {
         val sites = rules.filter { it.kind == CustomRule.Kind.SITE }.map { it.value }
         val words = rules.filter { it.kind == CustomRule.Kind.WORD }.map { it.value }
         return DomainMatcher(
-            blocked = bundled + DomainSet.of(sites) + CustomRules.containingAny(words),
+            blocked = bundled + timeLimited + DomainSet.of(sites) + CustomRules.containingAny(words),
             allowed = DomainSet.of(CustomRules.NEVER_BLOCKED),
         )
     }
