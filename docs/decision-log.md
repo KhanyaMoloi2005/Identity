@@ -194,3 +194,9 @@ _Last updated: 2026-10-27._
 - **Spec limits still apply:** an ordinary app cannot make a phone impossible to use. Emergency calls, system navigation and the essential apps are never blocked. The user can still leave through Android's own settings, and Identity says so during setup.
 - **Open before building:** who picks the essential apps and whether they can be changed during the hour; what "finished" means (time, a chapter, or both); behaviour if the phone restarts mid-hour; Google Play policy for full-screen alarms and app blocking (R-03).
 Not scheduled yet: M6.
+
+### D-033: Always-on VPN yes; "Block connections without VPN" never (M3.4, 2026-10-29)
+**Finding (product owner's phone):** with Always-on VPN set for Identity and Android's **Block connections without VPN** on, the phone had **no internet** although Identity showed "On". Turning only that option off restored it immediately.
+**Why:** that option allows only traffic that goes through the VPN. Identity's VPN routes DNS lookups only (D-023), so all other traffic has no allowed path.
+**Decision:** Home recommends **Always-on VPN** (it restarts protection earlier in the boot, and after Android ends it) and tells the user to leave **Block connections without VPN** off. Closing the "unprotected until unlock or app start" gap with that option would need a full-traffic VPN, which D-023 rules out for battery and reliability (R-08).
+**Consequence:** the gap between switching the phone on and protection starting stays; it is as short as Android's Always-on allows. Listed in the risk register as part of R-02.

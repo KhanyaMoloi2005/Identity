@@ -70,7 +70,7 @@ _Last updated: 2026-10-27 (M0). Changes to this file are recorded in [PROJECT_LO
 | Identity **can** | Identity **cannot** |
 |---|---|
 | Block known adult domains while its VPN is running | Prevent the user disabling the VPN, force-stopping, or uninstalling the app |
-| Enforce SafeSearch on major search engines and YouTube | Turn on Android's "Always-on VPN" / "Block connections without VPN" itself (only the user can, in system Settings) |
+| Enforce SafeSearch on major search engines and YouTube | Turn on Android's "Always-on VPN" itself (only the user can, in system Settings). "Block connections without VPN" must stay off: it would cut the internet for a DNS-only VPN (D-033) |
 | Detect and record that the VPN stopped or permission was revoked | See full URLs or content inside HTTPS pages, or decrypt traffic (out of scope) |
 | Detect whether Always-on VPN is enabled (Android 10+) and show it | Block adult content on general-purpose domains (X, Reddit, etc.) by domain alone |
 | Notice (via the backend) that a device stopped checking in | Know *why* a device stopped checking in (offline, phone off, app removed…) |
