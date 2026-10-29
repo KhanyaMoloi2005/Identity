@@ -23,7 +23,7 @@ import app.identity.filter.DomainMatcher
  *
  * It tells Android to use a private DNS address ([DNS_ADDRESS]) and routes only that address into
  * the tunnel, so DNS queries come to us and all other traffic bypasses the VPN as before.
- * [DnsTunnel] answers blocked names itself and forwards the rest. M2.3 blocks only [TEST_BLOCKLIST].
+ * [DnsTunnel] answers names on the bundled [Blocklist] itself and forwards the rest.
  */
 class IdentityVpnService : VpnService() {
 
@@ -63,7 +63,7 @@ class IdentityVpnService : VpnService() {
                 .addRoute(DNS_ADDRESS, 32) // only DNS enters the tunnel
                 .establish()
             tunnel?.let { fd ->
-                dnsTunnel = DnsTunnel(fd, DnsFilter(DomainMatcher(TEST_BLOCKLIST)), ::protect).also { it.start() }
+                dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect).also { it.start() }
             }
         } catch (e: Exception) {
             // Android refused (e.g. permission revoked a moment ago) or the tunnel couldn't be set up.
@@ -72,6 +72,9 @@ class IdentityVpnService : VpnService() {
         }
         if (tunnel == null) stopProtection() else isRunning = true
     }
+
+    /** Runs on the tunnel's thread. The list stays in memory only while protection is on. */
+    private fun createFilter(): DnsFilter = DnsFilter(DomainMatcher(Blocklist.load(this)))
 
     private fun stopProtection() {
         closeTunnel()
@@ -126,9 +129,6 @@ class IdentityVpnService : VpnService() {
         /** Private addresses: the phone's end of the tunnel, and the DNS server only we answer. */
         private const val TUNNEL_ADDRESS = "10.111.222.2"
         private const val DNS_ADDRESS = "10.111.222.1"
-
-        /** M2.3 test only: a harmless site that normally loads. The real blocklist arrives in M3. */
-        private val TEST_BLOCKLIST = listOf("example.com")
 
         /**
          * Whether the tunnel is up, for the Home screen. Compose state, so the screen redraws when it

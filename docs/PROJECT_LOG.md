@@ -8,6 +8,43 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.1 Bundled blocklist (branch `m3/bundled-blocklist`)
+
+> ✅ **Verified on a computer:** 38 `:filter-core` unit tests ran (0 failed, 0 skipped) with Gradle 8.9 and Java 17, the same versions CI uses: 32 existing plus 6 new. A one-off local check (not committed; it needs the real file path) loaded the real bundled list: 92,127 entries, about 2.4 MB of memory, 0.12 s to load, about 2 µs per lookup. Every entry and its `www.` subdomain was blocked; wikipedia.org, google.com, instagram.com, youtube.com, bible.com and whatsapp.net were not. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
+
+**Also recorded:** product owner reported M2.4 network switching (Wi-Fi ↔ mobile data) works; the battery observation is running. M3 goes next and the Scripture screens wait until functionality is done (D-026).
+
+**Task:** replace the one test domain with a real adult-content blocklist that ships inside the app.
+
+**What changed and why**
+- **List:** HaGeZi's NSFW list (D-025), 92,127 domains, each also blocking its subdomains. Chosen because it is updated several times a day and keeps wrongly-blocked normal sites out.
+- **Licence (GPL-3.0):** the list is its own readable file with a header crediting the source, version and our changes; the full licence text ships beside it; the build script is in the repo. A visible licences screen is added to M8.
+- **Build script** `content/blocklists/build_blocklist.py`: downloads, cleans, sorts and de-duplicates the list, and refuses to write a suspiciously short one.
+- **`CompactDomainSet`** (`:filter-core`): stores the whole list in one sorted byte array and finds names by binary search. About a quarter of the memory of a normal set, which matters for a VPN running all day. `DomainMatcher` now accepts it; the allow-beats-block rule is unchanged.
+- **App:** `Blocklist` loads the file on the tunnel's background thread when protection turns on (lookups wait a fraction of a second, then are answered). If loading fails, DNS fails closed (D-023). Test builds also block `example.com` for easy checking; release builds don't.
+- Status and notification text: "Adult sites are blocked".
+
+**Files:** `content/blocklists/{build_blocklist.py,SOURCES.md}` (new), `android/app/src/main/assets/blocklist/nsfw.txt` (new, generated), `android/app/src/main/assets/licenses/hagezi-GPL-3.0.txt` (new), `android/filter-core/src/main/kotlin/app/identity/filter/DomainSet.kt` (new), `android/filter-core/src/main/kotlin/app/identity/filter/DomainMatcher.kt`, `android/filter-core/src/test/kotlin/app/identity/filter/CompactDomainSetTest.kt` (new), `android/app/src/main/java/app/identity/protection/{Blocklist.kt (new),DnsTunnel.kt,IdentityVpnService.kt}`, `android/app/src/main/res/values/strings.xml`, `docs/decision-log.md` (D-025, D-026), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. List built reproducibly by a script, with source, version and licence credited: ✅
+2. Packed set agrees with a normal set (5,000 names, 20,000 lookups), skips invalid lines: ✅ tested
+3. Real list loads, blocks its entries and subdomains, leaves common sites alone: ✅ checked on computer
+4. CI green: ⏳ pending push
+5. Phone: protection on → `example.com` blocked; normal sites and apps work; turning on feels no slower: 📱 pending
+6. Phone: battery over a few hours similar to M2.4's result: 📱 pending
+
+**Limits to know:** the list is frozen at today's version until signed updates (3.6). No list catches every adult site; Cloudflare for Families (D-003) and SafeSearch (3.2) are the other layers. Blocks are by domain, so adult content hosted on general sites (e.g. social media) is not caught (R-02). There is no licences screen yet (M8).
+
+**How to verify (phone)**
+1. Install the CI build. Turn protection on: the status should read "On. Adult sites are blocked on this phone."
+2. `example.com` → "This site can't be reached". `wikipedia.org`, Instagram and WhatsApp work.
+3. Optional: an adult site's address now fails with the code `DNS_PROBE_FINISHED_NXDOMAIN` under the message; that code means Identity blocked it (Cloudflare's block shows a different error). Not required: the list was checked on the computer.
+
+**Next step:** after CI ✅ and the phone check, M3.2: SafeSearch.
+
+---
+
 ## 2026-10-29: Recorded "uninstall protection" request for M7 (D-024) (branch `docs/m7-uninstall-friction`)
 
 **What changed and why**

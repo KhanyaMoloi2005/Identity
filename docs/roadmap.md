@@ -7,9 +7,9 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | # | Milestone | Status |
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
-| M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes after M2 |
-| M2 | DNS filtering proof of concept | 🟡 In progress (2.1, 2.2 merged; 2.3 phone-tested; 2.4 next) |
-| M3 | Reliable protection | ⚪ Not started |
+| M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
+| M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
+| M3 | Reliable protection | 🟡 In progress (3.1 written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -68,11 +68,15 @@ Acceptance criteria for M2 as a whole:
 - Wi-Fi ↔ mobile data and IPv6 tested; 24 h battery observation recorded
 
 ## M3: Reliable protection (BLOCK-02, BLOCK-03, SEC-01, CORE-02, TEST-01)
-- Bundled compact blocklist; signed, versioned updates
-- SafeSearch enforcement; custom allow/block rules applied predictably
-- Restart after reboot; Always-on VPN status detection
-- Interruption events stored locally, deleted after 30 days
-- Dashboard shows observed status; bypass test checklist documented with results
+
+Built in seven slices, one pull request each (order agreed 2026-10-29):
+- [ ] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain — written, 38 filter-core tests pass locally; awaiting CI ✅ and phone check
+- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode
+- [ ] 3.3 Custom allow/block rules, applied predictably (allow wins)
+- [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
+- [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
+- [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
+- [ ] 3.7 Bypass test checklist documented with results
 
 ## M4: Accounts and partners (ACC-01, PRIV-01)
 - Sign-up / sign-in; device registration
@@ -100,3 +104,4 @@ Acceptance criteria for M2 as a whole:
 ## M8: Hardening + private beta
 - Security/privacy review, accessibility pass, privacy notice, signed release build
 - Google Play VPN/alarm policy check; feedback, support and rollback process
+- **Licences screen** in Settings: fonts (OFL) and the HaGeZi blocklist (GPL-3.0) credited and readable; re-check the GPL conditions for the Play release (D-025)

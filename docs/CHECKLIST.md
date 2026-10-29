@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M2.3 block a test domain — phone-tested ✅; merge, then M2.4. M1.2 awaits its verse review (in progress).
+**Current task:** M3.1 bundled blocklist — written, 38 filter-core tests pass locally; awaiting CI ✅, then a phone check. M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -24,7 +24,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 ## Milestones
 
 - [x] **M0** Foundations
-- [ ] **M1** App shell + offline Scripture ⏸ paused after 1.2 until M2 is proven (D-020)
+- [ ] **M1** App shell + offline Scripture ⏸ paused after 1.2 until functionality is done (D-020, D-026)
   - [x] 1.1 Navigation shell + fonts (merged, phone-verified)
   - [ ] 1.2 Scripture data layer + first unit tests (written; CI green with tests run, then verse review)
   - [ ] 1.3 Browse by topic
@@ -36,9 +36,16 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [x] 2.1 `:filter-core`: DNS parsing + domain matcher, unit-tested (computer only), merged (PR #8)
   - [x] 2.2 VPN service skeleton: permission, start/stop, notification (merged PR #9, phone-tested)
   - [x] 2.3 Block a test domain, forward the rest (phone-tested)
-  - [ ] 2.4 Network switching, IPv6, 24 h battery (phone check)
+  - [ ] 2.4 Network switching ✅ (Wi-Fi ↔ mobile data, reported 2026-10-29), IPv6, battery (in progress)
   - [ ] M2 acceptance: test domain blocked in Chrome, normal browsing works
-- [ ] **M3** Reliable protection
+- [ ] **M3** Reliable protection ← in progress
+  - [ ] 3.1 Bundled blocklist (HaGeZi NSFW) — written; CI ✅ then phone
+  - [ ] 3.2 SafeSearch
+  - [ ] 3.3 Custom allow/block rules
+  - [ ] 3.4 Staying on: reboot, Always-on, Private DNS detection
+  - [ ] 3.5 Observed status + interruption log
+  - [ ] 3.6 Signed list updates
+  - [ ] 3.7 Bypass test checklist
 - [ ] **M4** Accounts, partners, account deletion
 - [ ] **M5** Reports and alerts
 - [ ] **M6** Scripture First alarm + reminders

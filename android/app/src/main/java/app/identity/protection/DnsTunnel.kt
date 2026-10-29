@@ -29,7 +29,8 @@ import java.util.concurrent.RejectedExecutionException
  */
 internal class DnsTunnel(
     private val tunnel: ParcelFileDescriptor,
-    private val filter: DnsFilter,
+    /** Builds the filter on the reader thread, because loading the blocklist takes a moment. */
+    private val createFilter: () -> DnsFilter,
     /** Marks a socket so its traffic skips our own VPN ([android.net.VpnService.protect]). */
     private val protect: (DatagramSocket) -> Boolean,
 ) {
@@ -39,6 +40,7 @@ internal class DnsTunnel(
     // Writing a byte into this pipe wakes the reader thread so it can finish.
     private val wakeUp = Os.pipe()
     private val reader = Thread(::readLoop, "identity-dns")
+    private lateinit var filter: DnsFilter
 
     fun start() = reader.start()
 
@@ -59,6 +61,12 @@ internal class DnsTunnel(
     }
 
     private fun readLoop() {
+        // Queries that arrive meanwhile wait in the tunnel and are answered once the list is ready.
+        filter = try {
+            createFilter()
+        } catch (e: Exception) {
+            return // no filter: stop answering, so DNS fails closed (D-023)
+        }
         val input = FileInputStream(tunnel.fileDescriptor)
         val buffer = ByteArray(MAX_PACKET)
         val tunnelPoll = StructPollfd().apply {

@@ -128,3 +128,15 @@ _Last updated: 2026-10-27._
 **Decision:** build an optional, off-by-default **uninstall friction** feature in **M7** (with the cooldowns it belongs with): Device Admin role; a pause message when the user tries to remove it; neutral partner alert when protection is removed (builds on the M5 missed check-in alert); clear disclosure of what it can and cannot do before it's switched on.
 **Gate:** before any code, check the current Google Play policies on Device Admin and on apps that resist uninstalling (R-03). If Play doesn't allow it, keep only the tamper alert and record the result here.
 **Why not M2:** M2 proves DNS filtering works. Friction only matters once there is real protection to keep on.
+
+### D-025: Bundled blocklist is HaGeZi's NSFW list (2026-10-29)
+**Decision:** bundle **HaGeZi NSFW** (`wildcard/nsfw-onlydomains.txt`, 92,127 domains on 2026-10-29; each entry also covers its subdomains). Chosen by the product owner on Claude's recommendation.
+**Why:** it is updated several times a day and actively cleaned of wrongly-blocked normal sites, and it is small enough to keep in memory all day. The alternative, Block List Project's porn list (Unlicense), was archived on 2026-10-27 and will never be updated again, and it is larger.
+**Licence conditions (GPL-3.0):** the list ships as its own readable file (`assets/blocklist/nsfw.txt`) with a header crediting the source, version and our changes; the full licence text ships beside it (`assets/licenses/hagezi-GPL-3.0.txt`); our build script is in the repo. The list is data loaded at run time, kept separate from the app's code. Before the Play release (M8): add a visible licences screen and re-check these conditions (not legal advice; Claude is not a lawyer).
+**How it's built:** `python content/blocklists/build_blocklist.py` downloads, lower-cases, sorts and de-duplicates the list, and refuses to write if fewer than 50,000 entries arrive. The app re-checks every line when loading.
+**Memory:** packed into one sorted byte array (`CompactDomainSet`): about 2.4 MB measured on a computer, versus roughly 9 MB as ordinary strings. Loaded on the tunnel's thread when protection turns on.
+**Test builds** also block `example.com`, so blocking can be checked without visiting an adult site. Release builds don't.
+**Updates:** the list is frozen at the bundled version until signed updates arrive (slice 3.6). Cloudflare for Families (D-003) still filters behind it.
+
+### D-026: M3 next; the paused Scripture screens wait until functionality is done (2026-10-29)
+**Decision:** after M2, continue with M3 (reliable protection) and the other functionality milestones. M1.3 to M1.6 (Scripture screens) stay paused until the functionality is done, and then everything is put together. Product owner's call, extending D-020.
