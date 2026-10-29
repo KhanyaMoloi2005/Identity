@@ -8,9 +8,34 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.7 Bypass tests (branch `m3/bypass-tests`)
+
+> ✅ **Verified on a computer:** 105 `:filter-core` unit tests ran (0 failed, 0 skipped): 104 existing plus 1 new (the Firefox canary). `assembleDebug` and `lintDebug` pass. ✅ **Phone (checked from the computer over USB with screenshots, and by the product owner, 2026-10-29):** see [bypass-tests.md](bypass-tests.md) for all 22 scenarios. ⏳ **Not yet verified:** a second VPN app taking over, an app with its own DNS server, Firefox, Safe mode / guest / Secure Folder, the TikTok allowance when the date is moved; CI on a pull request.
+
+**Task:** document the known ways around protection and test them (TEST-01), without promising more than Identity can deliver.
+
+**Findings**
+- ❌ **Chrome's "Use secure DNS" set to a custom provider (Cloudflare) bypasses Identity.** With it on, a fresh address of the blocked test site loaded; with Chrome's setting left alone, the same kind of address was blocked. Chrome sends lookups straight to Cloudflare over HTTPS, so Identity never sees them. The product owner set the Chrome setting for the test and was asked to set it back.
+- ⚠️ **Pages the browser has saved load without any lookup.** Plain `example.com` opened after protection was on loaded from Chrome's saved copy; only a changed address (`?x=...`) was blocked. This is the same cause as the Back-button finding in M3.2. Not fixable in a DNS filter; disclosed.
+- ⚠️ **A site's IP address** (typed instead of its name) connects without a lookup. The test site's host refused it (Cloudflare error 1003); a site serving its default page on its IP would load.
+- ✅ Blocked and normal sites, restarts, Wi-Fi/data switching, force-stop recovery, Private DNS detection: as in earlier slices.
+
+**What changed:** `BlockPresets.DOH_CANARY`: Mozilla's `use-application-dns.net` is answered "no such domain", which tells Firefox to keep using the phone's DNS instead of its own encrypted DNS (R-02). Always on, unit-tested; not tried on a phone (no Firefox installed). `docs/bypass-tests.md` is new. The roadmap, checklist and risk register point to it.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/BlockPresets.kt`, `android/filter-core/src/test/kotlin/app/identity/filter/BlockPresetsTest.kt`, `android/app/src/main/java/app/identity/protection/Blocklist.kt`, `docs/bypass-tests.md` (new), `docs/risk-register.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Known bypass scenarios documented with how each was tested and the result: ✅ (22 rows)
+2. The most important ones tested on the phone: ✅ (blocked/normal, saved page, IP address, Chrome secure DNS); the rest marked ⏳ honestly
+3. Build and lint: ✅ (local); CI on a pull request: ⏳
+
+**Next step:** pull request and CI ✅, merge. The product owner decides on **3.7b**, the proposed fix for the Chrome secure-DNS bypass and for apps with their own DNS (see bypass-tests.md): it would make Chrome unable to look anything up while its secure DNS is on a custom provider, until the setting is switched off.
+
+---
+
 ## 2026-10-29: M3.6 Signed blocklist updates (branch `m3/signed-updates`)
 
-> ✅ **Verified on a computer:** 104 `:filter-core` unit tests ran (0 failed, 0 skipped): 89 existing plus 15 new. They include a list signed with the product owner's **real** private key by `openssl`, accepted by the app's Java code; the same list refused after one changed byte; and refusals for a wrong key, a tampered manifest, junk signatures, no key, an old or equal version, an oversized list, a hash or entry-count mismatch, too few names, and a list that shrinks by more than half. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. `publish_update.py` ran for real: it built version `202610291841` (92,127 names), signed it, and verified its own signature. ⏳ **Not yet verified:** the first published release and the phone downloading and installing it; the refusal path on the phone; the daily schedule; CI on a pull request.
+> ✅ **Verified on a computer:** 104 `:filter-core` unit tests ran (0 failed, 0 skipped): 89 existing plus 15 new. They include a list signed with the product owner's **real** private key by `openssl`, accepted by the app's Java code; the same list refused after one changed byte; and refusals for a wrong key, a tampered manifest, junk signatures, no key, an old or equal version, an oversized list, a hash or entry-count mismatch, too few names, and a list that shrinks by more than half. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. `publish_update.py` ran for real: it built version `202610291841` (92,127 names), signed it, and verified its own signature. ✅ **Phone (product owner, 2026-10-29):** before the release existed, Check for update said it could not reach the update server (the address returned 404); after the product owner published the `blocklist-latest` release, the three files were checked from the computer (all 200, byte-for-byte identical to what was signed, signature verified against the public key, SHA-256 matching), and Check for update then installed it ("it updated and it works"). ⏳ **Not yet verified:** the refusal path on a phone (covered by unit tests); the once-a-day schedule; CI on a pull request.
 
 **Task:** let the blocklist update itself safely (R-05): signed, versioned, and the last good list kept on any failure.
 
@@ -33,9 +58,9 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 **Acceptance criteria**
 1. A correctly signed, newer, well-formed list is accepted; every kind of bad update is refused: ✅ tested, including a real openssl signature
 2. Build and lint: ✅ (local); CI on a pull request: ⏳
-3. Phone: with no release published, Check for update says it could not reach the server, and nothing breaks: ⏳ product owner to see
-4. Phone: after the first release is published, Check for update installs it, the Blocklist line changes to "Updated list", and a history entry appears: ⏳
-5. Phone: pressing Check again says "already have the newest list": ⏳
+3. Phone: with no release published, Check for update says it could not reach the server, and nothing breaks: ✅ (product owner)
+4. Phone: after the first release is published, Check for update installs it: ✅ (product owner: "it updated and it works"); the Blocklist line and history entry were not reported separately
+5. Phone: pressing Check again says "already have the newest list": ⏳ not reported
 
 **Limits to know:** see D-035. This first update has the same names as the list already in the app (it was built from the same source on the same day), so the phone test proves the path works end to end but won't change what is blocked.
 

@@ -28,6 +28,13 @@ object BlockPresets {
     )
 
     /**
+     * Mozilla's "canary" name (R-02, M3.7). Firefox asks for it before switching on its own encrypted
+     * DNS; "no such domain" tells it that the network filters DNS and it should keep using the
+     * phone's DNS (which is Identity). Always on. Has no other effect.
+     */
+    val DOH_CANARY: List<String> = listOf("use-application-dns.net")
+
+    /**
      * TikTok's app, video and image servers. Not always on: they are blocked only once the user's
      * daily TikTok allowance is used up (M3.3c-1, D-030).
      */

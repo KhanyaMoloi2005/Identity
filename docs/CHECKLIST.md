@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M3.6 signed blocklist updates, branch `m3/signed-updates`: written, 104 filter-core tests pass, lint clean, installed on the phone. Still to do: publish the first signed release (content/blocklists/PUBLISHING.md), phone check of "Check for update", pull request and CI ✅, then merge. Next: 3.7 bypass checklist. M3.1 to M3.5 merged. Not yet checked: custom rules surviving a restart.
+**Current task:** M3.7 bypass tests, branch `m3/bypass-tests`: results written up in docs/bypass-tests.md, canary block added (105 filter-core tests pass). A confirmed bypass was found (Chrome secure DNS on a custom provider); the fix (3.7b) awaits the product owner's decision. Still to do: product owner sets Chrome's secure DNS back to the default; pull request and CI ✅, then merge. M3.1 to M3.6 merged. Not yet checked: custom rules surviving a restart.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
@@ -50,8 +50,9 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
     - [x] 3.3c-2 YouTube Shorts / Instagram Reels only (Accessibility Service, D-031), two switches; phone-tested; PR + CI ✅ then merge
   - [x] 3.4 Staying on: reboot, Always-on guidance, Private DNS warning (phone-tested except the Private DNS card; PR + CI ✅ then merge)
   - [x] 3.5 Observed status + protection history (phone-tested except the Needs-attention reasons; PR + CI ✅ then merge)
-  - [ ] 3.6 Signed list updates (D-035): written; publish the first release, then phone check, PR + CI ✅
-  - [ ] 3.7 Bypass test checklist
+  - [x] 3.6 Signed list updates (D-035): phone-tested; PR + CI ✅ then merge
+  - [x] 3.7 Bypass test checklist (docs/bypass-tests.md; PR + CI ✅ then merge)
+  - [ ] 3.7b Close the public-resolver bypass (Chrome secure DNS): awaiting the product owner's decision
 - [ ] **M4** Accounts, partners, account deletion
 - [ ] **M5** Reports and alerts
 - [ ] **M6** Scripture First alarm + reminders (incl. the focus hour: D-032)
