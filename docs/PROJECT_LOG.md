@@ -8,6 +8,39 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.3c-1 TikTok daily time limit (branch `m3/app-time-limit`)
+
+> ✅ **Verified on a computer:** 69 `:filter-core` unit tests ran (0 failed, 0 skipped): 56 existing plus 13 new. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (product owner, 2026-10-29):** granted both permissions, set 15 minutes; having already used TikTok for longer today, opening TikTok brought up Identity's page and closed TikTok ("it works fine"). ⏳ **Not yet verified:** CI on a pull request; raising the limit (starts tomorrow); midnight reset; the DNS cut-off on its own.
+
+**Task:** let the user give TikTok a daily allowance. When it is used up, cover TikTok with a page and block its servers until tomorrow. Product owner's choices: TikTok is time-limited, not always blocked; a page on top of TikTok; fixed choices only; raising starts tomorrow (D-030).
+
+**What changed and why**
+- `TimeLimit` (`:filter-core`): the six choices, adding up time on screen from usage events, and the change rule (lower now, raise tomorrow). Pure logic, unit-tested.
+- `BlockPresets.TIKTOK`: TikTok's servers, blocked only while the allowance is used up.
+- `TikTokLimit` (app): saves the allowance (atomic file, no backup); reads today's time from Android's usage history; needs Usage access.
+- `TikTokLimitMonitor` + `LimitReachedOverlay` (app): inside the protection service, a light timer checks TikTok; over the limit it shows a full-screen page (verse from the bundled library, Leave button, Back leaves) and tells the service to rebuild the filter with TikTok blocked.
+- Settings: "TikTok time limit" with the two permission steps, six chips, used-today status, a note when a raise is waiting.
+- **New permissions:** `PACKAGE_USAGE_STATS` (Usage access) and `SYSTEM_ALERT_WINDOW` (Display over other apps), both switched on by the user in system Settings.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{TimeLimit.kt (new),BlockPresets.kt}`, `android/filter-core/src/test/kotlin/app/identity/filter/{TimeLimitTest.kt (new),BlockPresetsTest.kt}`, `android/app/src/main/java/app/identity/protection/{TikTokLimit.kt,TikTokLimitMonitor.kt,LimitReachedOverlay.kt (all new),Blocklist.kt,IdentityVpnService.kt}`, `android/app/src/main/java/app/identity/feature/settings/SettingsScreen.kt`, `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/strings.xml`, `docs/decision-log.md` (D-030), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/privacy/data-inventory.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Time adding, edge cases, change rule, TikTok list and look-alikes: ✅ tested
+2. Build and lint: ✅ (local); CI on a pull request: ⏳
+3. Phone: allowance chosen, TikTok covered by the page and closed once over the limit: ✅
+4. Phone: raising the limit starts tomorrow; the limit resets at midnight; TikTok's servers stay blocked after Leave: ⏳ not yet checked
+
+**Limits to know:** only works while protection is on. Cached videos may play briefly after the cut-off. Overlapping screens in TikTok are counted slightly low, never high. The Google Play review of Usage access and Display over other apps is still open (R-03). The 30-day lock is M7. One deprecation warning (`LocalLifecycleOwner`) is left for a later tidy-up.
+
+**How to verify (phone)**
+1. Install the build, protection on. Settings: allow Usage access, then Display over other apps.
+2. Pick a limit. Once TikTok's time today passes it, opening TikTok shows the page; Leave goes Home.
+3. Lower the limit: applies at once. Raise it: the status says it starts tomorrow.
+
+**Next step:** pull request and CI ✅, merge. Then 3.3c-2 (YouTube Shorts and Instagram Reels only) once the product owner decides whether to allow an Accessibility Service (D-030).
+
+---
+
 ## 2026-10-29: M3.3b Your own blocks: websites and words (branch `m3/custom-rules`)
 
 > ✅ **Verified on a computer:** 56 `:filter-core` unit tests ran (0 failed, 0 skipped): 50 existing plus 6 new. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**

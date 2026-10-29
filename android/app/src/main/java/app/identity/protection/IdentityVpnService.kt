@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import app.identity.MainActivity
 import app.identity.R
+import app.identity.filter.BlockPresets
 import app.identity.filter.DnsFilter
 import app.identity.filter.DomainSet
 
@@ -29,6 +30,7 @@ class IdentityVpnService : VpnService() {
 
     private var tunnel: ParcelFileDescriptor? = null
     private var dnsTunnel: DnsTunnel? = null
+    private var tiktokMonitor: TikTokLimitMonitor? = null
 
     // Loaded once per protection session; a rule change only rebuilds the small custom part.
     @Volatile private var bundled: DomainSet? = null
@@ -37,7 +39,12 @@ class IdentityVpnService : VpnService() {
         // Anything other than "stop" or "reload" means start, including Android starting us for Always-on VPN.
         when (intent?.action) {
             ACTION_STOP -> stopProtection()
-            ACTION_RELOAD -> if (tunnel == null) stopSelf() else dnsTunnel?.reload()
+            ACTION_RELOAD -> if (tunnel == null) {
+                stopSelf()
+            } else {
+                dnsTunnel?.reload()
+                tiktokMonitor?.refresh()
+            }
             else -> startProtection()
         }
         // Not restarted automatically yet; restart after a crash or reboot is M3 work.
@@ -71,6 +78,7 @@ class IdentityVpnService : VpnService() {
                 .establish()
             tunnel?.let { fd ->
                 dnsTunnel = DnsTunnel(fd, ::createFilter, ::protect).also { it.start() }
+                tiktokMonitor = TikTokLimitMonitor(this) { dnsTunnel?.reload() }.also { it.start() }
             }
         } catch (e: Exception) {
             // Android refused (e.g. permission revoked a moment ago) or the tunnel couldn't be set up.
@@ -84,7 +92,9 @@ class IdentityVpnService : VpnService() {
     @Synchronized
     private fun createFilter(): DnsFilter {
         val list = bundled ?: Blocklist.load(this).also { bundled = it }
-        return DnsFilter(Blocklist.withCustomRules(list, CustomRulesStore(this).load()))
+        // TikTok's servers are blocked only once today's allowance is used up (D-030).
+        val tiktok = if (TikTokLimit(this).isOver()) DomainSet.of(BlockPresets.TIKTOK) else DomainSet.EMPTY
+        return DnsFilter(Blocklist.withCustomRules(list, CustomRulesStore(this).load(), tiktok))
     }
 
     private fun stopProtection() {
@@ -94,6 +104,8 @@ class IdentityVpnService : VpnService() {
     }
 
     private fun closeTunnel() {
+        tiktokMonitor?.stop()
+        tiktokMonitor = null
         dnsTunnel?.stop()
         dnsTunnel = null
         tunnel?.close()

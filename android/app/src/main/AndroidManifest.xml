@@ -12,6 +12,14 @@
     <!-- M2.2: run the VPN as a foreground service with a visible notification (D-022). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <!--
+      M3.3c-1: read how long TikTok is on screen (Usage access, switched on by the user in system
+      Settings) and show the "limit reached" page over it (Display over other apps, same). D-030.
+    -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- Android 13+: asked for once, so the "protection is on" notification can be shown. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 

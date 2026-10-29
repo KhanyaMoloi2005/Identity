@@ -9,7 +9,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
 | M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
-| M3 | Reliable protection | 🟡 In progress (3.1 to 3.3a merged; 3.3b written) |
+| M3 | Reliable protection | 🟡 In progress (3.1 to 3.3b merged; 3.3c-1 written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -74,7 +74,9 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [x] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) (merged, phone-tested)
 - [x] 3.3a Always block X/Reddit and image-search pictures, no user switches (D-028) (merged, phone-tested)
 - [ ] 3.3b Your own blocks: websites and words in site names; block-only, 10-minute undo (D-029) — written, 56 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 3.3c App blocking: a full-screen "This app is blocked" page with a verse when a blocked app opens (Usage access permission). **Google Play policy check first** (R-03). Chosen over cutting the app's internet (D-029)
+- [ ] 3.3c App blocking (chosen over cutting the app's internet, D-029)
+  - [x] 3.3c-1 TikTok daily time limit: fixed allowances, "time is up" page over TikTok, DNS cut-off, raising starts tomorrow (D-030). Phone-tested by the product owner; the 30-day lock is M7
+  - [ ] 3.3c-2 YouTube Shorts and Instagram Reels only (not the whole apps): needs an Accessibility Service, amending D-012. Awaiting decision; Google Play policy risk (R-03)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
