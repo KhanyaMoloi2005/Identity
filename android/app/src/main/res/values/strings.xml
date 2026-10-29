@@ -87,6 +87,6 @@
     <string name="home_private_dns_body">Private DNS is set to a custom provider, so web lookups go around Identity and nothing is blocked. Open Settings, Connections, More connection settings, Private DNS, and choose Automatic.</string>
     <string name="home_private_dns_button">Open network settings</string>
     <string name="home_always_on_title">Keep protection from being turned off by accident</string>
-    <string name="home_always_on_body">In Android\'s VPN settings, tap the gear next to Identity and turn on Always-on VPN. Also turn on Block connections without VPN if you want no internet at all while protection is off.</string>
+    <string name="home_always_on_body">In Android\'s VPN settings, tap the gear next to Identity and turn on Always-on VPN. Leave Block connections without VPN off: Identity only filters web lookups, so that setting would cut your internet.</string>
     <string name="home_always_on_button">Open VPN settings</string>
 </resources>
