@@ -8,6 +8,19 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: Recorded "uninstall protection" request for M7 (D-024) (branch `docs/m7-uninstall-friction`)
+
+**What changed and why**
+- The product owner asked for a switch that stops the user from ever uninstalling Identity.
+- Android doesn't allow any ordinary app to make itself impossible to uninstall. The closest option is the Device Admin role, which adds a deliberate extra step (turn the role off in Settings, then uninstall). Agreed to plan it as **uninstall friction + tamper alert**: optional, off by default, honest about its limits.
+- Placed in **M7** (commitment controls), because it belongs with the cooldowns and needs real protection (M3) to be worth having. It is gated on a **Google Play policy check** (R-03) before any code.
+
+**Files:** `docs/decision-log.md` (D-024), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`. Docs only.
+
+**Next step:** unchanged. M2.4 phone testing continues.
+
+---
+
 ## 2026-10-29: M2.3 Block a test domain, forward the rest (branch `m2/block-test-domain`)
 
 > ✅ **Verified on a computer:** 32 `:filter-core` unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses: the 18 existing tests plus 14 new ones. ⏳ **Not yet verified:** the `app` module (this laptop has no Android SDK, so CI builds it). 📱 **Phone check pending.**

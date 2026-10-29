@@ -42,7 +42,7 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
 - [ ] **M4** Accounts, partners, account deletion
 - [ ] **M5** Reports and alerts
 - [ ] **M6** Scripture First alarm + reminders
-- [ ] **M7** Commitment controls
+- [ ] **M7** Commitment controls (incl. uninstall friction + tamper alert, after a Play policy check: D-024)
 - [ ] **M8** Hardening + private beta
 
 ---

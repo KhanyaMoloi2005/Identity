@@ -94,6 +94,8 @@ Acceptance criteria for M2 as a whole:
 ## M7: Commitment controls
 - Tightening protection applies immediately; loosening waits through a user-chosen cooldown
 - Optional partner notification of loosening; all limits disclosed before enabling
+- **Uninstall friction + tamper alert (D-024, product owner request 2026-10-29):** optional, off by default. When on, Identity holds the Device Admin role, so the user must first turn that role off in Settings before uninstalling; Identity shows a pause message at that moment, and the partner (if any, M5) is told neutrally that protection was removed or the device stopped checking in. Removing the role can be tied to the loosening cooldown above. **Cannot make uninstalling impossible** (Safe Mode, factory reset and computer uninstall always work); the app says so before it is enabled.
+  - **Gate before building:** check the current Google Play Device Admin and "Device and Network Abuse" policies (R-03). If Play does not allow this use, record the outcome and keep only the tamper alert.
 
 ## M8: Hardening + private beta
 - Security/privacy review, accessibility pass, privacy notice, signed release build
