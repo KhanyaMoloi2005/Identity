@@ -44,7 +44,15 @@ class BlockPresetsTest {
 
     @Test
     fun everyRuleIsAValidDomain() {
-        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH + BlockPresets.TIKTOK) assertEquals(rule, normalizeDomain(rule))
+        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH + BlockPresets.TIKTOK + BlockPresets.DOH_CANARY) assertEquals(rule, normalizeDomain(rule))
+    }
+
+    @Test
+    fun theFirefoxEncryptedDnsCanaryIsBlockedAndNothingAroundItIs() {
+        val canary = DomainMatcher(BlockPresets.DOH_CANARY)
+        assertTrue(canary.isBlocked("use-application-dns.net"))
+        assertFalse(canary.isBlocked("mozilla.org"))
+        assertFalse(canary.isBlocked("application-dns.net"))
     }
 
     @Test

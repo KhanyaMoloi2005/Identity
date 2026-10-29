@@ -26,7 +26,8 @@ internal object Blocklist {
             ?: context.assets.open(ASSET).bufferedReader().useLines { CompactDomainSet.fromLines(it) }
         val list = packed +
             DomainSet.of(BlockPresets.X_AND_REDDIT) +
-            DomainSet.of(BlockPresets.IMAGE_SEARCH)
+            DomainSet.of(BlockPresets.IMAGE_SEARCH) +
+            DomainSet.of(BlockPresets.DOH_CANARY)
         val debuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         return if (debuggable) list + DomainSet.of(DEBUG_TEST_DOMAINS) else list
     }
