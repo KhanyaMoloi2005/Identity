@@ -8,9 +8,37 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: Fix: tell the user when Android turns the Shorts/Reels blocker off (branch `m3/shorts-status`, on top of `m3/staying-on`)
+
+> ✅ **Verified on a computer:** `assembleDebug`, `lintDebug` and all 89 `:filter-core` unit tests pass (no test changes: the change is in the app module). ✅ **Phone (checked over USB and by screenshot, 2026-10-29):** with the service on, `enabled_accessibility_services` listed Identity; after `am force-stop`, the list was **empty**; opening Identity then showed the new Home card "The Shorts and Reels blocker is off" with a button to Accessibility settings, while protection restarted by itself. ⏳ **Not yet verified:** the Settings "Off" line in a screenshot; the cause behind the product owner's original report after a phone restart (see below).
+
+**Report (product owner):** after restarting the phone, the two switches in Identity's settings were on, but "Identity: leave Shorts and Reels" was off in Android's Accessibility settings.
+
+**Finding:** at the time, Android's list of enabled accessibility services was empty while Identity's own switches were still on. The two are separate: the switches choose *which* apps to leave, but they do nothing unless Android's service is on. The likely cause is that **Android turns off an app's accessibility service when the app is force-stopped**: the same force-stop reproduced it exactly. During testing that evening I had force-stopped Identity (about 20:01), which is the most probable cause of what was seen; a restart on its own was not shown to turn it off. Real users can force-stop an app too, and nothing told them the blocker had stopped.
+
+**What changed**
+- `ShortsReelsPrefs.everEnabled`: remembers that Android once connected the service (set in `onServiceConnected`).
+- `ShortsReelsService.isEnabled` / `wasTurnedOffByAndroid`: one shared way to ask whether the service is on right now, and whether it was once on but isn't.
+- Home: a card when the blocker was turned off, with a button to Accessibility settings.
+- Settings: always shows an explicit On or Off line for the service, and says the switches only work once the service is on.
+- No new permission, no new data (one more flag in the existing preferences file).
+
+**Files:** `android/app/src/main/java/app/identity/protection/{ShortsReelsPrefs.kt,ShortsReelsService.kt}`, `android/app/src/main/java/app/identity/feature/home/HomeScreen.kt`, `android/app/src/main/java/app/identity/feature/settings/SettingsScreen.kt`, `android/app/src/main/res/values/strings.xml`, `docs/PROJECT_LOG.md`.
+
+**Limits to know:** Identity can only tell the user; only the user can switch an accessibility service back on. The card appears the next time Identity is opened. A partner alert for this is M5.
+
+**How to verify (phone)**
+1. Settings → YouTube Shorts and Instagram Reels: turn the service on. Status says On.
+2. Force-stop Identity (Settings, Apps, Identity, Force stop), then open it: Home shows "The Shorts and Reels blocker is off".
+3. Tap the button, switch the service back on, return: the card is gone.
+
+**Next step:** merge, then 3.6 (signed blocklist updates) or 3.7 (bypass checklist).
+
+---
+
 ## 2026-10-29: M3.5 Observed status and protection history (branch `m3/staying-on`, with M3.4)
 
-> ✅ **Verified on a computer:** 89 `:filter-core` unit tests ran (0 failed, 0 skipped): 75 existing plus 14 new (status rules, 30-day history). `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (checked over USB and by screenshot, 2026-10-29):** after Private DNS was set back to Automatic, the warning card is gone (product owner saw it appear first); the history card lists turn-ons and "stopped unexpectedly, then restarted" entries with times; after a force-stop, opening the app brought protection back by itself; while the service was waiting for Android to restart it, Home honestly showed **Interrupted**. ⏳ **Not yet verified:** the "Needs attention" status and its reasons on the phone; the partner-facing use (M5); CI on a pull request.
+> ✅ **Verified on a computer:** 89 `:filter-core` unit tests ran (0 failed, 0 skipped): 75 existing plus 14 new (status rules, 30-day history). `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. ✅ **Phone (checked over USB and by screenshot, 2026-10-29):** after Private DNS was set back to Automatic, the warning card is gone (product owner saw it appear first); the history card lists turn-ons and "stopped unexpectedly, then restarted" entries with times; after a force-stop, opening the app brought protection back by itself; while the service was waiting for Android to restart it, Home honestly showed **Interrupted**. ✅ **Phone (product owner, 2026-10-29):** setting Private DNS to a custom provider produced the warning and a "Private DNS is set to a custom provider" history entry (seen on screen at 20:06), and setting it back to Automatic cleared it ("it works properly"). ⏳ **Not yet verified:** the other two "Needs attention" reasons (lookup handler stopped, filtering service unreachable); the partner-facing use (M5); CI on a pull request.
 
 **Task:** Home must show what protection is really doing, and Identity must keep a short, private history of interruptions (D-034).
 
@@ -31,7 +59,7 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 1. Status rules and history rules (30 days, 200 entries, ordering): ✅ tested
 2. Build and lint: ✅ (local); CI on a pull request: ⏳
 3. Phone: history card shows entries; Interrupted shown when the service is not running; opening the app restarts protection: ✅
-4. Phone: Needs attention with a reason when Private DNS is custom (within 20 seconds): ⏳ product owner to test
+4. Phone: Needs attention with a reason when Private DNS is custom: ✅ (product owner)
 
 **Limits to know:** see D-034. The history is on this phone only; nothing is sent anywhere.
 
