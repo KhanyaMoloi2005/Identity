@@ -121,3 +121,10 @@ _Last updated: 2026-10-27._
 **If the tunnel's reader stops** (an unexpected error), DNS stops working while the VPN is on: websites fail to load, rather than load unfiltered. This "fail closed" behaviour suits a protection app; M3 adds detection and recovery.
 **Not covered yet:** IPv6-only DNS, DNS over TCP (rare; used for very large answers), Private DNS set to a specific provider, and browsers using their own secure DNS (risk R-02). These are M2.4 and M3 items.
 **Battery:** the reader thread sleeps until a packet arrives (`poll`), with no timer waking it; M2.4 measures it.
+
+### D-024: Uninstall protection becomes "uninstall friction + tamper alert", in M7 (2026-10-29)
+**Request:** the product owner asked for a switch that prevents the user from ever uninstalling Identity.
+**What Android allows:** no ordinary app can make itself impossible to uninstall. The strongest option is the **Device Admin** role: while it is active, Android refuses to uninstall the app until the user turns the role off in Settings. That is a deliberate extra step, not a lock. Safe Mode, a factory reset and uninstalling from a computer always remain possible. (Full control, "Device Owner", needs a factory-reset phone set up from a computer; not suitable for consumers.) The architecture's "cannot enforce" table already lists uninstalling, and the development rules forbid promising protections that can't be bypassed.
+**Decision:** build an optional, off-by-default **uninstall friction** feature in **M7** (with the cooldowns it belongs with): Device Admin role; a pause message when the user tries to remove it; neutral partner alert when protection is removed (builds on the M5 missed check-in alert); clear disclosure of what it can and cannot do before it's switched on.
+**Gate:** before any code, check the current Google Play policies on Device Admin and on apps that resist uninstalling (R-03). If Play doesn't allow it, keep only the tamper alert and record the result here.
+**Why not M2:** M2 proves DNS filtering works. Friction only matters once there is real protection to keep on.

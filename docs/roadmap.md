@@ -8,7 +8,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 |---|---|---|
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes after M2 |
-| M2 | DNS filtering proof of concept | 🟡 In progress (2.1, 2.2 merged; 2.3 written, awaiting CI + phone check) |
+| M2 | DNS filtering proof of concept | 🟡 In progress (2.1, 2.2 merged; 2.3 phone-tested; 2.4 next) |
 | M3 | Reliable protection | ⚪ Not started |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
@@ -58,8 +58,8 @@ Acceptance criteria for M1 as a whole:
 Built in four slices, one pull request each:
 - [x] 2.1 `:filter-core` module: DNS packet parsing + domain matcher, unit-tested (computer only), merged (PR #8)
 - [x] 2.2 `IdentityVpnService` skeleton: VPN permission, start/stop, visible notification, nothing blocked yet (phone check), merged (PR #9), phone-tested
-- [ ] 2.3 Answer queries: block a hard-coded test domain, forward everything else upstream (phone check) — written, 32 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 2.4 Wi-Fi to mobile data, IPv6 and 24 h battery observation recorded (phone check)
+- [x] 2.3 Answer queries: block a hard-coded test domain, forward everything else upstream (phone check), phone-tested; a custom Private DNS breaks it (→ M3 detection)
+- [ ] 2.4 Wi-Fi to mobile data, IPv6 and 24 h battery observation recorded (phone check); also repeat 2.2/2.3 items not yet reported (Cancel, Settings-off, Android version)
 
 Acceptance criteria for M2 as a whole:
 - `:filter-core` module: DNS packet parsing + domain matcher, unit-tested
@@ -94,6 +94,8 @@ Acceptance criteria for M2 as a whole:
 ## M7: Commitment controls
 - Tightening protection applies immediately; loosening waits through a user-chosen cooldown
 - Optional partner notification of loosening; all limits disclosed before enabling
+- **Uninstall friction + tamper alert (D-024, product owner request 2026-10-29):** optional, off by default. When on, Identity holds the Device Admin role, so the user must first turn that role off in Settings before uninstalling; Identity shows a pause message at that moment, and the partner (if any, M5) is told neutrally that protection was removed or the device stopped checking in. Removing the role can be tied to the loosening cooldown above. **Cannot make uninstalling impossible** (Safe Mode, factory reset and computer uninstall always work); the app says so before it is enabled.
+  - **Gate before building:** check the current Google Play Device Admin and "Device and Network Abuse" policies (R-03). If Play does not allow this use, record the outcome and keep only the tamper alert.
 
 ## M8: Hardening + private beta
 - Security/privacy review, accessibility pass, privacy notice, signed release build
