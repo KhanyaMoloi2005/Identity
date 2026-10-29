@@ -8,6 +8,46 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.2 SafeSearch (branch `m3/safesearch`, stacked on `m3/bundled-blocklist`)
+
+> ✅ **Verified on a computer:** 45 `:filter-core` unit tests ran (0 failed, 0 skipped): 38 existing plus 7 new. Each safe hostname was also resolved through Cloudflare for Families from the laptop: `forcesafesearch.google.com` → 216.239.38.120, `strict.bing.com` → 150.171.27.16, `safe.duckduckgo.com` → 191.235.126.53, `restrictmoderate.youtube.com` → 216.239.38.119. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
+
+**Also recorded**
+- **M3.1 phone feedback:** nothing feels slow with the full list.
+- **Back-button finding:** after visiting another site, pressing Back can show `example.com` again until the page is refreshed. The browser shows the page from its own memory without a new lookup, so DNS filtering can't act. Only pages opened before protection was on are affected. Added to the bypass checklist (3.7).
+- **Idea for later:** the product owner suggested on-screen phrase and explicit-image detection. It needs an Accessibility Service or screen capture, which conflicts with D-012 and the spec, so it is recorded under "Later: ideas to investigate" in the roadmap, to be researched (Play policy, privacy, battery) before any decision.
+
+**Task:** force Google, Bing, DuckDuckGo and YouTube into safe mode, so explicit results (including image search) are filtered and can't be turned back on.
+
+**What changed and why**
+- `SafeSearch` (`:filter-core`): maps each engine's normal hostnames to its official safe-mode hostname (D-027). Google covers all 187 country domains, including `google.co.za`.
+- `DnsPackets.redirectedQuery` / `redirectedResponse`: ask upstream about the safe hostname, then reply to the phone's original question with an alias plus the safe addresses. An upstream answer about any other name is rejected.
+- `DnsFilter`: blocked names stay blocked; search engines get a new `Redirect` decision; everything else is forwarded as before.
+- `DnsTunnel`: the "ask Cloudflare" step is shared by forwarding and SafeSearch.
+- YouTube uses **Moderate** restricted mode (D-027); one line to switch to Strict.
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{SafeSearch.kt (new),DnsPackets.kt,DnsFilter.kt}`, `android/filter-core/src/main/resources/app/identity/filter/google-search-domains.txt` (new), `android/filter-core/src/test/kotlin/app/identity/filter/SafeSearchTest.kt` (new), `android/app/src/main/java/app/identity/protection/DnsTunnel.kt`, `docs/decision-log.md` (D-027), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Engines map to the right safe hostnames; Gmail/Maps and look-alikes untouched: ✅ tested
+2. Redirected reply carries the phone's own question, an alias and the safe address; wrong upstream answers rejected; IPv6 lookups redirected too; blocking still wins: ✅ tested
+3. Safe hostnames resolve through Cloudflare for Families: ✅ checked from the laptop
+4. CI green: ⏳ pending push
+5. Phone: Google SafeSearch locked on; Bing strict; YouTube Restricted Mode on and can't be turned off; normal search and Gmail work: 📱 pending
+
+**Limits to know:** other search engines aren't covered (D-027). Browsers and apps remember lookups for a few minutes, so changes show after a short wait or a restart of the app. Explicit content inside social apps isn't affected.
+
+**How to verify (phone)**
+1. Install the CI build. Turn protection **off and on again**, and **force-stop Chrome and YouTube** (Settings → Apps → Force stop) so they forget old lookups.
+2. Google: search anything, open the settings (☰ or your profile picture → SafeSearch). It should say SafeSearch is on and **locked** (e.g. "your network has turned on SafeSearch").
+3. YouTube app or site: Settings → General → **Restricted Mode** should be on, with a message that it's enabled by the network.
+4. Bing (bing.com) and DuckDuckGo: their safe-search setting should show strict and not be changeable.
+5. Gmail and Google Maps still work.
+
+**Next step:** after CI ✅ and the phone check, M3.3: custom allow/block rules.
+
+---
+
 ## 2026-10-29: M3.1 Bundled blocklist (branch `m3/bundled-blocklist`)
 
 > ✅ **Verified on a computer:** 38 `:filter-core` unit tests ran (0 failed, 0 skipped) with Gradle 8.9 and Java 17, the same versions CI uses: 32 existing plus 6 new. A one-off local check (not committed; it needs the real file path) loaded the real bundled list: 92,127 entries, about 2.4 MB of memory, 0.12 s to load, about 2 µs per lookup. Every entry and its `www.` subdomain was blocked; wikipedia.org, google.com, instagram.com, youtube.com, bible.com and whatsapp.net were not. ⏳ **Not yet verified:** the `app` module (CI). 📱 **Phone check pending.**
