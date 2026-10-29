@@ -79,7 +79,7 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
   - [x] 3.3c-2 YouTube Shorts and Instagram Reels only (not the whole apps): an Accessibility Service sends the user back to the app's home screen or closes the app; they can open it again (D-031). Two switches, one per app. Phone-tested by the product owner. Google Play policy risk (R-03)
 - [x] 3.4 Staying on: restart after reboot, update or Android ending the service; Always-on VPN guidance; custom Private DNS warning (M2.3 finding). Phone-tested except the Private DNS card
 - [x] 3.5 Observed status on Home (Protected / Needs attention with reasons / Interrupted / Off); protection history stored locally, deleted after 30 days; protection restarts when the app is opened (D-034). Phone-tested except the Needs-attention reasons
-- [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
+- [ ] 3.6 Signed, versioned blocklist updates (ECDSA P-256 instead of Ed25519, D-035; keep the last good list on failure). Written; 104 filter-core tests pass; awaiting the first published release and the phone check
 - [ ] 3.7 Bypass test checklist documented with results (include: a page opened before protection was on can reappear through the browser's Back button until refreshed, found 2026-10-29)
 
 ## Later: ideas to investigate (not scheduled)

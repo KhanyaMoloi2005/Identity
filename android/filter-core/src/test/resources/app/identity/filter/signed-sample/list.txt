@@ -1,0 +1,6 @@
+# Test list for the signing check. Not a real blocklist.
+alpha.example
+beta.example
+gamma.example
+delta.example
+epsilon.example

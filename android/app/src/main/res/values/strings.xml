@@ -101,4 +101,15 @@
     <string name="history_turned_off">Protection turned off</string>
     <string name="history_turned_off_in_android">Protection turned off in Android settings or by another VPN</string>
     <string name="history_ended_unexpectedly">Protection stopped unexpectedly, then restarted (cause unknown)</string>
+    <string name="settings_blocklist_heading">Blocklist</string>
+    <string name="settings_blocklist_bundled">The list that came with the app: %1$s sites.</string>
+    <string name="settings_blocklist_updated">Updated list: %1$s sites (made %2$s).</string>
+    <string name="settings_blocklist_check">Check for update</string>
+    <string name="settings_blocklist_checking">Checking...</string>
+    <string name="settings_blocklist_result_updated">Updated to a newer list.</string>
+    <string name="settings_blocklist_result_current">You already have the newest list.</string>
+    <string name="settings_blocklist_result_refused">A list was found but refused, because it did not pass the safety checks. The current list stays.</string>
+    <string name="settings_blocklist_result_offline">Could not reach the update server. Check your internet connection.</string>
+    <string name="history_blocklist_updated">Blocklist updated</string>
+    <string name="history_blocklist_failed">Blocklist update failed or was refused</string>
 </resources>

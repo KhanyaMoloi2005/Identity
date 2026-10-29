@@ -9,6 +9,8 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.ParcelFileDescriptor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +22,8 @@ import app.identity.filter.DnsFilter
 import app.identity.filter.DomainSet
 import app.identity.filter.InterruptionLog
 import app.identity.filter.ProtectionHealth
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * Identity's on-device, DNS-only VPN.
@@ -34,6 +38,9 @@ class IdentityVpnService : VpnService() {
     private var dnsTunnel: DnsTunnel? = null
     private var tiktokMonitor: TikTokLimitMonitor? = null
     private var healthMonitor: HealthMonitor? = null
+    private var updateExecutor: ExecutorService? = null
+    private val updateHandler = Handler(Looper.getMainLooper())
+    private val updateCheck = Runnable { maybeCheckForUpdate() }
 
     // Loaded once per protection session; a rule change only rebuilds the small custom part.
     @Volatile private var bundled: DomainSet? = null
@@ -43,6 +50,10 @@ class IdentityVpnService : VpnService() {
         // restarting us after ending the service (null intent), or Always-on VPN.
         when (intent?.action) {
             ACTION_STOP -> stopProtection()
+            ACTION_BLOCKLIST_CHANGED -> if (tunnel != null) {
+                bundled = null // read the list again, including the newly installed update
+                dnsTunnel?.reload()
+            }
             ACTION_RELOAD -> if (tunnel == null) {
                 stopSelf()
             } else {
@@ -109,6 +120,8 @@ class IdentityVpnService : VpnService() {
             if (choice.sessionOpen) InterruptionStore(this).record(InterruptionLog.Kind.ENDED_UNEXPECTEDLY)
             choice.sessionOpen = true
             healthMonitor = HealthMonitor(this, { dnsTunnel }) { report -> health = report }.also { it.start() }
+            updateExecutor = Executors.newSingleThreadExecutor()
+            updateHandler.postDelayed(updateCheck, FIRST_UPDATE_CHECK_MS)
         }
     }
 
@@ -130,7 +143,27 @@ class IdentityVpnService : VpnService() {
         stopSelf()
     }
 
+    /** Once a day at most, while protection runs: look for a newer signed blocklist (M3.6). The timer doesn't wake a sleeping phone. */
+    private fun maybeCheckForUpdate() {
+        val executor = updateExecutor ?: return
+        val due = System.currentTimeMillis() - ProtectionPrefs(this).lastUpdateCheckMs >= UPDATE_INTERVAL_MS
+        if (due) {
+            executor.execute {
+                if (BlocklistUpdater(this).checkNow() is BlocklistUpdater.Outcome.Updated) {
+                    updateHandler.post {
+                        bundled = null
+                        dnsTunnel?.reload()
+                    }
+                }
+            }
+        }
+        updateHandler.postDelayed(updateCheck, UPDATE_RECHECK_MS)
+    }
+
     private fun closeTunnel() {
+        updateHandler.removeCallbacks(updateCheck)
+        updateExecutor?.shutdownNow()
+        updateExecutor = null
         healthMonitor?.stop()
         healthMonitor = null
         tiktokMonitor?.stop()
@@ -178,6 +211,10 @@ class IdentityVpnService : VpnService() {
     companion object {
         private const val ACTION_STOP = "app.identity.protection.STOP"
         private const val ACTION_RELOAD = "app.identity.protection.RELOAD"
+        private const val ACTION_BLOCKLIST_CHANGED = "app.identity.protection.BLOCKLIST_CHANGED"
+        private const val FIRST_UPDATE_CHECK_MS = 2 * 60 * 1000L
+        private const val UPDATE_RECHECK_MS = 6 * 60 * 60 * 1000L
+        private const val UPDATE_INTERVAL_MS = 24 * 60 * 60 * 1000L
         private const val CHANNEL_ID = "protection"
         private const val NOTIFICATION_ID = 1
 
@@ -218,6 +255,11 @@ class IdentityVpnService : VpnService() {
             if (isRunning || !ProtectionPrefs(context).wantsProtection) return
             if (prepare(context) != null) return // VPN permission gone: only the user can grant it again
             start(context, byUser = false)
+        }
+
+        /** Tells running protection that a new blocklist was installed (from the Settings button). */
+        fun blocklistChanged(context: Context) {
+            if (isRunning) context.startService(Intent(context, IdentityVpnService::class.java).setAction(ACTION_BLOCKLIST_CHANGED))
         }
 
         /** Applies changed custom rules to running protection. Does nothing when protection is off. */

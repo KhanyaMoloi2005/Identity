@@ -21,12 +21,33 @@ internal object Blocklist {
 
     /** Reads and packs the list (a fraction of a second). Call off the main thread. */
     fun load(context: Context): DomainSet {
-        val list = context.assets.open(ASSET).bufferedReader().useLines { CompactDomainSet.fromLines(it) } +
+        // A downloaded update that still passes its signature check wins over the list inside the app (M3.6).
+        val packed: DomainSet = BlocklistStore(context).installed()?.domains
+            ?: context.assets.open(ASSET).bufferedReader().useLines { CompactDomainSet.fromLines(it) }
+        val list = packed +
             DomainSet.of(BlockPresets.X_AND_REDDIT) +
             DomainSet.of(BlockPresets.IMAGE_SEARCH)
         val debuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         return if (debuggable) list + DomainSet.of(DEBUG_TEST_DOMAINS) else list
     }
+
+    /** How many names the list inside the app has, read from its header (0 if the header is missing). */
+    fun bundledEntries(context: Context): Int =
+        context.assets.open(ASSET).bufferedReader().useLines { lines ->
+            lines.take(12).firstOrNull { it.startsWith("# Entries:") }?.substringAfter(':')?.trim()?.toIntOrNull() ?: 0
+        }
+
+    /** What the lists in use are, for the Settings screen. */
+    fun info(context: Context): ListInfo {
+        val installed = BlocklistStore(context).installed()
+        return if (installed != null) {
+            ListInfo(installed.manifest.entries, updated = true, generated = installed.manifest.generated)
+        } else {
+            ListInfo(bundledEntries(context), updated = false, generated = null)
+        }
+    }
+
+    class ListInfo(val entries: Int, val updated: Boolean, val generated: String?)
 
     /** The bundled list plus the user's own sites and words. Custom rules never block [CustomRules.NEVER_BLOCKED]. */
     fun withCustomRules(

@@ -217,6 +217,8 @@ private fun eventText(kind: InterruptionLog.Kind): Int = when (kind) {
     InterruptionLog.Kind.DNS_HANDLER_STOPPED -> R.string.home_problem_dns_stopped
     InterruptionLog.Kind.FILTER_SERVICE_UNREACHABLE -> R.string.home_problem_unreachable
     InterruptionLog.Kind.PRIVATE_DNS_BYPASS -> R.string.home_problem_private_dns
+    InterruptionLog.Kind.BLOCKLIST_UPDATED -> R.string.history_blocklist_updated
+    InterruptionLog.Kind.BLOCKLIST_UPDATE_FAILED -> R.string.history_blocklist_failed
 }
 
 /** The last few things protection did, newest first. Kept on the phone for 30 days (M3.5). */

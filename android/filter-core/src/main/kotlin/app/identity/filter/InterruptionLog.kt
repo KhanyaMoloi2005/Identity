@@ -20,6 +20,12 @@ object InterruptionLog {
         DNS_HANDLER_STOPPED,
         FILTER_SERVICE_UNREACHABLE,
         PRIVATE_DNS_BYPASS,
+
+        /** A signed blocklist update was installed (M3.6). */
+        BLOCKLIST_UPDATED,
+
+        /** An update was refused (bad signature, older, damaged) or could not be downloaded several times in a row. */
+        BLOCKLIST_UPDATE_FAILED,
     }
 
     data class Event(val timeMs: Long, val kind: Kind)
@@ -30,8 +36,10 @@ object InterruptionLog {
     fun prune(events: List<Event>, nowMs: Long): List<Event> =
         events.filter { nowMs - it.timeMs < RETENTION_MS }.sortedBy { it.timeMs }.takeLast(MAX_EVENTS)
 
-    /** The kinds that mean protection stopped working, as opposed to the user's own on/off. */
-    fun isInterruption(kind: Kind): Boolean = kind != Kind.TURNED_ON && kind != Kind.TURNED_OFF
+    /** The kinds that mean protection stopped working, as opposed to the user's own on/off and routine list updates. */
+    fun isInterruption(kind: Kind): Boolean = kind !in NOT_INTERRUPTIONS
+
+    private val NOT_INTERRUPTIONS = setOf(Kind.TURNED_ON, Kind.TURNED_OFF, Kind.BLOCKLIST_UPDATED, Kind.BLOCKLIST_UPDATE_FAILED)
 
     fun of(problem: ProtectionHealth.Problem): Kind = when (problem) {
         ProtectionHealth.Problem.DNS_HANDLER_STOPPED -> Kind.DNS_HANDLER_STOPPED
