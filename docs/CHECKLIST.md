@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** M2.1 filter-core — written, 18 tests pass locally; awaiting CI ✅ and merge. M1.2 awaits its CI check + verse review (in progress).
+**Current task:** M2.2 VPN service skeleton — written; awaiting CI ✅, then a phone check at home. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
 
 ---
@@ -32,9 +32,9 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [ ] 1.5 Saved verses + private reflections
   - [ ] 1.6 Onboarding + privacy disclosures
   - [ ] M1 acceptance: works in airplane mode, no internet permission, TalkBack labels, verse tests pass
-- [ ] **M2** DNS filtering proof of concept ← next
-  - [ ] 2.1 `:filter-core`: DNS parsing + domain matcher, unit-tested (computer only) — written; CI ✅ then merge
-  - [ ] 2.2 VPN service skeleton: permission, start/stop, notification (phone check)
+- [ ] **M2** DNS filtering proof of concept ← in progress
+  - [x] 2.1 `:filter-core`: DNS parsing + domain matcher, unit-tested (computer only), merged (PR #8)
+  - [ ] 2.2 VPN service skeleton: permission, start/stop, notification (phone check) — written; CI ✅ then phone
   - [ ] 2.3 Block a test domain, forward the rest (phone check)
   - [ ] 2.4 Network switching, IPv6, 24 h battery (phone check)
   - [ ] M2 acceptance: test domain blocked in Chrome, normal browsing works

@@ -8,6 +8,42 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M2.2 VPN service skeleton (branch `m2/vpn-skeleton`)
+
+> ⏳ **Not yet verified:** this laptop has no Android SDK, so the app was **not built here**. CI (GitHub Actions) builds it and runs lint and the unit tests once the branch is pushed. 📱 **Phone check pending:** the product owner will test at home. Nothing below has been run on a device.
+
+**Task:** Identity can switch its VPN on and off with the user's permission and shows a notification while it's on. Nothing is blocked and no traffic goes through the VPN yet.
+
+**What changed and why**
+- New `IdentityVpnService` (in `protection/`). It creates a tunnel with an address but **no routes and no DNS server**, so browsing works exactly as before. Sending DNS into the tunnel before we can answer it (M2.3) would break every website.
+- It runs as a foreground service with a silent "Identity protection is on" notification. Tapping it opens the app. Type `systemExempted` on Android 14+ (D-022).
+- It stops cleanly when the user taps Turn off, turns it off in system Settings, or another VPN app takes over (`onRevoke`). If Android refuses to start it, it stops instead of crashing.
+- Home card: **Turn on** asks for the notification permission (Android 13+, once), then shows Android's own "Connection request" VPN dialog. Only "OK" starts it. Status reads On/Off; **Turn off** stops it.
+- **New permissions:** `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SYSTEM_EXEMPTED`, `POST_NOTIFICATIONS`. **Still no internet permission.** The service is not exported and is protected by `BIND_VPN_SERVICE`, so other apps can't control it.
+- New status-bar icon `ic_stat_protection` (a filled version of the Home shield).
+
+**Files:** `android/app/src/main/java/app/identity/protection/IdentityVpnService.kt` (new), `android/app/src/main/java/app/identity/feature/home/HomeScreen.kt`, `android/app/src/main/AndroidManifest.xml`, `android/app/src/main/res/values/strings.xml`, `android/app/src/main/res/drawable/ic_stat_protection.xml` (new), `docs/decision-log.md` (D-022), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**First CI run: ❌ lint, fixed.** The code compiled and all unit tests passed. Lint failed with 1 error: it believes the `systemExempted` service type also needs an exact-alarm permission. Android also accepts the user's VPN approval instead, which lint can't see because it is given at run time. Rather than add an alarm permission we don't use, that single check is switched off on the VPN service only, with a comment (D-022). The phone test confirms whether Android agrees; if it refuses, the service stops cleanly instead of crashing.
+
+**Acceptance criteria**
+1. CI green (build, lint, unit tests): ⏳ re-run pending (first run: compile ✅, tests ✅, lint ❌ fixed)
+2. Turn on → Android's VPN dialog → OK → status "On", key icon in the status bar, notification shown: 📱 pending
+3. Cancel in the dialog → stays "Off", no crash: 📱 pending
+4. While on, websites in Chrome load normally: 📱 pending
+5. Turn off → status "Off", notification and key icon gone: 📱 pending
+6. Turning it off in Settings → Network → VPN also stops it, and the app shows "Off" when reopened: 📱 pending
+
+**Limits to know:** it doesn't restart after a reboot or if Android ends the app (M3). The On/Off status is kept in memory only, so after Android ends the app it shows "Off". If the user refuses the notification permission, Android hides the notification, but the VPN key icon still shows. On Android 14+ users can swipe the notification away; the key icon stays.
+
+**How to verify**
+1. Push the branch and open a pull request. GitHub → Actions → "Android build" must be ✅. If ❌, paste the red lines to Claude.
+2. At home: download `identity-debug-apk` from that run, unzip it, install the APK, and walk through acceptance criteria 2 to 6. Note your Android version.
+
+**Next step:** after CI ✅ and the phone check, M2.3: point DNS at the tunnel, block one hard-coded test domain, forward everything else (this adds the internet permission).
+
+---
+
 ## 2026-10-28: M2.1 `:filter-core`: DNS parsing and domain matcher (branch `m2/filter-core`)
 
 > ✅ **Verified on a computer:** 18 unit tests ran (0 failed, 0 skipped) using Gradle 8.9 and Java 17, the same versions CI uses. ⏳ **Not yet verified:** the full-project CI run, because the module was tested in a scratch copy (this laptop has no Android SDK, so the `app` module could not be built here). No phone check is needed for this slice.
