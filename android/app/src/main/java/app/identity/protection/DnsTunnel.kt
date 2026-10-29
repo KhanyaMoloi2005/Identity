@@ -8,7 +8,6 @@ import android.system.StructPollfd
 import app.identity.filter.DnsDecision
 import app.identity.filter.DnsFilter
 import app.identity.filter.IpPackets
-import app.identity.filter.UdpPacket
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -21,7 +20,8 @@ import java.util.concurrent.RejectedExecutionException
 
 /**
  * Handles the DNS queries that arrive through the tunnel: blocked names get "no such domain"
- * straight away; the rest are forwarded to the upstream resolver (D-003) and the answer is passed back.
+ * straight away; search engines are redirected to their safe mode (D-027); the rest are forwarded
+ * to the upstream resolver (D-003) and the answer is passed back.
  *
  * One thread reads the tunnel and sleeps (no polling timer) until a packet or [stop] arrives.
  * Forwarding happens on a small thread pool so one slow answer doesn't hold up the others.
@@ -103,33 +103,45 @@ internal class DnsTunnel(
         if (query.destinationPort != DNS_PORT) return
         when (val decision = filter.decide(query.payload)) {
             is DnsDecision.Answer -> write(query.reply(decision.response))
-            DnsDecision.Forward -> try {
-                forwarders.execute { forward(query) }
-            } catch (e: RejectedExecutionException) {
-                // Stopping; drop it.
+            DnsDecision.Forward -> inBackground {
+                askUpstream(query.payload)?.let { write(query.reply(it)) }
+            }
+            is DnsDecision.Redirect -> inBackground {
+                askUpstream(decision.query)?.let(decision::answer)?.let { write(query.reply(it)) }
             }
             DnsDecision.Drop -> Unit
         }
     }
 
-    /** Asks each upstream server in turn; if none answers in time, the app that asked retries by itself. */
-    private fun forward(query: UdpPacket) {
+    private fun inBackground(work: () -> Unit) {
+        try {
+            forwarders.execute(work)
+        } catch (e: RejectedExecutionException) {
+            // Stopping; drop it.
+        }
+    }
+
+    /**
+     * Asks each upstream server in turn and returns the first answer. Null if none answers in time;
+     * the app that asked then retries by itself.
+     */
+    private fun askUpstream(message: ByteArray): ByteArray? {
         for (server in UPSTREAM_SERVERS) {
             try {
                 DatagramSocket().use { socket ->
-                    if (!protect(socket)) return
+                    if (!protect(socket)) return null
                     socket.soTimeout = UPSTREAM_TIMEOUT_MS
                     socket.connect(server) // only accept answers from this server
-                    socket.send(DatagramPacket(query.payload, query.payload.size))
+                    socket.send(DatagramPacket(message, message.size))
                     val answer = DatagramPacket(ByteArray(IpPackets.MAX_UDP_PAYLOAD), IpPackets.MAX_UDP_PAYLOAD)
                     socket.receive(answer)
-                    write(query.reply(answer.data.copyOf(answer.length)))
-                    return
+                    return answer.data.copyOf(answer.length)
                 }
             } catch (e: IOException) {
                 // Timed out or no network: try the next server.
             }
         }
+        return null
     }
 
     private fun write(packet: ByteArray) {

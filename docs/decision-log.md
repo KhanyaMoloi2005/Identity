@@ -140,3 +140,12 @@ _Last updated: 2026-10-27._
 
 ### D-026: M3 next; the paused Scripture screens wait until functionality is done (2026-10-29)
 **Decision:** after M2, continue with M3 (reliable protection) and the other functionality milestones. M1.3 to M1.6 (Scripture screens) stay paused until the functionality is done, and then everything is put together. Product owner's call, extending D-020.
+
+### D-027: How SafeSearch is enforced (M3.2, 2026-10-29)
+**Decision:** when a lookup asks for a search engine, Identity asks upstream about that engine's official safe-mode hostname instead and replies with an alias ("this name is that one") plus the safe hostname's addresses. The browser keeps talking to the engine normally; results come back filtered, and the setting can't be switched off on the phone. This is the method each engine documents for network administrators.
+- **Google Search** → `forcesafesearch.google.com`, for `google.<domain>` and `www.google.<domain>` on all 187 of Google's country domains (bundled from google.com/supported_domains). Gmail, Maps and other Google services are untouched.
+- **Bing** → `strict.bing.com`. **DuckDuckGo** → `safe.duckduckgo.com`.
+- **YouTube** → `restrictmoderate.youtube.com` (**Moderate** restricted mode) for the website, the app's API hosts and youtube-nocookie. Claude's default: Strict hides a lot of ordinary videos, which tempts users to switch protection off. Can be changed to Strict in one line, or later offered as a setting.
+**Order:** a blocked name stays blocked (NXDOMAIN) even if it's a search engine; otherwise SafeSearch applies; otherwise the query is forwarded.
+**Safety:** an upstream answer that isn't about the safe hostname is rejected.
+**Not covered:** other search engines (e.g. Brave Search, Yandex, Ecosia's own pages) and image searches inside other apps. Listed for the bypass checklist (3.7).

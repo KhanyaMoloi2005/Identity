@@ -9,7 +9,7 @@ Each milestone ends with something you can run and verify on a phone, plus a sma
 | M0 | Foundations | ✅ Complete (2026-10-27) |
 | M1 | App shell + offline Scripture | ⏸ Paused after 1.2 (D-020); resumes once functionality is done (D-026) |
 | M2 | DNS filtering proof of concept | 🟡 2.1 to 2.3 done; 2.4 battery observation in progress |
-| M3 | Reliable protection | 🟡 In progress (3.1 written) |
+| M3 | Reliable protection | 🟡 In progress (3.1, 3.2 written) |
 | M4 | Accounts, partners, account deletion | ⚪ Not started |
 | M5 | Reports and alerts | ⚪ Not started |
 | M6 | Scripture First alarm + reminders | ⚪ Not started |
@@ -71,12 +71,15 @@ Acceptance criteria for M2 as a whole:
 
 Built in seven slices, one pull request each (order agreed 2026-10-29):
 - [ ] 3.1 Bundled blocklist: HaGeZi NSFW (D-025), packed for low memory, replaces the test domain — written, 38 filter-core tests pass locally; awaiting CI ✅ and phone check
-- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode
+- [ ] 3.2 SafeSearch: Google, Bing, DuckDuckGo, YouTube forced into safe mode (D-027) — written, 45 filter-core tests pass locally; awaiting CI ✅ and phone check
 - [ ] 3.3 Custom allow/block rules, applied predictably (allow wins)
 - [ ] 3.4 Staying on: restart after reboot, Always-on VPN detection, custom Private DNS detection + guidance (M2.3 finding)
 - [ ] 3.5 Observed status on Home; interruption events stored locally, deleted after 30 days
 - [ ] 3.6 Signed, versioned blocklist updates (Ed25519; keep the last good list on failure)
-- [ ] 3.7 Bypass test checklist documented with results
+- [ ] 3.7 Bypass test checklist documented with results (include: a page opened before protection was on can reappear through the browser's Back button until refreshed, found 2026-10-29)
+
+## Later: ideas to investigate (not scheduled)
+- **On-device content detection** (product owner idea, 2026-10-29): close a page or app for a few seconds when certain phrases appear on screen, and detect explicit images on screen. Possible only with an Accessibility Service and/or screen capture plus an on-device image model, which **conflicts with D-012 and the spec** (no accessibility service, no screenshots). Before deciding, research: current Google Play policy on Accessibility for blocking apps (R-03), fully on-device and opt-in design, battery cost, false positives, model licences. Then the product owner decides whether to change D-012.
 
 ## M4: Accounts and partners (ACC-01, PRIV-01)
 - Sign-up / sign-in; device registration
