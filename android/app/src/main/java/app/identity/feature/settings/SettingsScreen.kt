@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.identity.filter.CustomRules
 import app.identity.filter.TimeLimit
+import app.identity.protection.Blocklist
+import app.identity.protection.BlocklistUpdater
 import app.identity.protection.CustomRule
 import app.identity.protection.CustomRulesStore
 import app.identity.protection.IdentityVpnService
@@ -49,6 +53,9 @@ import app.identity.protection.ShortsReelsPrefs
 import app.identity.protection.ShortsReelsService
 import app.identity.protection.TikTokLimit
 import app.identity.ui.components.ScreenColumn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Settings tab. Explains what protection always blocks (D-028; no switches) and lets the user add
@@ -78,6 +85,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+
+        BlocklistSection()
 
         TikTokLimitSection()
 
@@ -391,4 +400,51 @@ private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = onChange)
     }
+}
+
+/**
+ * Which blocklist is in use, and a button to look for a newer signed one now (M3.6, D-035). Updates
+ * also happen by themselves once a day while protection is on.
+ */
+@Composable
+private fun BlocklistSection() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var info by remember { mutableStateOf<Blocklist.ListInfo?>(null) }
+    var checking by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(Unit) { info = withContext(Dispatchers.IO) { Blocklist.info(context) } }
+
+    SectionHeading(stringResource(R.string.settings_blocklist_heading))
+    info?.let {
+        Text(
+            text = stringResource(
+                if (it.updated) R.string.settings_blocklist_updated else R.string.settings_blocklist_bundled,
+                java.text.NumberFormat.getIntegerInstance().format(it.entries),
+                it.generated?.take(10) ?: "",
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+    message?.let { Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    Button(
+        enabled = !checking,
+        onClick = {
+            checking = true
+            message = R.string.settings_blocklist_checking
+            scope.launch {
+                val outcome = withContext(Dispatchers.IO) { BlocklistUpdater(context).checkNow() }
+                if (outcome is BlocklistUpdater.Outcome.Updated) IdentityVpnService.blocklistChanged(context)
+                info = withContext(Dispatchers.IO) { Blocklist.info(context) }
+                message = when (outcome) {
+                    is BlocklistUpdater.Outcome.Updated -> R.string.settings_blocklist_result_updated
+                    BlocklistUpdater.Outcome.UpToDate -> R.string.settings_blocklist_result_current
+                    is BlocklistUpdater.Outcome.Refused -> R.string.settings_blocklist_result_refused
+                    BlocklistUpdater.Outcome.NoConnection -> R.string.settings_blocklist_result_offline
+                }
+                checking = false
+            }
+        },
+    ) { Text(stringResource(R.string.settings_blocklist_check)) }
 }

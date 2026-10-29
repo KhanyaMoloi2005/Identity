@@ -39,10 +39,10 @@ class InterruptionLogTest {
     }
 
     @Test
-    fun theUsersOwnOnAndOffAreNotInterruptions() {
-        assertFalse(InterruptionLog.isInterruption(Kind.TURNED_ON))
-        assertFalse(InterruptionLog.isInterruption(Kind.TURNED_OFF))
-        for (kind in Kind.values().filter { it != Kind.TURNED_ON && it != Kind.TURNED_OFF }) assertTrue(kind.name, InterruptionLog.isInterruption(kind))
+    fun theUsersOwnOnAndOffAndListUpdatesAreNotInterruptions() {
+        val routine = setOf(Kind.TURNED_ON, Kind.TURNED_OFF, Kind.BLOCKLIST_UPDATED, Kind.BLOCKLIST_UPDATE_FAILED)
+        for (kind in routine) assertFalse(kind.name, InterruptionLog.isInterruption(kind))
+        for (kind in Kind.values().filter { it !in routine }) assertTrue(kind.name, InterruptionLog.isInterruption(kind))
     }
 
     @Test

@@ -6,6 +6,9 @@ It downloads the list, keeps only plain domain names (lower-case, one per line, 
 no duplicates) and writes android/app/src/main/assets/blocklist/nsfw.txt with a header that
 credits the source and its licence, as the GPL-3.0 requires. The app re-checks every line when it
 loads the file, so a damaged file can't add strange entries.
+
+publish_update.py reuses fetch() and render() so the bundled list and the signed updates are built
+the same way.
 """
 
 import datetime
@@ -21,11 +24,8 @@ DOMAIN = re.compile(r"^[a-z0-9_-]+(\.[a-z0-9_-]+)*$")
 MINIMUM_ENTRIES = 50_000
 
 
-def main() -> int:
-    if not pathlib.Path("android").is_dir():
-        print("Run this from the project root (the folder that contains 'android').")
-        return 1
-
+def fetch():
+    """Downloads HaGeZi's list. Returns (source_version, set_of_names)."""
     with urllib.request.urlopen(SOURCE_URL, timeout=60) as response:
         text = response.read().decode("utf-8")
 
@@ -40,12 +40,11 @@ def main() -> int:
         name = line.lower().rstrip(".")
         if DOMAIN.match(name):
             names.add(name)
+    return version, names
 
-    if len(names) < MINIMUM_ENTRIES:
-        print(f"Only {len(names)} entries; expected at least {MINIMUM_ENTRIES}. Nothing written.")
-        return 1
 
-    today = datetime.date.today().isoformat()
+def render(version, names, today):
+    """The text of the list file, with the header the GPL-3.0 requires."""
     header = [
         "# HaGeZi's NSFW blocklist, as bundled in Identity.",
         "# Source: https://github.com/hagezi/dns-blocklists (wildcard/nsfw-onlydomains.txt)",
@@ -55,8 +54,21 @@ def main() -> int:
         "# Each name also blocks its subdomains.",
         f"# Entries: {len(names)}",
     ]
+    return "\n".join(header + sorted(names)) + "\n"
+
+
+def main() -> int:
+    if not pathlib.Path("android").is_dir():
+        print("Run this from the project root (the folder that contains 'android').")
+        return 1
+
+    version, names = fetch()
+    if len(names) < MINIMUM_ENTRIES:
+        print(f"Only {len(names)} entries; expected at least {MINIMUM_ENTRIES}. Nothing written.")
+        return 1
+
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text("\n".join(header + sorted(names)) + "\n", encoding="utf-8", newline="\n")
+    OUTPUT.write_text(render(version, names, datetime.date.today().isoformat()), encoding="utf-8", newline="\n")
     print(f"Wrote {len(names)} domains (source version {version}) to {OUTPUT}")
     return 0
 

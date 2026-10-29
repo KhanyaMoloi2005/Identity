@@ -10,3 +10,5 @@
 *.ttf binary
 *.otf binary
 *.jar binary
+# Signed files: the signature covers the exact bytes, so never convert them.
+android/filter-core/src/test/resources/**/signed-sample/* -text

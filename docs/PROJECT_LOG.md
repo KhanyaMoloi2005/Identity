@@ -8,6 +8,46 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-29: M3.6 Signed blocklist updates (branch `m3/signed-updates`)
+
+> ✅ **Verified on a computer:** 104 `:filter-core` unit tests ran (0 failed, 0 skipped): 89 existing plus 15 new. They include a list signed with the product owner's **real** private key by `openssl`, accepted by the app's Java code; the same list refused after one changed byte; and refusals for a wrong key, a tampered manifest, junk signatures, no key, an old or equal version, an oversized list, a hash or entry-count mismatch, too few names, and a list that shrinks by more than half. `assembleDebug` and `lintDebug` pass with Gradle 8.9 and Java 17, built and installed from the terminal. `publish_update.py` ran for real: it built version `202610291841` (92,127 names), signed it, and verified its own signature. ⏳ **Not yet verified:** the first published release and the phone downloading and installing it; the refusal path on the phone; the daily schedule; CI on a pull request.
+
+**Task:** let the blocklist update itself safely (R-05): signed, versioned, and the last good list kept on any failure.
+
+**Setup done in this slice:** the signing key pair was generated on the product owner's laptop (outside the repo; the product owner backed it up), the repo was scanned for secrets (none) and made public by the product owner.
+
+**What changed and why**
+- `BlocklistUpdate` (`:filter-core`): the acceptance rules above, and the public key. Pure logic, tested.
+- `BlocklistStore` (app): keeps the installed update in three files, written to a side folder first so a crash can't leave a half-written list, and re-verified every time it is read.
+- `BlocklistUpdater` (app): downloads the manifest first (and stops there if nothing is newer, saving a 1.4 MB download), then the signature and list, then installs only what passes. Contacts only the release address.
+- `Blocklist.load`: uses the installed update if it still verifies, otherwise the list inside the app.
+- `IdentityVpnService`: checks 2 minutes after start and then at most daily; reloads the filter when an update is installed.
+- Settings: a **Blocklist** section (which list, how many names, when made) and a **Check for update** button.
+- History: two new event kinds, "Blocklist updated" and "Blocklist update failed or was refused" (neither counts as a protection interruption).
+- `content/blocklists/publish_update.py` and `PUBLISHING.md`: how to build, sign and upload a release. `build_blocklist.py` was split into reusable parts so the bundled list and the updates are built identically.
+- `.gitattributes` pins the signed test files byte for byte; `.gitignore` ignores `__pycache__/`.
+- **No new permission** (INTERNET was already declared for DNS).
+
+**Files:** `android/filter-core/src/main/kotlin/app/identity/filter/{BlocklistUpdate.kt (new),InterruptionLog.kt}`, `android/filter-core/src/test/kotlin/app/identity/filter/{BlocklistUpdateTest.kt (new),InterruptionLogTest.kt}`, `android/filter-core/src/test/resources/app/identity/filter/signed-sample/{list.txt,manifest.txt,manifest.sig}` (new), `android/app/src/main/java/app/identity/protection/{BlocklistStore.kt,BlocklistUpdater.kt (new),Blocklist.kt,IdentityVpnService.kt,ProtectionPrefs.kt}`, `android/app/src/main/java/app/identity/feature/{settings/SettingsScreen.kt,home/HomeScreen.kt}`, `android/app/src/main/res/values/strings.xml`, `content/blocklists/{publish_update.py,PUBLISHING.md (new),build_blocklist.py}`, `.gitattributes`, `.gitignore`, `docs/decision-log.md` (D-035), `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/risk-register.md`, `docs/privacy/data-inventory.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. A correctly signed, newer, well-formed list is accepted; every kind of bad update is refused: ✅ tested, including a real openssl signature
+2. Build and lint: ✅ (local); CI on a pull request: ⏳
+3. Phone: with no release published, Check for update says it could not reach the server, and nothing breaks: ⏳ product owner to see
+4. Phone: after the first release is published, Check for update installs it, the Blocklist line changes to "Updated list", and a history entry appears: ⏳
+5. Phone: pressing Check again says "already have the newest list": ⏳
+
+**Limits to know:** see D-035. This first update has the same names as the list already in the app (it was built from the same source on the same day), so the phone test proves the path works end to end but won't change what is blocked.
+
+**How to verify (phone)**
+1. Publish the release (PUBLISHING.md, "First time only"), upload the three files from `build/blocklist-update/`.
+2. Settings, Blocklist, **Check for update**: "Updated to a newer list", the line changes to "Updated list: 92,127 sites (made 2026-10-29)". Press it again: "already have the newest list".
+3. Home, Protection history: a "Blocklist updated" entry. Browsing and blocking keep working.
+
+**Next step:** publish the first release and run the phone check; pull request and CI ✅; merge. Then 3.7 (bypass checklist).
+
+---
+
 ## 2026-10-29: Fix: tell the user when Android turns the Shorts/Reels blocker off (branch `m3/shorts-status`, on top of `m3/staying-on`)
 
 > ✅ **Verified on a computer:** `assembleDebug`, `lintDebug` and all 89 `:filter-core` unit tests pass (no test changes: the change is in the app module). ✅ **Phone (checked over USB and by screenshot, 2026-10-29):** with the service on, `enabled_accessibility_services` listed Identity; after `am force-stop`, the list was **empty**; opening Identity then showed the new Home card "The Shorts and Reels blocker is off" with a button to Accessibility settings, while protection restarted by itself. ⏳ **Not yet verified:** the Settings "Off" line in a screenshot; the cause behind the product owner's original report after a phone restart (see below).
