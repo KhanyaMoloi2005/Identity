@@ -1,6 +1,7 @@
 package app.identity.protection
 
 import android.os.ParcelFileDescriptor
+import android.os.SystemClock
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
@@ -8,6 +9,7 @@ import android.system.StructPollfd
 import app.identity.filter.DnsDecision
 import app.identity.filter.DnsFilter
 import app.identity.filter.IpPackets
+import app.identity.filter.TcpResets
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -18,6 +20,7 @@ import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Handles the DNS queries that arrive through the tunnel: blocked names get "no such domain"
@@ -49,6 +52,7 @@ internal class DnsTunnel(
 
     // What HealthMonitor observes (M3.5): is the reader thread alive, and did the last lookups reach upstream?
     private val upstreamFailures = AtomicInteger(0)
+    private val outsideDnsAttemptMs = AtomicLong(0)
 
     fun handlerAlive(): Boolean = reader.isAlive
     fun upstreamFailures(): Int = upstreamFailures.get()
@@ -117,11 +121,18 @@ internal class DnsTunnel(
     }
 
     private fun handle(buffer: ByteArray, length: Int) {
-        val query = IpPackets.parseUdp(buffer, length) ?: return
+        val query = IpPackets.parseUdp(buffer, length)
+        if (query == null) {
+            refuseTcp(buffer, length)
+            return
+        }
         if (query.destinationPort != DNS_PORT) return
         val current = filter ?: return
         when (val decision = current.decide(query.payload)) {
-            is DnsDecision.Answer -> write(query.reply(decision.response))
+            is DnsDecision.Answer -> {
+                if (decision.outsideDns) outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+                write(query.reply(decision.response))
+            }
             DnsDecision.Forward -> inBackground {
                 askUpstream(query.payload)?.let { write(query.reply(it)) }
             }
@@ -130,6 +141,25 @@ internal class DnsTunnel(
             }
             DnsDecision.Drop -> Unit
         }
+    }
+
+    /**
+     * A TCP connection to Identity's DNS address, or to one of the public resolvers routed into the
+     * tunnel (M3.7b, D-036), is refused at once, so an app fails over quickly instead of waiting. A
+     * connection to a resolver on the encrypted-DNS ports is what Chrome's "Use secure DNS" or a
+     * private-DNS setting makes; it is noted so Home can say what stopped.
+     */
+    private fun refuseTcp(buffer: ByteArray, length: Int) {
+        val refusal = TcpResets.reset(buffer, length) ?: return
+        write(refusal.packet)
+        val ours = refusal.destinationAddress.contentEquals(OWN_DNS_ADDRESS)
+        if (!ours && refusal.destinationPort in ENCRYPTED_DNS_PORTS) outsideDnsAttemptMs.set(SystemClock.elapsedRealtime())
+    }
+
+    /** Whether something tried an outside encrypted-DNS service within the last [windowMs]. */
+    fun outsideDnsAttemptedWithin(windowMs: Long): Boolean {
+        val last = outsideDnsAttemptMs.get()
+        return last != 0L && SystemClock.elapsedRealtime() - last < windowMs
     }
 
     private fun inBackground(work: () -> Unit) {
@@ -181,6 +211,12 @@ internal class DnsTunnel(
 
     private companion object {
         const val DNS_PORT = 53
+
+        /** Identity's own DNS address inside the tunnel (see IdentityVpnService). */
+        val OWN_DNS_ADDRESS = byteArrayOf(10, 111, 222.toByte(), 1)
+
+        /** DNS over HTTPS and DNS over TLS. */
+        val ENCRYPTED_DNS_PORTS = setOf(443, 853)
         const val MAX_PACKET = 32_767
         const val FORWARD_THREADS = 4
         const val UPSTREAM_TIMEOUT_MS = 5_000

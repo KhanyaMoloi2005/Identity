@@ -207,6 +207,7 @@ private fun problemText(problem: ProtectionHealth.Problem): Int = when (problem)
     ProtectionHealth.Problem.DNS_HANDLER_STOPPED -> R.string.home_problem_dns_stopped
     ProtectionHealth.Problem.FILTER_SERVICE_UNREACHABLE -> R.string.home_problem_unreachable
     ProtectionHealth.Problem.PRIVATE_DNS_BYPASS -> R.string.home_problem_private_dns
+    ProtectionHealth.Problem.OUTSIDE_DNS_BLOCKED -> R.string.home_problem_outside_dns
 }
 
 private fun eventText(kind: InterruptionLog.Kind): Int = when (kind) {
@@ -217,6 +218,7 @@ private fun eventText(kind: InterruptionLog.Kind): Int = when (kind) {
     InterruptionLog.Kind.DNS_HANDLER_STOPPED -> R.string.home_problem_dns_stopped
     InterruptionLog.Kind.FILTER_SERVICE_UNREACHABLE -> R.string.home_problem_unreachable
     InterruptionLog.Kind.PRIVATE_DNS_BYPASS -> R.string.home_problem_private_dns
+    InterruptionLog.Kind.OUTSIDE_DNS_BLOCKED -> R.string.history_outside_dns_blocked
     InterruptionLog.Kind.BLOCKLIST_UPDATED -> R.string.history_blocklist_updated
     InterruptionLog.Kind.BLOCKLIST_UPDATE_FAILED -> R.string.history_blocklist_failed
 }

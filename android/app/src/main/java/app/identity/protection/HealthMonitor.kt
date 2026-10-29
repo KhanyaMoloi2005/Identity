@@ -42,6 +42,7 @@ internal class HealthMonitor(
                 serviceRunning = current != null,
                 dnsHandlerAlive = current?.handlerAlive() ?: true,
                 consecutiveUpstreamFailures = current?.upstreamFailures() ?: 0,
+                outsideDnsBlockedRecently = current?.outsideDnsAttemptedWithin(OUTSIDE_DNS_WINDOW_MS) ?: false,
                 privateDnsBypass = PrivateDns.bypassesProtection(
                     Settings.Global.getString(appContext.contentResolver, "private_dns_mode"),
                 ),
@@ -56,5 +57,8 @@ internal class HealthMonitor(
 
     private companion object {
         const val INTERVAL_MS = 20_000L
+
+        /** An outside encrypted-DNS attempt counts as "recent" for this long, so Home explains it while it is happening. */
+        const val OUTSIDE_DNS_WINDOW_MS = 5 * 60 * 1000L
     }
 }

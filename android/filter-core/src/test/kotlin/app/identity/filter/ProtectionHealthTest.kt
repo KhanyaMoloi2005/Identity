@@ -47,15 +47,22 @@ class ProtectionHealthTest {
     }
 
     @Test
+    fun anOutsideDnsServiceThatWasRefusedNeedsAttention() {
+        val report = ProtectionHealth.assess(Observation(true, true, outsideDnsBlockedRecently = true))
+        assertEquals(State.NEEDS_ATTENTION, report.state)
+        assertEquals(setOf(Problem.OUTSIDE_DNS_BLOCKED), report.problems)
+    }
+
+    @Test
     fun severalProblemsAreAllReported() {
-        val report = ProtectionHealth.assess(Observation(true, true, false, 9, true))
+        val report = ProtectionHealth.assess(Observation(true, true, false, 9, true, true))
         assertEquals(Problem.values().toSet(), report.problems)
     }
 
     @Test
     fun problemsOnAStoppedServiceDoNotMatter() {
         // Not running: the state is about that, whatever else was last seen.
-        val report = ProtectionHealth.assess(Observation(true, false, false, 9, true))
+        val report = ProtectionHealth.assess(Observation(true, false, false, 9, true, true))
         assertEquals(State.INTERRUPTED, report.state)
         assertEquals(emptySet<Problem>(), report.problems)
     }

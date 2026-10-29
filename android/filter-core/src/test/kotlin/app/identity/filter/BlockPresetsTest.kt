@@ -44,7 +44,21 @@ class BlockPresetsTest {
 
     @Test
     fun everyRuleIsAValidDomain() {
-        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH + BlockPresets.TIKTOK + BlockPresets.DOH_CANARY) assertEquals(rule, normalizeDomain(rule))
+        for (rule in BlockPresets.X_AND_REDDIT + BlockPresets.IMAGE_SEARCH + BlockPresets.TIKTOK + BlockPresets.DOH_CANARY + BlockPresets.DOH_ENDPOINTS) assertEquals(rule, normalizeDomain(rule))
+    }
+
+    @Test
+    fun theEncryptedDnsServersAreBlockedButTheirCompaniesOtherSitesAreNot() {
+        val doh = DomainMatcher(BlockPresets.DOH_ENDPOINTS)
+        for (name in listOf(
+            "chrome.cloudflare-dns.com", "mozilla.cloudflare-dns.com", "cloudflare-dns.com", "one.one.one.one", "dns.google",
+            "dns64.dns.google", "dns.quad9.net", "doh.opendns.com", "dns.adguard-dns.com", "dns.nextdns.io", "doh.dns.sb",
+        )) assertTrue(name, doh.isBlocked(name))
+        for (name in listOf(
+            "google.com", "www.google.com", "mail.google.com", "maps.google.com", "gstatic.com", "cloudflare.com",
+            "www.cloudflare.com", "quad9.net", "www.opendns.com", "adguard.com", "nextdns.io", "wikipedia.org",
+            "connectivitycheck.gstatic.com", "notdns.google.example",
+        )) assertFalse(name, doh.isBlocked(name))
     }
 
     @Test
