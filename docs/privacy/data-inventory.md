@@ -26,6 +26,8 @@ _Last updated: 2026-10-29 (M4.2: accounts. Personal data now leaves the phone, o
 | Protection status events (VPN started/stopped, list update failed) | Room | Summary only, if consented | 30 days | M3 |
 | Scripture First sessions (scheduled, completed, missed) | Room | Only if user enables sharing (off by default) | 90 days | M6 |
 | Signed-in account: email, the sign-in and refresh tokens, nickname, and this phone's registration id. One file, encrypted with a key held in Android's hardware keystore. **No password is ever stored.** | `account/account.bin` in app storage, excluded from backup | Tokens are sent to Supabase only to sign in, refresh and make requests; the email and nickname are what the person chose to give (see Backend data) | Until sign-out, or until the server says the sign-in is no longer valid | M4.2 |
+| Partners' nicknames, by account id, inside the same encrypted file, so a connection that ended can still be named (the server stops showing the nickname once it ends) | `account/account.bin` (as above) | Not sent anywhere | Only while the connection is listed: forgotten 7 days after it ends, and at sign-out | M4.3 |
+| A new invitation code | Shown on screen and handed to the share sheet the person chooses; **never saved** on the phone (the server keeps only its hash) | Only where the person shares it | Until the screen is left | M4.3 |
 
 All of the above (except the bundled library) are **excluded from Android cloud backup**.
 

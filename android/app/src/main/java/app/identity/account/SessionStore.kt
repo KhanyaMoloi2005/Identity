@@ -74,6 +74,8 @@ internal data class StoredAccount(
     val nickname: String? = null,
     val deviceId: String? = null,
     val lastTouchMs: Long = 0,
+    /** Partners' nicknames by account id, so a connection that ended can still be named (the server hides them then). Only for connections still listed. */
+    val knownNicknames: Map<String, String> = emptyMap(),
 ) {
     fun session() = Session(accessToken, refreshToken, expiresAtSec, userId, email)
 
