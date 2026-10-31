@@ -8,6 +8,68 @@ Related documents: [roadmap](roadmap.md) · [decision log](decision-log.md) · [
 
 ---
 
+## 2026-10-30: M4.3 Invitations and partners (branch `m4/partners`)
+
+> ✅ **Verified on a computer:** 18 new unit tests using the server's real answers (captured from the project with two throw-away accounts): app module 62 tests, `:filter-core` 121, 0 failed, 0 skipped; `assembleDebug` and `lintDebug` pass (no new lint warnings apart from "..." in a string, matching the existing ones). ✅ **Real server, the app's own code and HTTP client** (a one-off check, not committed, two throw-away accounts, deleted afterwards): own code refused; a wrong code refused; the right code (typed in lower case) connects; a used code and a cancelled code refused; both sides list each other by nickname; ending shows on **both** sides with the right name and who ended it; ending twice is harmless. ⏳ **Not yet verified:** everything on the phone (the screens, the share sheet, the switches); the sharing switches against the real server from the app (the computer's Java client cannot send PATCH, Android's can; the same request was checked from Python, and the nickname change, also a PATCH, works on the phone); expiry after 48 hours from the app (covered by the database tests and the unit tests).
+
+**Task:** invite a partner with a one-time code and the share sheet, accept a code, list partners both ways, end a connection from either side, and the three sharing choices (D-037).
+
+**What changed and why**
+- `account/Partners.kt` (new): the partner model (connections, waiting invitations, the sharing choices with D-037's defaults), the database functions' refusal reasons, and a code shape check so an obvious typo does not use one of the 10 tries an hour.
+- `AccountApi.kt`: calls the four database functions (create, accept, cancel, end) and reads partnerships, open invitations (**with named columns, never "everything"**), partners' nicknames, and saves the sharing choices.
+- `AccountRepository.kt`: one list state for the Partner tab; every change reloads the lists; "already ended or cancelled" counts as done (the other person may have done it first); offline keeps the last lists and says so; signing out forgets them.
+- **Ended connections keep a name:** the database hides a nickname once a connection ends, so the phone remembers the nicknames it saw (inside the encrypted login file) and shows "Sam ended the connection on ..." for 7 days, then forgets it.
+- `PartnersSection.kt` (new) on the Partner tab: Your partners (with the three switches and End connection, confirmed in a dialog), Invite a partner (the code shown once, Share code opens Android's share sheet), Invitations not used yet (Cancel), People you support, Enter an invitation code, Recently ended, Refresh. Only nicknames are shown, never emails.
+- `backend/tests/partner_helper.py` (new): plays the second person against the real project (make a code, accept one, list, end), so one phone is enough. Its throw-away login is kept in `build/` (ignored by git).
+- **Found while checking:** a partner trying to change the sharing choices gets "200, nothing changed" from the server, not an error; the app shows the switches only to the supported person and reports "nothing changed" as such.
+- No new library and no new permission.
+
+**Files:** `android/app/src/main/java/app/identity/account/{Partners.kt (new),AccountApi.kt,AccountRepository.kt,SessionStore.kt}`, `android/app/src/main/java/app/identity/feature/accountability/{PartnersSection.kt (new),PartnerScreen.kt}`, `android/app/src/main/res/values/strings.xml`, `android/app/src/test/java/app/identity/account/{PartnersTest.kt (new),AccountRepositoryTest.kt}` (the fakes are now shared), `backend/tests/partner_helper.py` (new), `docs/privacy/data-inventory.md`, `docs/plans/m4-accounts-and-partners.md`, `docs/roadmap.md`, `docs/CHECKLIST.md`, `docs/PROJECT_LOG.md`.
+
+**Acceptance criteria**
+1. Invite: a one-time code, shown once, shared with the share sheet: ✅ computer and real server (code never saved: tested); share sheet ⏳ phone
+2. Accept, with a clear reason for a wrong, used, expired or cancelled code: ✅ tested and real server (expired: unit test)
+3. Lists both ways, nicknames only: ✅ tested and real server; ⏳ phone
+4. Either side can end it, and the other sees it ended: ✅ real server (both sides); ⏳ phone
+5. Sharing choices, defaults on/off/off, changeable: ✅ tested; ⏳ phone and real server from the app
+6. Protection unaffected without an account or offline: no protection code changed; ⏳ phone
+
+**Install note:** this APK was built on the work computer, which has its own debug signing key, so it cannot be installed over a copy built elsewhere: uninstall Identity first (protection settings, custom rules and the sign-in on the phone are lost and must be set again; the account itself stays on the server). The same happens again when going back to the laptop's builds.
+
+**Next step:** phone test with the APK and the helper, then commit, pull request, CI ✅, merge. Then 4.4 (account deletion).
+
+---
+
+## 2026-10-30: CI run #54 (merge of PR #25 into `main`) was cancelled, not failed
+
+The product owner saw "some checks were not successful" on the merge of PR #25. GitHub shows run #54 (commit `e2fbe46`) **cancelled**: it hung in "Build, lint and unit-test" for 35 minutes and hit the workflow's 30-minute time limit; no test failed. The same code passed on the pull request (run #53) and, on 2026-10-30, the same command passed on this computer on `main` at `e2fbe46` (app 44 and filter-core 121 tests, 0 failed). The merge itself is complete. To clear the red mark: Actions tab, run #54, "Re-run all jobs" (or it is superseded by the next merge). If a run hangs like this again, look into it (for example, a Gradle download stalling on GitHub's machine).
+
+---
+
+## 2026-10-30: Build tools installed on the work computer
+
+**Why:** the product owner is away from the personal laptop and tests with APK files; this computer had no Java or Android tools, so nothing could be built or tested here.
+
+**What:** installed in the user folder only (no admin rights, nothing in the repo): Temurin JDK 17.0.20.1, Gradle 8.9 (the version the project uses) and the Android command-line tools with SDK Platform 35, Build-Tools 35 and 34, and platform-tools (`adb`), all under `C:\Users\KhanyaMoloi\devtools`. `devtools\env.sh` sets `JAVA_HOME`, `ANDROID_HOME` and `PATH` for Git Bash. `android/local.properties` (ignored by git) points at the SDK; write it with forward slashes, since a backslash path fails with "The filename, directory name, or volume label syntax is incorrect".
+
+**Verified:** the same command CI runs (`gradle assembleDebug lintDebug testDebugUnitTest :filter-core:test`) passes on `main`: app 44 tests and filter-core 121 tests, 0 failed, 0 skipped; `app-debug.apk` built.
+
+---
+
+## 2026-10-30: Phone observation: Always-on VPN turned itself off (to investigate on the personal laptop)
+
+**What the product owner saw (APK build, normal use for a few hours):**
+- Battery use is normal.
+- At some point the Always-on VPN (Identity's protection) **turned itself off without being asked to**. It was only noticed during a WhatsApp call: the call rang, so the internet was working, but answering it got stuck on "Connecting". A WhatsApp call a few minutes earlier had worked normally.
+
+**Not yet known:** whether Android stopped the service (memory, an update, another VPN app), whether Identity stopped itself (a crash or an error in the tunnel), and whether the failed call was caused by the VPN going down or by something else. Identity only sends DNS (name lookups) through its tunnel, never the call audio itself, so the stuck call may be a coincidence or a side effect of the moment the tunnel went down; the logs should tell.
+
+**To do (needs USB debugging, so on the personal laptop):** connect the phone and run `adb logcat -d -b crash` and `adb logcat -d | findstr /i "identity vpn"`, and look at `adb shell dumpsys connectivity` and `adb shell dumpsys activity services app.identity`, as soon as possible after it happens again (the logs are overwritten after a while). **If it happens again before then:** note the time, check whether Identity's notification is still there, open Home in Identity and take a screenshot, and look at Settings, Network, VPN to see whether Identity is still set as Always-on. Linked to risk R-08 in the risk register; it does not block M4.
+
+**Files:** `docs/PROJECT_LOG.md`. **Next step:** M4.3 (invitations and partners) continues.
+
+---
+
 ## 2026-10-29: ⏸ PAUSE POINT: pick up here (end of day)
 
 **Where we are:** M3 is finished and merged. M4 is under way: the plan and decisions (D-037), the database (4.1: 91 of 91 checks pass on the real Supabase project) are merged; **4.2 (accounts in the app) is written, tested and phone-tested on branch `m4/account-app`** (commit `760b1d4`), waiting for the product owner to publish it, open a pull request and merge it once CI is green.

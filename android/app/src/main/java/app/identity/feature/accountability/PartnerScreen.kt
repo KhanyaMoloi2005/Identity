@@ -43,8 +43,7 @@ import kotlinx.coroutines.withContext
 /**
  * Partner tab (M4.2). An account is optional: filtering, limits and Scripture never need one. Signed
  * out, it explains what is shared and offers to create an account or sign in. Signed in, it shows
- * the account, the nickname a partner will see, and this phone's registration. Inviting a partner
- * arrives in the next slice.
+ * the account, the nickname a partner will see, this phone's registration, and the partners (M4.3).
  */
 @Composable
 fun PartnerScreen(modifier: Modifier = Modifier) {
@@ -208,13 +207,10 @@ private fun SignedInSection(repository: AccountRepository, state: AccountState.S
         ) { Text(stringResource(R.string.partner_retry)) }
     }
 
-    Text(
-        text = stringResource(R.string.partner_partners_soon),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 8.dp),
-    )
+    PartnersSection(repository)
+
     TextButton(
+        modifier = Modifier.padding(top = 8.dp),
         enabled = !busy,
         onClick = {
             busy = true
@@ -226,7 +222,7 @@ private fun SignedInSection(repository: AccountRepository, state: AccountState.S
     ) { Text(stringResource(R.string.partner_sign_out)) }
 }
 
-private fun failureText(failure: Outcome.Failed): Int =
+internal fun failureText(failure: Outcome.Failed): Int =
     when (failure.problem) {
         FieldProblem.EMAIL_INVALID -> R.string.partner_error_email
         FieldProblem.PASSWORD_TOO_SHORT -> R.string.partner_error_password_short

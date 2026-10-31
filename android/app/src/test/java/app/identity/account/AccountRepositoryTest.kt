@@ -10,7 +10,7 @@ import java.io.File
 import java.nio.file.Files
 
 /** A stand-in for the server that records every request, so the tests can check what was sent and in what order. */
-private class FakeTransport : HttpTransport {
+internal class FakeTransport : HttpTransport {
     class Request(val method: String, val path: String, val body: String?, val token: String?)
 
     val requests = mutableListOf<Request>()
@@ -32,7 +32,7 @@ private class FakeTransport : HttpTransport {
 }
 
 /** "Encrypts" by flipping bits, and can be told to lose its key. */
-private class FakeCipher : SessionCipher {
+internal class FakeCipher : SessionCipher {
     var keyLost = false
     override fun encrypt(plain: ByteArray) = ByteArray(plain.size) { (plain[it].toInt() xor 0x5A).toByte() }
     override fun decrypt(data: ByteArray): ByteArray? = if (keyLost) null else ByteArray(data.size) { (data[it].toInt() xor 0x5A).toByte() }

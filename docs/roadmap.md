@@ -87,7 +87,7 @@ Built in seven slices, one pull request each (order agreed 2026-10-29):
 - **On-device content detection** (product owner idea, 2026-10-29): close a page or app for a few seconds when certain phrases appear on screen, and detect explicit images on screen. Possible only with an Accessibility Service and/or screen capture plus an on-device image model, which **conflicts with D-012 and the spec** (no accessibility service, no screenshots). Before deciding, research: current Google Play policy on Accessibility for blocking apps (R-03), fully on-device and opt-in design, battery cost, false positives, model licences. Then the product owner decides whether to change D-012.
 
 ## M4: Accounts and partners (ACC-01, PRIV-01)
-_Plan (decided, D-037): [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md). 4.1 database done (91 of 91 checks); 4.2 accounts in the app done._
+_Plan (decided, D-037): [plans/m4-accounts-and-partners.md](plans/m4-accounts-and-partners.md). 4.1 database done (91 of 91 checks); 4.2 accounts in the app done; 4.3 invitations and partners built (phone test pending)._
 - Sign-up / sign-in; device registration
 - Invitations: random, hashed, single-use, 48 h expiry, rate-limited
 - RLS tested with two accounts + revoked partner

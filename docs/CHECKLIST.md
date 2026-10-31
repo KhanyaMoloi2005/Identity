@@ -2,7 +2,7 @@
 
 _The one page to check when you ask "where are we?" Tick boxes here as work finishes. Details live in [roadmap.md](roadmap.md); the history lives in [PROJECT_LOG.md](PROJECT_LOG.md)._
 
-**Current task:** ⏸ paused for the night (see the pause point at the top of PROJECT_LOG.md). M4.2 accounts in the app is committed on `m4/account-app` (phone-tested); next: publish it, pull request, CI ✅, merge; then slice 4.3 (invitations and partners). M3 is finished; M4.1 database is merged.
+**Current task:** M4.3 invitations and partners, on branch `m4/partners`: built, unit-tested and checked against the real Supabase project; **waiting for the phone test** with the APK. M4.1 and M4.2 are merged.
 
 > **Pick up here (2026-10-29):** on any computer, `git fetch` then `git checkout m3/custom-rules`. Read the newest entry in [PROJECT_LOG.md](PROJECT_LOG.md) and the open decisions in [decision-log.md](decision-log.md) (D-022 to D-029 cover M2 and M3). Working rules: [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md). Pending observations: M2.4 battery result, M2.2/2.3 leftovers (Cancel in the VPN dialog, turning off from system Settings, Android version). M2.4 battery observation is running on the phone. M1.2 awaits its verse review (in progress).
 **Rule:** one task at a time. A new task starts only when every box in "Done means done" below is ticked for the previous one.
@@ -53,7 +53,12 @@ _The one page to check when you ask "where are we?" Tick boxes here as work fini
   - [x] 3.6 Signed list updates (D-035): phone-tested; PR + CI ✅ then merge
   - [x] 3.7 Bypass test checklist (docs/bypass-tests.md; PR + CI ✅ then merge)
   - [x] 3.7b Close the public-resolver bypass (Chrome secure DNS, D-036): phone-tested; PR + CI ✅ then merge
-- [ ] **M4** Accounts, partners, account deletion
+- [ ] **M4** Accounts, partners, account deletion ← in progress
+  - [x] 4.1 Database, rules and functions (91 of 91 checks on the real project)
+  - [x] 4.2 Accounts in the app (phone-tested, merged PR #25)
+  - [ ] 4.3 Invitations and partners (built and tested on the computer and the real server; phone test pending)
+  - [ ] 4.4 Account deletion, retention note, privacy notice draft
+  - [ ] 4.5 Hardening and M4 acceptance
 - [ ] **M5** Reports and alerts
 - [ ] **M6** Scripture First alarm + reminders (incl. the focus hour: D-032)
 - [ ] **M7** Commitment controls (incl. uninstall friction + tamper alert, after a Play policy check: D-024)
